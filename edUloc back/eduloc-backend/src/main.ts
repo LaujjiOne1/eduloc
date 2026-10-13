@@ -14,12 +14,20 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { rawBody: true });
   const cfg = app.get(AppConfig);
   const logger = new Logger('Bootstrap');
+  const requestLogger = new Logger('HTTP');
 
+  app.use((req, _res, next) => {
+    requestLogger.log(`${req.method} ${req.path}`);
+    next();
+  });
   app.use(helmet());
   app.use(json({ limit: '1mb' }));
   app.use(urlencoded({ extended: true, limit: '1mb' }));
+  // En développement, toute origine locale (Expo web 8081/3000, LAN) est acceptée ; en production, la liste blanche seule.
+  const devOrigin = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/;
   app.enableCors({
-    origin: cfg.corsOrigins,
+    origin: (origin, callback) =>
+      callback(null, !origin || cfg.corsOrigins.includes(origin) || (cfg.nodeEnv !== 'production' && devOrigin.test(origin))),
     credentials: true,
   });
 

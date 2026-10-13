@@ -1,4 +1,5 @@
-import { IsEnum, IsISO8601, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsIn, IsInt, IsISO8601, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
 
 export enum TeachingModeDto {
   ONLINE = 'ONLINE',
@@ -14,6 +15,8 @@ export class CreateBookingDto {
   @IsEnum(TeachingModeDto) teachingMode!: TeachingModeDto;
   @IsOptional() @IsUUID() placeId?: string;
   @IsOptional() @IsUUID() voiceNoteUploadId?: string;
+  @IsOptional() @IsString() @MaxLength(500) beneficiaryAddress?: string;
+  @IsOptional() @IsString() @MaxLength(1000) requesterNote?: string;
 }
 
 export class RefuseBookingDto {
@@ -26,4 +29,11 @@ export class CancelBookingDto {
 
 export class StartSessionDto {
   @IsString() @MaxLength(6) otp!: string;
+}
+
+export class ListBookingsQueryDto {
+  @IsOptional() @IsIn(['requester', 'tutor']) role: 'requester' | 'tutor' = 'requester';
+  /** Un ou plusieurs statuts séparés par des virgules : « CONFIRMED,IN_PROGRESS ». */
+  @IsOptional() @Matches(/^[A-Z_]+(,[A-Z_]+)*$/, { message: 'status doit être une liste de statuts' }) status?: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit = 50;
 }

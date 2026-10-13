@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
 import { CursorQueryDto } from '../../common/pagination/cursor-pagination';
 import { ConversationsService } from './conversations.service';
+import { MessagesQueryDto } from './dto';
 
 @ApiTags('conversations')
 @ApiBearerAuth()
@@ -15,11 +16,16 @@ export class ConversationsController {
     return this.service.listMine(user.userId, q);
   }
 
+  @Get(':id')
+  get(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.service.getOne(user.userId, id);
+  }
+
   @Get(':id/messages')
   messages(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
-    @Query() q: CursorQueryDto,
+    @Query() q: MessagesQueryDto,
   ) {
     return this.service.listMessages(user.userId, id, q);
   }

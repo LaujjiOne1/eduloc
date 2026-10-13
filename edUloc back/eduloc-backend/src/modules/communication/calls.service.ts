@@ -25,8 +25,14 @@ export class CallsService {
     await this.rateLimit.consume(`rl:call:${userId}`, 10, 3600);
     const { conv, isRequester } = await this.conversations.requireParticipant(userId, dto.conversationId);
 
+    // La relation se juge sur TOUTES les réservations de la paire, pas seulement la plus récente.
     const active = await this.prisma.booking.findFirst({
-      where: { conversations: { some: { id: conv.id } }, status: { in: ['CONFIRMED', 'IN_PROGRESS'] } },
+      where: {
+        requesterId: conv.requesterId,
+        tutorProfileId: conv.tutorProfileId,
+        status: { in: ['CONFIRMED', 'IN_PROGRESS'] },
+      },
+      orderBy: { startAt: 'asc' },
     });
     const relation = CommunicationPolicy.relation(
       {
@@ -43,6 +49,8 @@ export class CallsService {
       });
     }
 
+    const caller = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { firstName: true, lastName: true } });
+    const callerName = `${caller.firstName} ${caller.lastName}`.trim();
     const roomName = `eduloc_${randomUUID()}`;
     const recipientId = isRequester ? conv.tutorProfile.userId : conv.requesterId;
     // Préparation externe AVANT la transaction (règle 6.4 : rien d'externe dans le tx).
@@ -77,6 +85,10 @@ export class CallsService {
         payload: {
           callId: call.id, roomName, type: dto.type,
           conversationId: conv.id, messageId: message.id,
+          bookingId: active?.id ?? null,
+          // Côté de l'appelé : l'app route vers l'espace tuteur ou demandeur.
+          recipientRole: isRequester ? 'TUTOR' : 'REQUESTER',
+          callerName: callerName,
         },
         pushTitle: 'Appel entrant',
         pushBody: dto.type === 'VIDEO' ? 'Appel vidéo…' : 'Appel audio…',
@@ -86,7 +98,7 @@ export class CallsService {
         roomName,
         type: call.type,
         status: call.status,
-        url: this.cfg.livekitUrl,
+        livekitUrl: this.cfg.livekitUrl,
         token: await this.provider.participantToken(call.roomName, userId, userId),
       };
     });
@@ -108,7 +120,9 @@ export class CallsService {
     return {
       callId: call.id,
       roomName: call.roomName,
-      url: this.cfg.livekitUrl,
+      type: call.type,
+      status: call.status,
+      livekitUrl: this.cfg.livekitUrl,
       token: await this.provider.participantToken(call.roomName, userId, name),
     };
   }

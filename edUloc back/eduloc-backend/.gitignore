@@ -4,3 +4,5 @@ dist/
 *.log
 coverage/
 src/generated/
+.storage/
+dist-e2e/

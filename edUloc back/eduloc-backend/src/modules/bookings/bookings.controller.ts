@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
 import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 import { BookingsService } from './bookings.service';
-import { CancelBookingDto, CreateBookingDto, RefuseBookingDto, StartSessionDto } from './dto';
+import { CancelBookingDto, CreateBookingDto, ListBookingsQueryDto, RefuseBookingDto, StartSessionDto } from './dto';
 
 @ApiTags('bookings')
 @ApiBearerAuth()
@@ -18,12 +18,8 @@ export class BookingsController {
   }
 
   @Get()
-  list(
-    @CurrentUser() user: AuthUser,
-    @Query('role') role: 'requester' | 'tutor' = 'requester',
-    @Query('status') status?: string,
-  ) {
-    return this.service.listMine(user.userId, role, status);
+  list(@CurrentUser() user: AuthUser, @Query() q: ListBookingsQueryDto) {
+    return this.service.listMine(user.userId, q.role, q.status, q.limit);
   }
 
   @Get(':id')

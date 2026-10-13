@@ -29,10 +29,14 @@ export function documentPath(conversationId: string, messageId: string, ext: str
 export function tutorDocumentPath(applicationId: string, documentId: string, ext: string): string {
   return `applications/${applicationId}/${documentId}${ext}`;
 }
+export function tutorIntroVideoPath(tutorProfileId: string, videoId: string, ext: string): string {
+  return `tutor-videos/${tutorProfileId}/${videoId}${ext}`;
+}
 export function extFromMime(mime: string): string {
   const map: Record<string, string> = {
     'audio/webm': '.webm', 'audio/mp4': '.m4a', 'audio/ogg': '.ogg', 'audio/mpeg': '.mp3',
     'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp',
+    'video/mp4': '.mp4', 'video/quicktime': '.mov', 'video/webm': '.webm',
   };
   return map[mime] ?? '.bin';
 }

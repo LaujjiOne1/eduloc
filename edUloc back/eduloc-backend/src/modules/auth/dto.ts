@@ -1,4 +1,6 @@
-import { IsEmail, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+
+const SIX_DIGITS = /^\d{6}$/;
 
 export class RegisterDto {
   @IsString() @MaxLength(100) firstName!: string;
@@ -8,8 +10,14 @@ export class RegisterDto {
   @IsOptional() @IsString() @MaxLength(30) phone?: string;
 }
 
+/** Code à 6 chiffres reçu par e-mail. */
 export class VerifyEmailDto {
-  @IsString() token!: string;
+  @IsEmail() email!: string;
+  @Matches(SIX_DIGITS, { message: 'code doit contenir 6 chiffres' }) code!: string;
+}
+
+export class ResendVerificationDto {
+  @IsEmail() email!: string;
 }
 
 export class LoginDto {
@@ -30,6 +38,7 @@ export class RequestPasswordResetDto {
 }
 
 export class ResetPasswordDto {
-  @IsString() token!: string;
+  @IsEmail() email!: string;
+  @Matches(SIX_DIGITS, { message: 'code doit contenir 6 chiffres' }) code!: string;
   @IsString() @MinLength(8) @MaxLength(128) password!: string;
 }

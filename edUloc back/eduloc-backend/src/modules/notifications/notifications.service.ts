@@ -13,11 +13,21 @@ export class NotificationsService {
     });
   }
 
+  async unreadCount(userId: string) {
+    return { count: await this.prisma.notification.count({ where: { userId, isRead: false } }) };
+  }
+
   async markRead(userId: string, id?: string) {
     await this.prisma.notification.updateMany({
       where: { userId, ...(id ? { id } : {}), isRead: false },
       data: { isRead: true },
     });
+    return { ok: true };
+  }
+
+  /** Déconnexion : seul le propriétaire du jeton peut le retirer. */
+  async unregisterDevice(userId: string, token: string) {
+    await this.prisma.deviceToken.deleteMany({ where: { userId, token } });
     return { ok: true };
   }
 

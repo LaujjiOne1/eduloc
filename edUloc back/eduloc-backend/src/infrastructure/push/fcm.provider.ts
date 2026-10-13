@@ -35,8 +35,12 @@ export class FcmProvider implements PushProvider, OnModuleInit {
         tokens,
         notification: { title: message.title, body: message.body },
         data: message.data ?? {},
-        android: { priority: 'high' },
-        apns: { headers: { 'apns-priority': '10' } },
+        android: {
+          priority: message.priority === 'normal' ? 'normal' : 'high',
+          ttl: message.ttlSeconds ? message.ttlSeconds * 1000 : undefined,
+          notification: { channelId: message.channelId ?? 'default', sound: message.sound ?? 'default' },
+        },
+        apns: { headers: { 'apns-priority': message.priority === 'normal' ? '5' : '10' } },
       });
       if (res.failureCount > 0) {
         this.logger.warn(`push: ${res.failureCount}/${tokens.length} échecs`);

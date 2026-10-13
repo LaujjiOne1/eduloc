@@ -1,3 +1,8 @@
+-- Extensions requises par les colonnes géographiques (places.location).
+-- Doit précéder tout type "geography" pour que la base shadow de Prisma
+-- puisse rejouer les migrations depuis zéro.
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'SUSPENDED', 'PENDING_VERIFICATION');
 

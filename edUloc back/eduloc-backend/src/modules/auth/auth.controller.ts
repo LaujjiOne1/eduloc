@@ -1,10 +1,10 @@
-import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, Ip, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/decorators/public.decorator';
 import { AuthService } from './auth.service';
 import {
   LoginDto, LogoutDto, RefreshDto, RegisterDto,
-  RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto,
+  RequestPasswordResetDto, ResendVerificationDto, ResetPasswordDto, VerifyEmailDto,
 } from './dto';
 
 @ApiTags('auth')
@@ -22,6 +22,13 @@ export class AuthController {
   @Post('verify-email')
   verify(@Body() dto: VerifyEmailDto) {
     return this.service.verifyEmail(dto);
+  }
+
+  @Public()
+  @Post('resend-verification')
+  @HttpCode(200)
+  resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.service.resendVerification(dto);
   }
 
   @Public()

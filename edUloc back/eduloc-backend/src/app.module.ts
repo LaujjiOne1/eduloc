@@ -25,6 +25,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { GeoModule } from './modules/geo/geo.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { AdminModule } from './modules/admin/admin.module';
     NotificationsModule,
     RealtimeModule,
     AdminModule,
+    GeoModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

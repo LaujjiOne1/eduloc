@@ -24,3 +24,7 @@ export class UpdateBeneficiaryDto {
   @IsOptional() @IsEnum(['ONLINE', 'IN_PERSON', 'BOTH']) preferredFormat?: string;
   @IsOptional() @IsEnum(['ONE_TIME', 'OCCASIONAL', 'REGULAR', 'INTENSIVE']) preferredRhythm?: string;
 }
+
+export class EnsureSelfDto {
+  @IsOptional() @IsUUID() educationLevelId?: string;
+}

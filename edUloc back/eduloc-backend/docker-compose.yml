@@ -16,6 +16,22 @@ services:
       timeout: 5s
       retries: 10
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: eduloc-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@eduloc.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - ./config/pgadmin-servers.json:/pgadmin4/servers.json:ro
+      - pgadmindata:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
     container_name: eduloc-redis
@@ -36,10 +52,12 @@ services:
     command: ["centrifugo", "-c", "/etc/centrifugo/config.json"]
     volumes:
       - ./config/centrifugo.json:/etc/centrifugo/config.json:ro
+    # Centrifugo v6 ne lit QUE ses propres noms de variables (CENTRIFUGO_HTTP_API_KEY, ...) :
+    # les valeurs viennent du .env pour rester identiques à celles de l'API.
     environment:
-      CENTRIFUGO_TOKEN_SECRET: centrifugo-connection-secret
-      CENTRIFUGO_SUB_SECRET: centrifugo-subscription-secret
-      CENTRIFUGO_API_KEY: centrifugo-api-key
+      CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY: ${CENTRIFUGO_TOKEN_SECRET:-centrifugo-connection-secret}
+      CENTRIFUGO_CLIENT_SUBSCRIPTION_TOKEN_HMAC_SECRET_KEY: ${CENTRIFUGO_SUB_SECRET:-centrifugo-subscription-secret}
+      CENTRIFUGO_HTTP_API_KEY: ${CENTRIFUGO_API_KEY:-centrifugo-api-key}
     ports:
       - "8000:8000"
     depends_on:
@@ -82,4 +100,5 @@ services:
 
 volumes:
   pgdata:
+  pgadmindata:
   redisdata:

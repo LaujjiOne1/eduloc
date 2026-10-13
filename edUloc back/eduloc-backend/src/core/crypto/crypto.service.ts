@@ -11,6 +11,16 @@ export class CryptoService {
     return randomInt(0, 1_000_000).toString().padStart(6, '0');
   }
 
+  /** Code e-mail à 6 chiffres (vérification de compte, réinitialisation de mot de passe). */
+  generateEmailCode(): string {
+    return randomInt(0, 1_000_000).toString().padStart(6, '0');
+  }
+
+  /** Empreinte d'un code e-mail, liée à l'adresse : deux comptes peuvent recevoir le même code. */
+  emailCodeHash(email: string, code: string): string {
+    return this.sha256(`${email.trim().toLowerCase()}:${code}`);
+  }
+
   generateToken(bytes = 32): string {
     return randomBytes(bytes).toString('base64url');
   }

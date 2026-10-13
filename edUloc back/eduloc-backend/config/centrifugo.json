@@ -1,10 +1,14 @@
 {
   "client": {
-    "token": { "hmac_secret_key": "${CENTRIFUGO_TOKEN_SECRET}" },
-    "subscription_token": { "hmac_secret_key": "${CENTRIFUGO_SUB_SECRET}" },
-    "allowed_origins": ["https://app.eduloc.mg", "https://eduloc.mg", "http://localhost:3000"]
+    "allowed_origins": [
+      "https://app.eduloc.mg",
+      "https://eduloc.mg",
+      "http://localhost:*",
+      "http://127.0.0.1:*",
+      "http://192.168.*:*",
+      "http://10.*:*"
+    ]
   },
-  "http_api": { "key": "${CENTRIFUGO_API_KEY}" },
   "channel": {
     "namespaces": [
       {

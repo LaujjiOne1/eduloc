@@ -90,7 +90,7 @@ export class AdminService {
 
   /** UC-G05 : approbation + visibilité dans la MÊME transaction. */
   async approveApplication(adminId: string, applicationId: string) {
-    return this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx) => {
       const app = await tx.tutorApplication.findUnique({ where: { id: applicationId } });
       if (!app) throw new NotFoundException('APPLICATION_NOT_FOUND');
       if (app.status !== 'PENDING') throw new UnprocessableEntityException('APPLICATION_NOT_PENDING');
@@ -106,6 +106,11 @@ export class AdminService {
         where: { id: app.tutorProfileId },
         select: { userId: true },
       });
+      // Les compétences ajoutées librement par ce tuteur entrent au catalogue avec son dossier.
+      await tx.subject.updateMany({
+        where: { isVerified: false, createdById: tutor.userId, tutorSubjects: { some: { tutorProfileId: app.tutorProfileId } } },
+        data: { isVerified: true },
+      });
       await this.outbox.write(tx, {
         aggregateType: 'tutorApplication',
         aggregateId: app.id,
@@ -114,10 +119,14 @@ export class AdminService {
         payload: { applicationId: app.id },
         pushTitle: 'Dossier approuvé',
         pushBody: 'Vous êtes visible dans la recherche.',
-        cacheKeys: [CacheKeys.tutorPublic(app.tutorProfileId)],
+        cacheKeys: [CacheKeys.tutorPublic(app.tutorProfileId), CacheKeys.subjects()],
       });
-      return { ok: true };
     });
+    // Le tuteur doit apparaître tout de suite dans la recherche (résultats mis en cache 90 s),
+    // et ses compétences libres dans le catalogue (l'outbox n'invalide qu'avec un délai).
+    await this.cache.invalidate(CacheKeys.subjects());
+    await this.cache.bumpSearch();
+    return { ok: true };
   }
 
   async rejectApplication(adminId: string, applicationId: string, reason?: string) {
@@ -153,7 +162,7 @@ export class AdminService {
 
   /** UC-G07 : suspension + conflits sur les réservations futures (UC-G10). */
   async suspendTutor(adminId: string, tutorProfileId: string, reason?: string) {
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const tp = await tx.tutorProfile.findUnique({ where: { id: tutorProfileId } });
       if (!tp) throw new NotFoundException('TUTOR_NOT_FOUND');
       await tx.tutorProfile.update({
@@ -190,6 +199,8 @@ export class AdminService {
       });
       return { ok: true, affectedBookings: future.length };
     });
+    await this.cache.bumpSearch();
+    return result;
   }
 
   /** UC-G08 : retrait d'offre par l'admin — le tuteur ne peut pas réactiver. */
@@ -207,6 +218,7 @@ export class AdminService {
         data: { disabledByAdminAt: null, isActive: true },
       });
     }
+    await this.cache.bumpSearch();
     return { ok: true };
   }
 

@@ -47,6 +47,11 @@ enum TutorDocumentStatus {
   REJECTED
 }
 
+enum TutorExperienceType {
+  PROFESSIONAL
+  ACADEMIC
+}
+
 enum RelationshipType {
   SELF
   CHILD
@@ -220,6 +225,10 @@ model User {
 
   isAdmin Boolean @default(false)
 
+  /// Alarme de cours (paramètre du compte) : rappel avant chaque séance confirmée du jour.
+  lessonAlarmEnabled     Boolean @default(true)
+  lessonAlarmLeadMinutes Int     @default(30)
+
   lastLoginAt DateTime?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
@@ -228,6 +237,7 @@ model User {
   beneficiaries            Beneficiary[]
   bookings                 Booking[]          @relation("RequesterBookings")
   tutorProfile             TutorProfile?
+  createdSubjects          Subject[]     @relation("SubjectCreator")
   sentMessages             Message[]          @relation("SentMessages")
   conversationsAsRequester Conversation[]     @relation("RequesterConversations")
   reviews                  Review[]           @relation("RequesterReviews")
@@ -320,6 +330,8 @@ model EducationLevel {
   category     String   @default("")
   displayOrder Int      @default(0)
   isActive     Boolean  @default(true)
+  /// Diplôme minimal pour enseigner ce niveau : BAC | LICENCE | MASTER | DOCTORAT.
+  requiredDegree String @default("BAC")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -338,6 +350,12 @@ model Subject {
   description String?  @db.Text
   category    String?
   isActive    Boolean  @default(true)
+  /// Catégories de niveaux où la matière s'enseigne (« Lycée », « Université »…). Vide = tous les niveaux.
+  levelCategories String[] @default([])
+  /// false = compétence ajoutée librement par un tuteur : visible de lui seul jusqu'à l'approbation de son dossier.
+  isVerified  Boolean  @default(true)
+  createdById String?
+  createdBy   User?    @relation("SubjectCreator", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -345,6 +363,7 @@ model Subject {
   offers        Offer[]
 
   @@index([isActive])
+  @@index([createdById])
   @@map("subjects")
 }
 
@@ -363,6 +382,10 @@ model TutorProfile {
   profilePhoto        String?
   experience          String?   @db.Text
   educationBackground String?   @db.Text
+  /// Plus haut diplôme déclaré : BAC | LICENCE | MASTER | DOCTORAT | OTHER (détermine les niveaux enseignables).
+  highestDegree       String?
+  /// MALE | FEMALE : choisit l'avatar par défaut du tuteur (silhouette) tant qu'il n'a pas de photo.
+  gender              String?
 
   /// Maintenu dans la même transaction que l'approbation / la suspension.
   isVisible   Boolean   @default(false)
@@ -375,6 +398,8 @@ model TutorProfile {
   updatedAt DateTime @updatedAt
 
   applications   TutorApplication[]
+  experiences    TutorExperience[]
+  introVideo     TutorIntroVideo?
   subjects       TutorSubject[]
   offers         Offer[]
   places         Place[]
@@ -409,6 +434,39 @@ model TutorApplication {
   @@index([tutorProfileId])
   @@index([status])
   @@map("tutor_applications")
+}
+
+model TutorExperience {
+  id             String       @id @default(uuid())
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  type         TutorExperienceType
+  title        String
+  organization String
+  period       String
+  description  String?            @db.Text
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([tutorProfileId, type])
+  @@map("tutor_experiences")
+}
+
+model TutorIntroVideo {
+  id             String       @id @default(uuid())
+  tutorProfileId String       @unique
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  storagePath String   @unique
+  mimeType    String
+  sizeBytes   Int
+  fileName    String?
+  durationMs  Int?
+  uploadedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tutor_intro_videos")
 }
 
 model TutorDocument {
@@ -499,6 +557,7 @@ model Place {
   /// Rayon de déplacement en mètres (type BENEFICIARY_HOME)
   radius    Int?
   type      PlaceType
+  isPrimary Boolean @default(false)
 
   /// Colonne générée PostGIS (cf. 001_constraints.sql). Lecture via $queryRaw uniquement.
   location Unsupported("geography(Point, 4326)")?
@@ -602,6 +661,7 @@ model Booking {
   locationAddress String?
   latitude        Float?
   longitude       Float?
+  requesterNote   String? @db.Text
 
   // --- Séance ---
   startOtpCipher String? // AES-256-GCM
@@ -609,6 +669,10 @@ model Booking {
   otpExpiresAt   DateTime?
   startedAt      DateTime?
   completedAt    DateTime?
+
+  // --- Rappels de séance (un par partie, jamais deux fois) ---
+  requesterRemindedAt DateTime?
+  tutorRemindedAt     DateTime?
 
   // --- Annulation / refus ---
   cancelledBy        BookingActor?

@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "EduLoc PostgreSQL",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "eduloc",
+      "Username": "eduloc",
+      "Password": "eduloc",
+      "SSLMode": "prefer",
+      "SavePassword": true
+    }
+  }
+}
