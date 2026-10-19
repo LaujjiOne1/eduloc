@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { assertOfferTrack } from '../catalog/domain/offer-track';
+import { enqueueTutorReindex } from '../matching/indexing/reindex-events';
 
 const offerResponseInclude = {
   subject: true,
   educationLevel: true,
+  track: true,
   tutorProfile: {
     include: {
       user: { select: { firstName: true, lastName: true } },
@@ -21,9 +24,10 @@ const tutorProfileResponseInclude = {
   subjects: { include: { subject: true, educationLevel: true } },
   offers: {
     where: { isActive: true, disabledByAdminAt: null },
-    include: { subject: true, educationLevel: true },
+    include: { subject: true, educationLevel: true, track: true },
   },
   places: { where: { isActive: true } },
+  academicLevel: { select: { id: true, name: true, category: true } },
 } satisfies Prisma.TutorProfileInclude;
 
 type TutorProfileResponseRecord = Prisma.TutorProfileGetPayload<{ include: typeof tutorProfileResponseInclude }>;
@@ -65,6 +69,16 @@ export class TutorsService {
       bio: p.bio,
       experience: p.experience,
       educationBackground: p.educationBackground,
+      highestDegree: p.highestDegree,
+      degreeTitle: p.degreeTitle,
+      fieldOfStudy: p.fieldOfStudy,
+      specialization: p.specialization,
+      degreeInstitution: p.degreeInstitution,
+      degreeCountry: p.degreeCountry,
+      // Niveau validé par EduLoc (lecture seule) ; le motif de la décision reste interne.
+      academicLevel: p.academicLevel
+        ? { ...p.academicLevel, validatedAt: p.academicLevelValidatedAt }
+        : null,
       subjects: p.subjects.map((item) => ({
         id: item.id,
         subject: {
@@ -107,6 +121,9 @@ export class TutorsService {
               displayOrder: offer.educationLevel.displayOrder,
             }
           : null,
+        track: offer.track
+          ? { id: offer.track.id, kind: offer.track.kind, code: offer.track.code, name: offer.track.name, domain: offer.track.domain }
+          : null,
         format: offer.format,
         durationMinutes: offer.durationMinutes,
         price: { amount: offer.price.toString(), currency: offer.currency },
@@ -123,6 +140,7 @@ export class TutorsService {
   async createProfile(userId: string, data: {
     displayName?: string; bio?: string; birthDate?: Date;
     profilePhoto?: string; gender?: 'MALE' | 'FEMALE'; experience?: string; educationBackground?: string;
+    degreeTitle?: string; fieldOfStudy?: string; specialization?: string; degreeInstitution?: string; degreeCountry?: string;
   }) {
     await this.prisma.tutorProfile.create({ data: { userId, ...data } as never });
     return this.profileResponse(userId);
@@ -131,11 +149,16 @@ export class TutorsService {
   async updateProfile(userId: string, data: {
     displayName?: string; bio?: string; birthDate?: string;
     profilePhoto?: string; gender?: 'MALE' | 'FEMALE'; experience?: string; educationBackground?: string;
+    degreeTitle?: string; fieldOfStudy?: string; specialization?: string; degreeInstitution?: string; degreeCountry?: string;
   }) {
     const { birthDate, ...profileData } = data;
-    await this.prisma.tutorProfile.update({
-      where: { userId },
-      data: { ...profileData, ...(birthDate ? { birthDate: new Date(birthDate) } : {}) } as never,
+    await this.prisma.$transaction(async (tx) => {
+      const profile = await tx.tutorProfile.update({
+        where: { userId },
+        data: { ...profileData, ...(birthDate ? { birthDate: new Date(birthDate) } : {}) } as never,
+        select: { id: true },
+      });
+      await enqueueTutorReindex(tx, profile.id);
     });
     return this.profileResponse(userId);
   }
@@ -144,14 +167,20 @@ export class TutorsService {
     subjectId: string; educationLevelId: string; competenceDescription?: string;
   }) {
     const p = await this.prisma.tutorProfile.findUniqueOrThrow({ where: { userId } });
-    return this.prisma.tutorSubject.create({
-      data: { tutorProfileId: p.id, ...data } as never,
+    return this.prisma.$transaction(async (tx) => {
+      const created = await tx.tutorSubject.create({ data: { tutorProfileId: p.id, ...data } as never });
+      await enqueueTutorReindex(tx, p.id);
+      return created;
     });
   }
 
   async removeSubject(userId: string, id: string) {
     const p = await this.prisma.tutorProfile.findUniqueOrThrow({ where: { userId } });
-    return this.prisma.tutorSubject.deleteMany({ where: { id, tutorProfileId: p.id } });
+    return this.prisma.$transaction(async (tx) => {
+      const removed = await tx.tutorSubject.deleteMany({ where: { id, tutorProfileId: p.id } });
+      await enqueueTutorReindex(tx, p.id);
+      return removed;
+    });
   }
 }
 
@@ -174,7 +203,7 @@ export class OffersService {
 
   /** UC-E04 : cohérence offre / matières déclarées. */
   async create(userId: string, data: {
-    subjectId: string; educationLevelId?: string; title: string; description: string;
+    subjectId: string; educationLevelId?: string; trackId?: string | null; title: string; description: string;
     format?: string; durationMinutes?: number; price: number; currency?: string;
   }) {
     const p = await this.profile(userId);
@@ -185,12 +214,17 @@ export class OffersService {
     if (data.educationLevelId && declared.educationLevelId !== data.educationLevelId) {
       throw new UnprocessableEntityException('LEVEL_NOT_DECLARED');
     }
-    const offer = await this.prisma.offer.create({ data: { tutorProfileId: p.id, ...data } as never });
+    await assertOfferTrack(this.prisma, data.educationLevelId, data.trackId);
+    const offer = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.offer.create({ data: { tutorProfileId: p.id, ...data } as never });
+      await enqueueTutorReindex(tx, p.id);
+      return created;
+    });
     return this.response(offer.id);
   }
 
   async update(userId: string, id: string, data: {
-    subjectId?: string; educationLevelId?: string; title?: string; description?: string;
+    subjectId?: string; educationLevelId?: string; trackId?: string | null; title?: string; description?: string;
     format?: string; durationMinutes?: number; price?: number; currency?: string;
   }) {
     const p = await this.profile(userId);
@@ -208,7 +242,18 @@ export class OffersService {
       });
       if (!declared) throw new UnprocessableEntityException('SUBJECT_NOT_DECLARED');
     }
-    await this.prisma.offer.update({ where: { id }, data: data as never });
+    // Une modification de prix ou de texte ne revalide pas la filière d'une offre existante ; changer le niveau ou la filière, si.
+    if (data.educationLevelId !== undefined || data.trackId !== undefined) {
+      await assertOfferTrack(
+        this.prisma,
+        data.educationLevelId ?? offer.educationLevelId,
+        data.trackId !== undefined ? data.trackId : offer.trackId,
+      );
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.offer.update({ where: { id }, data: data as never });
+      await enqueueTutorReindex(tx, p.id);
+    });
     return this.response(id);
   }
 
@@ -217,7 +262,10 @@ export class OffersService {
     const offer = await this.prisma.offer.findFirst({ where: { id, tutorProfileId: p.id } });
     if (!offer) throw new NotFoundException('OFFER_NOT_FOUND');
     if (isActive && offer.disabledByAdminAt) throw new UnprocessableEntityException('OFFER_DISABLED_BY_ADMIN');
-    await this.prisma.offer.update({ where: { id }, data: { isActive } });
+    await this.prisma.$transaction(async (tx) => {
+      await tx.offer.update({ where: { id }, data: { isActive } });
+      await enqueueTutorReindex(tx, p.id);
+    });
     return this.response(id);
   }
 
@@ -247,6 +295,9 @@ export class OffersService {
             category: offer.educationLevel.category,
             displayOrder: offer.educationLevel.displayOrder,
           }
+        : null,
+      track: offer.track
+        ? { id: offer.track.id, kind: offer.track.kind, code: offer.track.code, name: offer.track.name, domain: offer.track.domain }
         : null,
       format: offer.format,
       durationMinutes: offer.durationMinutes,

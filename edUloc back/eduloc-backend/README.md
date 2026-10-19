@@ -71,3 +71,54 @@ src/
 └── modules/         # auth, users, beneficiaries, catalog, tutors, search,
                      # bookings, communication, reviews, notifications, realtime, admin
 ```
+
+## Recherche sémantique (matching tuteur ↔ demande universitaire)
+
+Spécification : `../eduloc-recherche-semantique.md`. Principe : **le backend décide de l'éligibilité, en SQL, avant tout
+calcul sémantique** ; l'IA ne fait que classer des tuteurs déjà admissibles.
+
+- **Éligibilité hiérarchique** (`src/modules/matching/search/level-eligibility.ts`) : rang du niveau académique
+  VALIDÉ du tuteur strictement supérieur à celui de la demande (L1 → L2…Doctorat, M2 → Doctorat ou expert validé ;
+  demande Doctorat → Doctorat). Un tuteur sans niveau validé n'est jamais éligible. Échelle : `academic-scale.ts`.
+- **Admin** : `PUT /admin/tutors/:id/academic-level`, équivalences de diplômes `/admin/degree-equivalences`,
+  revue des justificatifs `POST /admin/tutor-documents/:id/review` (approuver un diplôme = attester de son authenticité).
+- **Indexation** : événements outbox `TUTOR_SEARCH_REINDEX` / `TUTOR_DOCUMENT_EXTRACT` (jamais dans une requête HTTP).
+  Réindexation globale (premier déploiement, changement de modèle) :
+  `docker compose run --rm api node dist/modules/matching/cli/reindex-all.command.js`.
+- **Recherche** : `POST /matching/search` (503 `MATCHING_UNAVAILABLE` si Ollama est arrêté ; 30 requêtes / min).
+  `GET /health` expose `{ status, matching }` sans dépendre d'Ollama.
+- **Ollama** : jamais publié sur Internet. `docker compose up -d --no-deps ollama ollama-init`, ou avec
+  `-f docker-compose.dev.yml` pour l'atteindre depuis `127.0.0.1:11434`. Modèle par défaut `hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL`
+  (GGUF unsloth, 768 dimensions ; exige Ollama ≥ 0.40.4 — la 0.40.3 répond « unknown model architecture »). Changer de modèle impose de réindexer (`POST /admin/matching/reindex`).
+- **Migrations** : `npx prisma migrate deploy` (jamais au démarrage du conteneur). La base locale utilise l'image
+  `docker/db` (PostGIS + pgvector).
+
+### Données de test pour le front
+
+`npm run db:seed:matching` crée 29 tuteurs fictifs (niveaux académiques validés, matières, offres, disponibilités en ligne)
+et écrit `MATCHING-TEST-DATA.md` : comptes (`tNN@matching.eduloc.mg` / `Demo12345!`) et 41 scénarios « niveau + matière + besoin
+→ tuteurs attendus ». Côté front : connecté, parcours « Pour moi », niveau de la catégorie Université.
+
+### Essayer la recherche (exemple guidé)
+
+```bash
+npm run db:seed          # comptes et tuteurs de démo (admin@eduloc.mg / Admin12345!, demo@eduloc.mg / Demo12345!)
+npm run start:dev        # API sur le PORT du .env ; Ollama requis pour la partie universitaire
+npm run try:matching     # lycée (classique) puis licence 2 (sémantique) : valide le niveau de 2 tuteurs de démo,
+                         # demande leur indexation, puis affiche les résultats ; API_URL_TRY pour changer l'URL
+```
+
+Si une recherche universitaire est vide, c'est presque toujours l'une de ces trois causes : tuteur **sans niveau
+académique validé** (`PUT /admin/tutors/:id/academic-level`), tuteur **pas encore indexé**
+(`POST /admin/matching/reindex`, calculé en tâche de fond avec Ollama), ou **aucun tuteur de rang strictement supérieur**
+à celui de la demande ayant déclaré ce niveau.
+
+### Tests
+
+```bash
+npm test                      # unitaires (sans base)
+TEST_DATABASE_URL=postgresql://eduloc:eduloc@localhost:5434/eduloc npm run test:int   # base pgvector jetable
+OLLAMA_URL=http://127.0.0.1:11434 EMBEDDING_MODEL=hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL npm run test:int # + Ollama réel
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db-test          # base jetable
+npm run matching:eval         # recall@10 / nDCG@10 → eval/report.md (Ollama réel + base jetable)
+```

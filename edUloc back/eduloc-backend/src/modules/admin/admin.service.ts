@@ -6,6 +6,11 @@ import { OutboxWriter } from '../../infrastructure/outbox/outbox-writer';
 import { CacheKeys, CacheService } from '../../infrastructure/cache/cache.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { MessagesService } from '../communication/messages.service';
+import { enqueueTutorReindex } from '../matching/indexing/reindex-events';
+import { AUTHENTICITY_CHECKED_TYPES, approvalMeaning } from '../matching/indexing/document-labels';
+import { AcademicLevelService } from './academic-level.service';
+import { DegreeEquivalencesService, equivalenceKey } from './degree-equivalences.service';
+import type { ApproveApplicationDto, ReviewDocumentDto } from './dto';
 
 @Injectable()
 export class AdminService {
@@ -17,6 +22,8 @@ export class AdminService {
     private readonly cache: CacheService,
     private readonly bookingsService: BookingsService,
     private readonly messages: MessagesService,
+    private readonly equivalences: DegreeEquivalencesService,
+    private readonly academicLevels: AcademicLevelService,
   ) {}
 
   /** UC-G02 : indicateurs (cache 60 s). */
@@ -75,21 +82,97 @@ export class AdminService {
     return { ok: true };
   }
 
-  tutorApplications(status?: string) {
-    return this.prisma.tutorApplication.findMany({
+  async tutorApplications(status?: string) {
+    const applications = await this.prisma.tutorApplication.findMany({
       where: status ? { status: status as never } : {},
       include: {
+        // Métadonnées seulement : jamais le texte extrait ni le pré-contrôle d'un document.
+        documents: {
+          select: {
+            id: true, type: true, status: true, fileName: true, mimeType: true, uploadedAt: true,
+            extractionStatus: true, autoCheck: true,
+          },
+          orderBy: { uploadedAt: 'asc' },
+        },
         tutorProfile: {
-          include: { user: { select: { firstName: true, lastName: true, email: true } } },
+          include: {
+            user: { select: { firstName: true, lastName: true, email: true } },
+            academicLevel: { select: { id: true, name: true, category: true, academicRank: true } },
+            degreeEquivalence: true,
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
+    // Revue d'un diplôme OTHER : l'équivalence déjà tranchée pour ce diplôme est proposée à l'admin.
+    const others = applications.filter((a) =>
+      a.tutorProfile.highestDegree === 'OTHER' && a.tutorProfile.degreeTitle && a.tutorProfile.degreeCountry);
+    const keyOf = (a: (typeof applications)[number]) => equivalenceKey({
+      degreeTitle: a.tutorProfile.degreeTitle!,
+      country: a.tutorProfile.degreeCountry!,
+      specialty: a.tutorProfile.fieldOfStudy,
+    });
+    const matches = others.length
+      ? await this.equivalences.matchAll(this.prisma, others.map((a) => ({
+          degreeTitle: a.tutorProfile.degreeTitle!,
+          country: a.tutorProfile.degreeCountry!,
+          specialty: a.tutorProfile.fieldOfStudy,
+        })))
+      : new Map();
+    return applications.map((a) => ({
+      ...a,
+      documents: a.documents.map((d) => ({ ...d, approvalMeaning: approvalMeaning(d.type) })),
+      degreeEquivalenceSuggestion: others.includes(a) ? matches.get(keyOf(a)) ?? null : null,
+    }));
+  }
+
+  /**
+   * Revue d'un justificatif. Approuver un document dont l'authenticité est contrôlée (diplôme, relevé, certificat,
+   * preuve d'expérience) exige une confirmation explicite : le libellé « vérifié » montré au Demandeur n'a de sens
+   * que si un humain a réellement contrôlé l'élément. Le tuteur est réindexé (le document entre dans l'index, ou en sort).
+   */
+  async reviewDocument(documentId: string, dto: ReviewDocumentDto) {
+    const doc = await this.prisma.tutorDocument.findUnique({
+      where: { id: documentId },
+      select: { id: true, type: true, tutorApplication: { select: { tutorProfileId: true } } },
+    });
+    if (!doc) throw new NotFoundException('DOCUMENT_NOT_FOUND');
+    if (dto.status === 'APPROVED' && AUTHENTICITY_CHECKED_TYPES.has(doc.type) && dto.confirmAuthenticity !== true) {
+      throw new UnprocessableEntityException('AUTHENTICITY_CONFIRMATION_REQUIRED');
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.tutorDocument.update({
+        where: { id: doc.id },
+        data: {
+          status: dto.status,
+          reviewedAt: new Date(),
+          rejectionReason: dto.status === 'REJECTED' ? dto.rejectionReason?.trim() || null : null,
+        },
+      });
+      await enqueueTutorReindex(tx, doc.tutorApplication.tutorProfileId);
+    });
+    return { ok: true, status: dto.status };
+  }
+
+  /**
+   * Demande la réindexation sémantique d'un tuteur approuvé, ou de TOUS (premier déploiement, tuteurs approuvés avant
+   * l'indexation). Le calcul des embeddings se fait en tâche de fond (outbox), jamais dans cette requête.
+   */
+  async requestReindex(tutorProfileId?: string) {
+    const tutors = await this.prisma.tutorProfile.findMany({
+      where: { ...(tutorProfileId ? { id: tutorProfileId } : {}), applications: { some: { status: 'APPROVED' } } },
+      select: { id: true },
+    });
+    if (tutorProfileId && tutors.length === 0) throw new NotFoundException('TUTOR_NOT_FOUND');
+    await this.prisma.$transaction(async (tx) => {
+      for (const tutor of tutors) await enqueueTutorReindex(tx, tutor.id);
+    });
+    return { queued: tutors.length };
   }
 
   /** UC-G05 : approbation + visibilité dans la MÊME transaction. */
-  async approveApplication(adminId: string, applicationId: string) {
+  async approveApplication(adminId: string, applicationId: string, decision: ApproveApplicationDto = {}) {
     await this.prisma.$transaction(async (tx) => {
       const app = await tx.tutorApplication.findUnique({ where: { id: applicationId } });
       if (!app) throw new NotFoundException('APPLICATION_NOT_FOUND');
@@ -102,6 +185,16 @@ export class AdminService {
         where: { id: app.tutorProfileId },
         data: { isVisible: true, suspendedAt: null },
       });
+      // E3/E9 : l'équivalence appliquée alimente d'abord le niveau académique ; le niveau choisi explicitement
+      // par l'admin prime. Sans l'un ni l'autre, le niveau validé reste inchangé (donc absent pour un nouveau tuteur).
+      if (decision.degreeEquivalenceId) {
+        await this.equivalences.applyInTx(tx, adminId, app.tutorProfileId, decision.degreeEquivalenceId);
+      }
+      if (decision.academicLevelId) {
+        await this.academicLevels.validateInTx(
+          tx, adminId, app.tutorProfileId, decision.academicLevelId, decision.academicLevelNote,
+        );
+      }
       const tutor = await tx.tutorProfile.findUniqueOrThrow({
         where: { id: app.tutorProfileId },
         select: { userId: true },
@@ -111,6 +204,8 @@ export class AdminService {
         where: { isVerified: false, createdById: tutor.userId, tutorSubjects: { some: { tutorProfileId: app.tutorProfileId } } },
         data: { isVerified: true },
       });
+      // Dossier approuvé : réindexation complète du tuteur (calculée hors requête, par l'outbox).
+      await enqueueTutorReindex(tx, app.tutorProfileId);
       await this.outbox.write(tx, {
         aggregateType: 'tutorApplication',
         aggregateId: app.id,
@@ -207,17 +302,13 @@ export class AdminService {
   async moderateOffer(offerId: string, action: 'disable' | 'enable') {
     const offer = await this.prisma.offer.findUnique({ where: { id: offerId } });
     if (!offer) throw new NotFoundException('OFFER_NOT_FOUND');
-    if (action === 'disable') {
-      await this.prisma.offer.update({
+    await this.prisma.$transaction(async (tx) => {
+      await tx.offer.update({
         where: { id: offerId },
-        data: { isActive: false, disabledByAdminAt: new Date() },
+        data: action === 'disable' ? { isActive: false, disabledByAdminAt: new Date() } : { disabledByAdminAt: null, isActive: true },
       });
-    } else {
-      await this.prisma.offer.update({
-        where: { id: offerId },
-        data: { disabledByAdminAt: null, isActive: true },
-      });
-    }
+      await enqueueTutorReindex(tx, offer.tutorProfileId); // son chunk OFFER apparaît ou disparaît
+    });
     await this.cache.bumpSearch();
     return { ok: true };
   }

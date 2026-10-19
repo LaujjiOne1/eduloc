@@ -43,6 +43,12 @@ export class SupabaseStorageProvider implements StorageProvider {
     return { exists: true, sizeBytes: obj.metadata?.size ?? 0, mimeType: obj.metadata?.mimetype ?? '' };
   }
 
+  async downloadObject(bucket: string, storagePath: string): Promise<Buffer> {
+    const { data, error } = await this.client.storage.from(bucket).download(storagePath);
+    if (error || !data) throw new Error(`download ${bucket}/${storagePath}: ${error?.message ?? 'empty'}`);
+    return Buffer.from(await data.arrayBuffer());
+  }
+
   async deleteObject(bucket: string, storagePath: string): Promise<void> {
     const { error } = await this.client.storage.from(bucket).remove([storagePath]);
     if (error) this.logger.warn(`suppression ${bucket}/${storagePath}: ${error.message}`);

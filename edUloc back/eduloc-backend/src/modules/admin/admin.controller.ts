@@ -1,11 +1,14 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
+import { AcademicLevelService } from './academic-level.service';
 import { AdminService } from './admin.service';
+import { DegreeEquivalencesService } from './degree-equivalences.service';
 import {
-  ModerateOfferDto, RejectApplicationDto, ResolveConflictDto,
-  SetUserStatusDto, SuspendTutorDto, UsersQueryDto,
+  ApplyDegreeEquivalenceDto, ApproveApplicationDto, CreateDegreeEquivalenceDto, DegreeDecisionDto,
+  DegreeEquivalencesQueryDto, DegreeLookupQueryDto, ModerateOfferDto, RejectApplicationDto,
+  ResolveConflictDto, ReviewDocumentDto, SetAcademicLevelDto, SetUserStatusDto, SuspendTutorDto, UsersQueryDto,
 } from './dto';
 
 @ApiTags('admin')
@@ -13,7 +16,11 @@ import {
 @UseGuards(AdminGuard)
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly service: AdminService) {}
+  constructor(
+    private readonly service: AdminService,
+    private readonly equivalences: DegreeEquivalencesService,
+    private readonly academicLevels: AcademicLevelService,
+  ) {}
 
   @Get('dashboard')
   dashboard() {
@@ -36,8 +43,75 @@ export class AdminController {
   }
 
   @Post('tutor-applications/:id/approve')
-  approve(@CurrentUser() u: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
-    return this.service.approveApplication(u.userId, id);
+  approve(@CurrentUser() u: AuthUser, @Param('id', ParseUUIDPipe) id: string, @Body() dto: ApproveApplicationDto) {
+    return this.service.approveApplication(u.userId, id, dto);
+  }
+
+  /** Réindexation sémantique de tous les tuteurs approuvés (tâche de fond). */
+  @Post('matching/reindex')
+  reindexAll() {
+    return this.service.requestReindex();
+  }
+
+  @Post('tutors/:id/reindex')
+  reindexOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.requestReindex(id);
+  }
+
+  /** Revue d'un justificatif : approuver un diplôme, un relevé, un certificat ou une preuve = attester de son authenticité. */
+  @Post('tutor-documents/:id/review')
+  reviewDocument(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ReviewDocumentDto) {
+    return this.service.reviewDocument(id, dto);
+  }
+
+  /** Applique au dossier une équivalence de diplôme VALIDATED (diplôme OTHER) ; elle alimente le niveau académique. */
+  @Post('tutor-applications/:id/degree-equivalence')
+  applyEquivalence(
+    @CurrentUser() u: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ApplyDegreeEquivalenceDto,
+  ) {
+    return this.equivalences.applyToApplication(u.userId, id, dto.degreeEquivalenceId);
+  }
+
+  /** Fixe (ou corrige) le niveau académique validé d'un tuteur, y compris déjà approuvé. */
+  @Put('tutors/:id/academic-level')
+  setAcademicLevel(
+    @CurrentUser() u: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SetAcademicLevelDto,
+  ) {
+    return this.academicLevels.set(u.userId, id, dto.academicLevelId, dto.note);
+  }
+
+  @Delete('tutors/:id/academic-level')
+  revokeAcademicLevel(@Param('id', ParseUUIDPipe) id: string) {
+    return this.academicLevels.revoke(id);
+  }
+
+  @Get('degree-equivalences')
+  degreeEquivalences(@Query() q: DegreeEquivalencesQueryDto) {
+    return this.equivalences.list(q);
+  }
+
+  /** Recherche l'équivalence d'un diplôme déclaré (intitulé, pays, spécialité) : `{ equivalence: null }` si absente. */
+  @Get('degree-equivalences/lookup')
+  lookupEquivalence(@Query() q: DegreeLookupQueryDto) {
+    return this.equivalences.lookup(q).then((equivalence) => ({ equivalence }));
+  }
+
+  @Post('degree-equivalences')
+  createEquivalence(@CurrentUser() u: AuthUser, @Body() dto: CreateDegreeEquivalenceDto) {
+    return this.equivalences.create(u.userId, dto);
+  }
+
+  @Patch('degree-equivalences/:id')
+  decideEquivalence(
+    @CurrentUser() u: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: DegreeDecisionDto,
+  ) {
+    return this.equivalences.decide(u.userId, id, dto);
   }
 
   @Post('tutor-applications/:id/reject')

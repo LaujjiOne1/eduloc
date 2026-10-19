@@ -8,7 +8,9 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import { RedisService } from '../../core/redis/redis.service';
 import { CacheKeys } from '../../infrastructure/cache/cache.service';
 import { canTeachLevel, subjectCoversCategory } from '../catalog/domain/degree-policy';
+import { assertOfferTrack } from '../catalog/domain/offer-track';
 import { OutboxWriter } from '../../infrastructure/outbox/outbox-writer';
+import { enqueueDocumentExtraction, enqueueTutorReindex } from '../matching/indexing/reindex-events';
 import {
   STORAGE_PROVIDER, StorageProvider, extFromMime, tutorDocumentPath, tutorIntroVideoPath,
 } from '../../infrastructure/storage/storage-provider.port';
@@ -145,6 +147,7 @@ export class TutorApplicationsService {
         )) {
           throw new UnprocessableEntityException('OFFER_SUBJECT_NOT_DECLARED');
         }
+        await assertOfferTrack(tx, offer.educationLevelId, offer.trackId);
       }
       for (const slot of input.availabilities) {
         if (slot.format !== 'ONLINE' && slot.placeIndex != null && slot.placeIndex >= input.places.length) {
@@ -171,6 +174,7 @@ export class TutorApplicationsService {
           experience: input.experience ?? null,
           educationBackground: input.educationBackground ?? null,
           highestDegree: input.highestDegree ?? null,
+          ...this.degreeDetails(input),
           gender: input.gender ?? null,
         },
         update: {
@@ -180,7 +184,15 @@ export class TutorApplicationsService {
           experience: input.experience ?? null,
           educationBackground: input.educationBackground ?? null,
           highestDegree: input.highestDegree ?? null,
+          ...this.degreeDetails(input),
           gender: input.gender ?? null,
+          // Le dossier a changé : l'équivalence appliquée et le niveau académique validé par l'admin
+          // ne valent plus. L'admin les fixe de nouveau à la prochaine revue.
+          degreeEquivalenceId: null,
+          academicLevelId: null,
+          academicLevelValidatedById: null,
+          academicLevelValidatedAt: null,
+          academicLevelNote: null,
         },
       });
 
@@ -259,6 +271,7 @@ export class TutorApplicationsService {
             tutorProfileId: profile.id,
             subjectId: offer.subjectId,
             educationLevelId: offer.educationLevelId ?? null,
+            trackId: offer.trackId ?? null,
             title: offer.title,
             description: offer.description,
             format: offer.format,
@@ -370,6 +383,8 @@ export class TutorApplicationsService {
       where: { tutorApplicationId: applicationId, type: input.type },
       select: { id: true, storagePath: true },
     });
+    // Une pièce d'identité n'est jamais lue ni indexée ; les autres sont extraites en tâche de fond (jamais dans la requête).
+    const extractable = input.type !== 'IDENTITY';
     const document = await this.prisma.$transaction(async (tx) => {
       const created = await tx.tutorDocument.create({
         data: {
@@ -379,13 +394,17 @@ export class TutorApplicationsService {
           mimeType: file.mimeType,
           sizeBytes: file.sizeBytes,
           fileName: metadata.fileName ?? null,
+          extractionStatus: extractable ? 'PENDING' : 'NONE',
         },
       });
       if (previousDocuments.length) {
         await tx.tutorDocument.deleteMany({
           where: { id: { in: previousDocuments.map((previous) => previous.id) } },
         });
+        // Document remplacé ou supprimé : ses chunks disparaissent à la prochaine réindexation.
+        await enqueueTutorReindex(tx, metadata.tutorProfileId);
       }
+      if (extractable) await enqueueDocumentExtraction(tx, created.id);
       return created;
     });
     await Promise.all(previousDocuments.map((previous) =>
@@ -434,6 +453,13 @@ export class TutorApplicationsService {
       if (application.status !== 'DRAFT') throw new UnprocessableEntityException('APPLICATION_NOT_EDITABLE');
       if (!application.tutorProfile.subjects.length) throw new UnprocessableEntityException('SUBJECT_REQUIRED');
       if (!application.tutorProfile.highestDegree) throw new UnprocessableEntityException('DEGREE_REQUIRED');
+      // Un diplôme hors catégories principales est rapproché d'une équivalence sur (intitulé, pays).
+      if (
+        application.tutorProfile.highestDegree === 'OTHER' &&
+        (!application.tutorProfile.degreeTitle || !application.tutorProfile.degreeCountry)
+      ) {
+        throw new UnprocessableEntityException('DEGREE_DETAILS_REQUIRED');
+      }
       if (!application.tutorProfile.gender) throw new UnprocessableEntityException('GENDER_REQUIRED');
       if (!application.tutorProfile.offers.some((offer) => offer.isActive)) {
         throw new UnprocessableEntityException('OFFER_REQUIRED');
@@ -540,6 +566,11 @@ export class TutorApplicationsService {
       id: application.id,
       tutorProfileId: application.tutorProfileId,
       highestDegree: application.tutorProfile.highestDegree,
+      degreeTitle: application.tutorProfile.degreeTitle,
+      fieldOfStudy: application.tutorProfile.fieldOfStudy,
+      specialization: application.tutorProfile.specialization,
+      degreeInstitution: application.tutorProfile.degreeInstitution,
+      degreeCountry: application.tutorProfile.degreeCountry,
       gender: application.tutorProfile.gender,
       status: application.status,
       submittedAt: application.submittedAt,
@@ -569,6 +600,7 @@ export class TutorApplicationsService {
         mimeType: document.mimeType,
         sizeBytes: document.sizeBytes,
         rejectionReason: document.rejectionReason,
+        extractionStatus: document.extractionStatus,
         uploadedAt: document.uploadedAt,
       })),
       experiences: application.tutorProfile.experiences,
@@ -582,6 +614,18 @@ export class TutorApplicationsService {
           }
         : null,
       createdAt: application.createdAt,
+    };
+  }
+
+  /** Champs de profil du diplôme (texte libre, vidé si absent) ; `trim` évite les doublons d'équivalence. */
+  private degreeDetails(input: TutorApplicationInputDto) {
+    const clean = (value?: string) => value?.trim() || null;
+    return {
+      degreeTitle: clean(input.degreeTitle),
+      fieldOfStudy: clean(input.fieldOfStudy),
+      specialization: clean(input.specialization),
+      degreeInstitution: clean(input.degreeInstitution),
+      degreeCountry: clean(input.degreeCountry),
     };
   }
 

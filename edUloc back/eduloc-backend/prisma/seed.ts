@@ -12,6 +12,8 @@ import argon2 from 'argon2';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
+import { MENTIONS, SERIES, SERIES_ECONOMIC, SERIES_LITERARY, SERIES_SCIENTIFIC } from '../src/modules/catalog/domain/academic-tracks';
+import { CATALOG_LEVELS, academicRankOfLevel, requiredDegreeFor } from '../src/modules/catalog/domain/education-levels';
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 2 });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
@@ -19,34 +21,58 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 const isProduction = process.env.NODE_ENV === 'production';
 const seedDemo = process.env.SEED_DEMO ? process.env.SEED_DEMO === 'true' : !isProduction;
 
-/** Diplôme minimal pour enseigner un niveau (voir degree-policy côté API). */
-const requiredDegreeFor = (category: string, name: string): 'BAC' | 'LICENCE' | 'MASTER' =>
-  category !== 'Université' ? 'BAC' : name === 'Master' ? 'MASTER' : 'LICENCE';
-
-const LEVELS: { category: string; names: string[] }[] = [
-  { category: 'Primaire', names: ['CP1', 'CP2', 'CE', 'CM1', 'CM2'] },
-  { category: 'Collège', names: ['6ème', '5ème', '4ème', '3ème'] },
-  { category: 'Lycée', names: ['Seconde', 'Première', 'Terminale'] },
-  { category: 'Université', names: ['Licence 1', 'Licence 2', 'Licence 3', 'Master', 'Formation pro'] },
-];
-
-const SECONDARY_AND_UP = ['Lycée', 'Université'];
+const PRIMARY = ['Primaire'];
+const MIDDLE = ['Collège'];
+const HIGH = ['Lycée'];
 const UNIVERSITY = ['Université'];
 
-/** levelCategories vide = enseignable à tous les niveaux. */
-const SUBJECTS: { name: string; category: string; description: string; levelCategories?: string[] }[] = [
-  { name: 'Mathématiques', category: 'Sciences', description: 'Algèbre, géométrie, analyse, probabilités.' },
-  { name: 'Physique-Chimie', category: 'Sciences', description: 'Mécanique, électricité, chimie générale et organique.' },
-  { name: 'SVT', category: 'Sciences', description: 'Biologie, géologie, écologie.' },
-  { name: 'Informatique', category: 'Numérique', description: 'Bureautique, algorithmique, culture numérique.' },
-  { name: 'Programmation', category: 'Numérique', description: 'Python, JavaScript, bases de données, web.', levelCategories: SECONDARY_AND_UP },
-  { name: 'Français', category: 'Langues', description: 'Grammaire, expression écrite et orale, littérature.' },
-  { name: 'Anglais', category: 'Langues', description: 'Conversation, grammaire, préparation aux examens.' },
-  { name: 'Malagasy', category: 'Langues', description: 'Lecture, écriture, littérature malagasy.' },
-  { name: 'Histoire-Géographie', category: 'Lettres', description: 'Histoire de Madagascar et du monde, géographie.' },
-  { name: 'Philosophie', category: 'Lettres', description: 'Dissertation, explication de texte, grands auteurs.', levelCategories: SECONDARY_AND_UP },
-  { name: 'Économie', category: 'Gestion', description: 'Microéconomie, macroéconomie, gestion.', levelCategories: SECONDARY_AND_UP },
-  { name: 'Comptabilité', category: 'Gestion', description: 'Comptabilité générale, analytique, fiscalité.', levelCategories: SECONDARY_AND_UP },
+type SubjectSeed = {
+  name: string;
+  category: string;
+  description: string;
+  /** Vide = tous les niveaux. */
+  levelCategories?: string[];
+  /** Séries du lycée concernées (Première/Terminale) ; vide = toutes. */
+  trackCodes?: string[];
+  aliases?: string[];
+};
+
+/**
+ * Catalogue par bloc d'études (étape 3 de l'entonnoir : seules les matières du bloc choisi sont proposées).
+ * Au lycée, `trackCodes` restreint la matière aux séries concernées ; Seconde (tronc commun) les voit toutes.
+ */
+const SUBJECTS: SubjectSeed[] = [
+  // Primaire
+  { name: 'Mathématiques', category: 'Sciences', description: 'Calcul, numération, géométrie, algèbre, probabilités.', levelCategories: [...PRIMARY, ...MIDDLE, ...UNIVERSITY], aliases: ['Maths'] },
+  { name: 'Français', category: 'Langues', description: 'Grammaire, expression écrite et orale, littérature.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY] },
+  { name: 'Malagasy', category: 'Langues', description: 'Lecture, écriture, littérature malagasy.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH] },
+  { name: 'Anglais', category: 'Langues', description: 'Initiation, conversation, grammaire, préparation aux examens.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY] },
+  { name: 'Éducation à la Citoyenneté', category: 'Lettres', description: 'Civisme, vivre ensemble, droits et devoirs.', levelCategories: PRIMARY },
+  { name: 'Histoire-Géographie', category: 'Lettres', description: 'Histoire de Madagascar et du monde, géographie.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH], aliases: ['Histoire', 'Géographie'] },
+  { name: 'Technologie', category: 'Sciences', description: 'Objets techniques, initiation au numérique.', levelCategories: [...PRIMARY, ...MIDDLE] },
+  { name: 'Arts visuels', category: 'Arts', description: 'Dessin, peinture, arts plastiques.', levelCategories: PRIMARY },
+  { name: 'Musique', category: 'Arts', description: 'Chant, rythme, culture musicale.', levelCategories: PRIMARY },
+  // Collège
+  { name: 'Sciences Physiques et Chimiques', category: 'Sciences', description: 'Matière, énergie, électricité, réactions chimiques.', levelCategories: MIDDLE },
+  { name: 'Sciences de la Vie et de la Terre (SVT)', category: 'Sciences', description: 'Biologie, géologie, écologie.', levelCategories: [...MIDDLE, ...HIGH], trackCodes: SERIES_SCIENTIFIC, aliases: ['SVT'] },
+  { name: 'EPS', category: 'Sport', description: 'Éducation physique et sportive.', levelCategories: [...MIDDLE, ...HIGH] },
+  // Lycée : commun à toutes les séries
+  { name: 'Philosophie', category: 'Lettres', description: 'Dissertation, explication de texte, grands auteurs.', levelCategories: [...HIGH, ...UNIVERSITY] },
+  // Lycée : séries scientifiques (C, D, S)
+  { name: 'Mathématiques Avancées', category: 'Sciences', description: 'Analyse, algèbre, géométrie, probabilités du programme scientifique.', levelCategories: HIGH, trackCodes: SERIES_SCIENTIFIC },
+  { name: 'Physique-Chimie', category: 'Sciences', description: 'Mécanique, électricité, chimie générale et organique.', levelCategories: HIGH, trackCodes: SERIES_SCIENTIFIC, aliases: ['Physique', 'Chimie', 'Sciences physiques'] },
+  // Lycée : séries économiques (OSE)
+  { name: 'Sciences Économiques et Sociales (SES)', category: 'Gestion', description: 'Économie, sociologie, organisation des sociétés.', levelCategories: HIGH, trackCodes: SERIES_ECONOMIC },
+  { name: 'Mathématiques Appliquées', category: 'Sciences', description: 'Statistiques, calcul financier, mathématiques pour l’économie.', levelCategories: HIGH, trackCodes: SERIES_ECONOMIC },
+  // Lycée : séries littéraires (A1, A2, L)
+  { name: 'Littérature', category: 'Lettres', description: 'Étude des œuvres, commentaire, dissertation littéraire.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
+  { name: 'Allemand', category: 'Langues', description: 'Langue allemande.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
+  { name: 'Espagnol', category: 'Langues', description: 'Langue espagnole.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
+  // Université : suggestions (la matière se saisit librement après le choix de la mention)
+  { name: 'Informatique', category: 'Numérique', description: 'Algorithmique, systèmes, culture numérique.', levelCategories: UNIVERSITY },
+  { name: 'Programmation', category: 'Numérique', description: 'Python, JavaScript, bases de données, web.', levelCategories: UNIVERSITY, aliases: ['Python', 'Développement web', 'JavaScript', 'Java'] },
+  { name: 'Économie', category: 'Gestion', description: 'Microéconomie, macroéconomie, gestion.', levelCategories: UNIVERSITY },
+  { name: 'Comptabilité', category: 'Gestion', description: 'Comptabilité générale, analytique, fiscalité.', levelCategories: UNIVERSITY },
   { name: 'Algèbre linéaire', category: 'Sciences', description: 'Espaces vectoriels, matrices, applications linéaires.', levelCategories: UNIVERSITY },
   { name: 'Algèbre abstraite', category: 'Sciences', description: 'Groupes, anneaux, corps.', levelCategories: UNIVERSITY },
   { name: 'Analyse réelle', category: 'Sciences', description: 'Suites, séries, intégration.', levelCategories: UNIVERSITY },
@@ -54,37 +80,52 @@ const SUBJECTS: { name: string; category: string; description: string; levelCate
   { name: 'Thermodynamique', category: 'Sciences', description: 'Principes, machines thermiques, entropie.', levelCategories: UNIVERSITY },
   { name: 'Chimie organique', category: 'Sciences', description: 'Mécanismes réactionnels, synthèse.', levelCategories: UNIVERSITY },
   { name: 'Bases de données', category: 'Numérique', description: 'SQL, modélisation, optimisation.', levelCategories: UNIVERSITY },
-  { name: 'Algorithmique avancée', category: 'Numérique', description: 'Complexité, graphes, programmation dynamique.', levelCategories: UNIVERSITY },
+  { name: 'Algorithmique avancée', category: 'Numérique', description: 'Complexité, graphes, programmation dynamique.', levelCategories: UNIVERSITY, aliases: ['Algorithmique'] },
   { name: 'Droit des affaires', category: 'Gestion', description: 'Sociétés, contrats commerciaux.', levelCategories: UNIVERSITY },
   { name: 'Macroéconomie', category: 'Gestion', description: 'Croissance, monnaie, politiques publiques.', levelCategories: UNIVERSITY },
 ];
 
 async function seedCatalog() {
   let order = 0;
-  for (const { category, names } of LEVELS) {
+  for (const { category, names } of CATALOG_LEVELS) {
     for (const name of names) {
       order += 1;
+      const academicRank = academicRankOfLevel(category, name);
       await prisma.educationLevel.upsert({
         where: { name_category: { name, category } },
-        update: { displayOrder: order, isActive: true, requiredDegree: requiredDegreeFor(category, name) },
-        create: { name, category, displayOrder: order, requiredDegree: requiredDegreeFor(category, name) },
+        update: { displayOrder: order, isActive: true, requiredDegree: requiredDegreeFor(category, name), academicRank },
+        create: { name, category, displayOrder: order, requiredDegree: requiredDegreeFor(category, name), academicRank },
       });
     }
   }
   for (const subject of SUBJECTS) {
+    const data = {
+      category: subject.category,
+      description: subject.description,
+      isActive: true,
+      isVerified: true,
+      levelCategories: subject.levelCategories ?? [],
+      trackCodes: subject.trackCodes ?? [],
+      aliases: subject.aliases ?? [],
+    };
     await prisma.subject.upsert({
       where: { name: subject.name },
-      update: {
-        category: subject.category,
-        description: subject.description,
-        isActive: true,
-        isVerified: true,
-        levelCategories: subject.levelCategories ?? [],
-      },
-      create: { ...subject, levelCategories: subject.levelCategories ?? [] },
+      update: data,
+      create: { name: subject.name, ...data },
     });
   }
-  console.log(`Catalogue : ${SUBJECTS.length} matières, ${order} niveaux.`);
+  const tracks = [
+    ...SERIES.map((t, i) => ({ kind: 'SERIE' as const, code: t.code, name: t.name, domain: null, programme: t.programme, levelName: t.levelName, displayOrder: i + 1 })),
+    ...MENTIONS.map((t, i) => ({ kind: 'MENTION' as const, code: t.code, name: t.name, domain: t.domain, programme: null, levelName: null, displayOrder: i + 1 })),
+  ];
+  for (const track of tracks) {
+    await prisma.academicTrack.upsert({
+      where: { kind_code: { kind: track.kind, code: track.code } },
+      update: { name: track.name, domain: track.domain, programme: track.programme, levelName: track.levelName, displayOrder: track.displayOrder, isActive: true },
+      create: track,
+    });
+  }
+  console.log(`Catalogue : ${SUBJECTS.length} matières, ${order} niveaux, ${SERIES.length} séries, ${MENTIONS.length} mentions.`);
 }
 
 async function seedAdmin() {
@@ -121,7 +162,7 @@ interface DemoTutor {
   degree: 'BAC' | 'LICENCE' | 'MASTER' | 'DOCTORAT';
   gender: 'MALE' | 'FEMALE';
   subjects: { subject: string; levels: string[]; description: string }[];
-  offers: { subject: string; level: string | null; title: string; description: string; format: 'ONLINE' | 'IN_PERSON' | 'BOTH'; price: number }[];
+  offers: { subject: string; level: string | null; /** Code de série (Première/Terminale) ou de mention. */ track?: string; title: string; description: string; format: 'ONLINE' | 'IN_PERSON' | 'BOTH'; price: number }[];
   places: { label: string; address: string; lat: number; lng: number; radius: number | null; type: 'BENEFICIARY_HOME' | 'TUTOR_HOME' | 'PUBLIC_PLACE'; primary: boolean }[];
   /** [jour (0 = dimanche), début, fin, index du lieu | 'online'] */
   availability: [number, string, string, number | 'online'][];
@@ -139,13 +180,14 @@ const DEMO_TUTORS: DemoTutor[] = [
     degree: 'MASTER',
     gender: 'MALE',
     subjects: [
-      { subject: 'Mathématiques', levels: ['3ème', 'Seconde', 'Première', 'Terminale'], description: 'Algèbre et analyse, préparation BEPC et BAC.' },
+      { subject: 'Mathématiques', levels: ['3ème'], description: 'Algèbre et géométrie, préparation BEPC.' },
+      { subject: 'Mathématiques Avancées', levels: ['Seconde', 'Première', 'Terminale'], description: 'Algèbre et analyse, préparation BAC.' },
       { subject: 'Physique-Chimie', levels: ['Seconde', 'Première', 'Terminale'], description: 'Mécanique et électricité.' },
     ],
     offers: [
-      { subject: 'Mathématiques', level: 'Terminale', title: 'Préparation au BAC — Mathématiques', description: 'Révision du programme, annales corrigées, méthode de rédaction.', format: 'BOTH', price: 25000 },
+      { subject: 'Mathématiques Avancées', level: 'Terminale', track: 'TS', title: 'Préparation au BAC — Mathématiques', description: 'Révision du programme, annales corrigées, méthode de rédaction.', format: 'BOTH', price: 25000 },
       { subject: 'Mathématiques', level: '3ème', title: 'Préparation au BEPC — Mathématiques', description: 'Reprendre les bases et réussir l’examen.', format: 'IN_PERSON', price: 20000 },
-      { subject: 'Physique-Chimie', level: 'Terminale', title: 'Physique-Chimie — Terminale', description: 'Cours et exercices types BAC.', format: 'ONLINE', price: 22000 },
+      { subject: 'Physique-Chimie', level: 'Terminale', track: 'TS', title: 'Physique-Chimie — Terminale', description: 'Cours et exercices types BAC.', format: 'ONLINE', price: 22000 },
     ],
     places: [
       { label: 'Analakely & environs', address: 'Antananarivo — Analakely', lat: -18.9082, lng: 47.5242, radius: 8000, type: 'BENEFICIARY_HOME', primary: true },
@@ -193,8 +235,8 @@ const DEMO_TUTORS: DemoTutor[] = [
     degree: 'MASTER',
     gender: 'FEMALE',
     subjects: [
-      { subject: 'Programmation', levels: ['Terminale', 'Licence 1', 'Licence 2', 'Licence 3', 'Formation pro'], description: 'Python, JavaScript, SQL.' },
-      { subject: 'Informatique', levels: ['Seconde', 'Première', 'Terminale', 'Licence 1'], description: 'Algorithmique et bureautique.' },
+      { subject: 'Programmation', levels: ['Licence 1', 'Licence 2', 'Licence 3', 'Formation pro'], description: 'Python, JavaScript, SQL.' },
+      { subject: 'Informatique', levels: ['Licence 1'], description: 'Algorithmique et bureautique.' },
     ],
     offers: [
       { subject: 'Programmation', level: 'Licence 1', title: 'Initiation à la programmation Python', description: 'De zéro à vos premiers programmes, projets guidés.', format: 'BOTH', price: 30000 },
@@ -213,6 +255,7 @@ async function seedDemo_() {
   const password = await argon2.hash('Demo12345!', { type: argon2.argon2id });
   const levels = new Map((await prisma.educationLevel.findMany()).map((l) => [l.name, l.id]));
   const subjects = new Map((await prisma.subject.findMany()).map((s) => [s.name, s.id]));
+  const tracks = new Map((await prisma.academicTrack.findMany()).map((t) => [t.code, t.id]));
   const level = (name: string) => {
     const id = levels.get(name);
     if (!id) throw new Error(`Niveau inconnu : ${name}`);
@@ -272,6 +315,7 @@ async function seedDemo_() {
         data: {
           tutorProfileId: profile.id, subjectId: subject(o.subject),
           educationLevelId: o.level ? level(o.level) : null,
+          trackId: o.track ? tracks.get(o.track) ?? null : null,
           title: o.title, description: o.description, format: o.format, durationMinutes: 60, price: o.price,
         },
       });

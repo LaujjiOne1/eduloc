@@ -8,6 +8,12 @@ export class SuggestSubjectsQueryDto {
   @IsOptional() @IsIn(DEGREES) degree?: (typeof DEGREES)[number];
 }
 
+export class TracksQueryDto {
+  @IsOptional() @IsIn(['SERIE', 'MENTION']) kind?: 'SERIE' | 'MENTION';
+  /** Séries d'un niveau : « Première » ou « Terminale ». */
+  @IsOptional() @IsIn(['Première', 'Terminale']) levelName?: 'Première' | 'Terminale';
+}
+
 export class CreateSubjectDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value))
   @IsString()

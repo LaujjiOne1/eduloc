@@ -1,0 +1,23 @@
+# Développement local : docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+services:
+  ollama:
+    ports:
+      - "127.0.0.1:11434:11434"   # accessible depuis ta machine seulement, pour tester avec curl
+
+  paddleocr:
+    ports:
+      - "127.0.0.1:5002:5000"     # curl -F file=@cv.png http://localhost:5002/ocr
+
+  # Base jetable pgvector + PostGIS pour les tests d'intégration (spec §10) : jamais la base Supabase.
+  # Image du projet (docker/db) et non pgvector/pgvector:pg17 : les migrations exigent aussi PostGIS et btree_gist.
+  db-test:
+    build: ./docker/db
+    image: eduloc-db:pg16-postgis3.4-pgvector0.8.0
+    environment:
+      POSTGRES_USER: eduloc
+      POSTGRES_PASSWORD: eduloc
+      POSTGRES_DB: eduloc_test
+    ports:
+      - "127.0.0.1:5434:5432"     # 5433 est déjà pris par le service « db »
+    tmpfs:
+      - /var/lib/postgresql/data  # données en mémoire : remise à zéro à chaque démarrage

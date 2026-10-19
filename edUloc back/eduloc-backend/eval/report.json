@@ -1,0 +1,765 @@
+{
+  "model": "hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL",
+  "scoring": {
+    "corroborationWeight": 0.02,
+    "corroborationWindow": 0.1,
+    "subjectBonus": 0.03,
+    "ratingBonus": 0.02,
+    "ratingPriorMean": 3.5,
+    "ratingPriorWeight": 5,
+    "relevanceWindow": 0.15
+  },
+  "k": 10,
+  "overall": {
+    "n": 41,
+    "recall": 0.991869918699187,
+    "ndcg": 0.9754818435627349
+  },
+  "byGroup": [
+    {
+      "group": "mathématiques",
+      "n": 10,
+      "recall": 0.9666666666666666,
+      "ndcg": 0.9701436175463382
+    },
+    {
+      "group": "informatique",
+      "n": 12,
+      "recall": 1,
+      "ndcg": 0.9851094762178153
+    },
+    {
+      "group": "sémantique-sans-mots-communs",
+      "n": 4,
+      "recall": 1,
+      "ndcg": 0.8680014239987425
+    },
+    {
+      "group": "économie-gestion-droit",
+      "n": 10,
+      "recall": 1,
+      "ndcg": 1
+    },
+    {
+      "group": "sciences-langues",
+      "n": 5,
+      "recall": 1,
+      "ndcg": 1
+    }
+  ],
+  "ablation": {
+    "Coefficients actuels (spec §6.4)": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Sans bonus (matière et note)": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Sans corroboration": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9779761659327365
+    },
+    "bestSim seul": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9779761659327365
+    },
+    "Sans filtre de pertinence relatif": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Filtre relatif 0,10": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Filtre relatif 0,20": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Filtre relatif 0,25": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    },
+    "Filtre relatif 0,30": {
+      "recall": 0.991869918699187,
+      "ndcg": 0.9754818435627349
+    }
+  },
+  "violations": 0,
+  "queries": [
+    {
+      "id": "Q01",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T01",
+        "T02",
+        "T24",
+        "T10",
+        "T25",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q02",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T02",
+        "T24",
+        "T23",
+        "T04",
+        "T25",
+        "T03",
+        "T15",
+        "T01",
+        "T10",
+        "T17"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q03",
+      "recall": 0.6666666666666666,
+      "ndcg": 0.878961873034099,
+      "returned": [
+        "T03",
+        "T23",
+        "T15",
+        "T25",
+        "T02",
+        "T16",
+        "T11",
+        "T27",
+        "T26",
+        "T04"
+      ],
+      "missed": [
+        {
+          "key": "T12",
+          "rel": 1,
+          "rank": 17,
+          "sim": 0.6541908979415894
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "recall": 1,
+      "ndcg": 0.944847956559586,
+      "returned": [
+        "T04",
+        "T02",
+        "T24",
+        "T25",
+        "T23",
+        "T08",
+        "T14",
+        "T01",
+        "T03",
+        "T11"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q05",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T03",
+        "T23",
+        "T15",
+        "T04",
+        "T07",
+        "T11",
+        "T29",
+        "T02"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q06",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T01",
+        "T02",
+        "T24",
+        "T25",
+        "T10",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q07",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T24",
+        "T02",
+        "T25",
+        "T12",
+        "T01",
+        "T05",
+        "T13",
+        "T10",
+        "T23",
+        "T04"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q08",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T01",
+        "T02",
+        "T10",
+        "T25",
+        "T06",
+        "T07",
+        "T08",
+        "T03",
+        "T19",
+        "T24"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q09",
+      "recall": 1,
+      "ndcg": 0.9327783893101107,
+      "returned": [
+        "T23",
+        "T15",
+        "T16",
+        "T01",
+        "T03",
+        "T02",
+        "T24",
+        "T21",
+        "T12",
+        "T17"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q10",
+      "recall": 1,
+      "ndcg": 0.944847956559586,
+      "returned": [
+        "T25",
+        "T24",
+        "T12",
+        "T04",
+        "T05",
+        "T14",
+        "T02",
+        "T01",
+        "T03",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q11",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T07",
+        "T13",
+        "T14",
+        "T11",
+        "T28",
+        "T02",
+        "T01",
+        "T29",
+        "T10",
+        "T09"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q12",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T07",
+        "T13",
+        "T11",
+        "T24",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q13",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T08",
+        "T29",
+        "T09",
+        "T07",
+        "T22"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q14",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T10",
+        "T01",
+        "T13",
+        "T08",
+        "T16",
+        "T11",
+        "T09",
+        "T24",
+        "T25",
+        "T03"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q15",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T09",
+        "T13",
+        "T14",
+        "T10",
+        "T12",
+        "T22",
+        "T20",
+        "T05",
+        "T01",
+        "T08"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q16",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T28",
+        "T13",
+        "T09",
+        "T25",
+        "T24",
+        "T12",
+        "T10",
+        "T01",
+        "T14",
+        "T29"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q17",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T11",
+        "T29",
+        "T14",
+        "T13",
+        "T03",
+        "T28",
+        "T01",
+        "T02",
+        "T08",
+        "T16"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q18",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T12",
+        "T10",
+        "T25",
+        "T15",
+        "T16",
+        "T23",
+        "T07",
+        "T03",
+        "T04",
+        "T09"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q19",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T14",
+        "T11",
+        "T13",
+        "T29"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q20",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T13",
+        "T09",
+        "T28"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q39",
+      "recall": 1,
+      "ndcg": 0.8213137146137828,
+      "returned": [
+        "T28",
+        "T10",
+        "T09",
+        "T11",
+        "T13",
+        "T14",
+        "T01",
+        "T24",
+        "T07",
+        "T08"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q40",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T29",
+        "T08",
+        "T11",
+        "T14",
+        "T13",
+        "T10",
+        "T09",
+        "T17",
+        "T16",
+        "T07"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q21",
+      "recall": 1,
+      "ndcg": 0.9180385079206221,
+      "returned": [
+        "T07",
+        "T29",
+        "T22",
+        "T11",
+        "T14",
+        "T13",
+        "T09",
+        "T08",
+        "T10",
+        "T21"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q22",
+      "recall": 1,
+      "ndcg": 0.9180385079206221,
+      "returned": [
+        "T09",
+        "T22",
+        "T13",
+        "T25",
+        "T24",
+        "T29",
+        "T07",
+        "T14",
+        "T12",
+        "T04"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q23",
+      "recall": 1,
+      "ndcg": 0.6719882468370725,
+      "returned": [
+        "T28",
+        "T09",
+        "T07",
+        "T29",
+        "T13",
+        "T11",
+        "T14",
+        "T12",
+        "T10",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q41",
+      "recall": 1,
+      "ndcg": 0.9639404333166532,
+      "returned": [
+        "T04",
+        "T02",
+        "T25",
+        "T01",
+        "T24",
+        "T08",
+        "T11",
+        "T14",
+        "T23",
+        "T05"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q24",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T15",
+        "T16",
+        "T23"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q25",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T16",
+        "T15",
+        "T23",
+        "T21",
+        "T05",
+        "T20",
+        "T17",
+        "T25",
+        "T02",
+        "T14"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q26",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T17",
+        "T15",
+        "T19",
+        "T18",
+        "T22",
+        "T10",
+        "T16",
+        "T21",
+        "T11",
+        "T07"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q27",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T18",
+        "T17",
+        "T16",
+        "T11",
+        "T20",
+        "T02",
+        "T19",
+        "T01",
+        "T23",
+        "T28"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q28",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T19",
+        "T20",
+        "T18",
+        "T15",
+        "T16",
+        "T17",
+        "T21",
+        "T29"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q29",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T20",
+        "T19",
+        "T16",
+        "T18",
+        "T03",
+        "T14",
+        "T11",
+        "T21",
+        "T23",
+        "T02"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q30",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T21",
+        "T16",
+        "T15",
+        "T17",
+        "T22",
+        "T23",
+        "T11",
+        "T19",
+        "T13",
+        "T29"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q31",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T22",
+        "T13",
+        "T14",
+        "T09",
+        "T21",
+        "T15",
+        "T10",
+        "T17",
+        "T16",
+        "T07"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q32",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T16",
+        "T15",
+        "T23",
+        "T05",
+        "T10"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q33",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T15",
+        "T16",
+        "T23",
+        "T05",
+        "T17",
+        "T18",
+        "T13",
+        "T02",
+        "T21",
+        "T03"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q34",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T05",
+        "T15",
+        "T16"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q35",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T06",
+        "T01",
+        "T02",
+        "T14"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q36",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T27",
+        "T14",
+        "T03",
+        "T26",
+        "T02",
+        "T06",
+        "T15",
+        "T16",
+        "T21",
+        "T01"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q37",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T26"
+      ],
+      "missed": []
+    },
+    {
+      "id": "Q38",
+      "recall": 1,
+      "ndcg": 1,
+      "returned": [
+        "T04",
+        "T25",
+        "T02",
+        "T29",
+        "T23",
+        "T10",
+        "T15",
+        "T06"
+      ],
+      "missed": []
+    }
+  ]
+}

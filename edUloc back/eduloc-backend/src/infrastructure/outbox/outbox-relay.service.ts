@@ -7,6 +7,7 @@ import { RedisService } from '../../core/redis/redis.service';
 import { REALTIME_PUBLISHER, RealtimePublisher } from '../realtime/realtime-publisher.port';
 import { PUSH_PROVIDER, PushProvider } from '../push/push-provider.port';
 import { ResendEmailService } from './resend-email.service';
+import { INDEXING_EVENT_TYPES } from './outbox-event-types';
 
 interface RelayRow {
   id: string;
@@ -83,6 +84,7 @@ export class OutboxRelayService {
           FROM outbox_events
           WHERE "processedAt" IS NULL
             AND ("lockedUntil" IS NULL OR "lockedUntil" < now())
+            AND "eventType" <> ALL(${[...INDEXING_EVENT_TYPES]}::text[])
           ORDER BY "createdAt" ASC
           LIMIT 50
           FOR UPDATE SKIP LOCKED`;

@@ -51,6 +51,8 @@ export class SearchService {
   async searchOffers(params: {
     subjectId: string;
     levelId?: string;
+    /** Série ou mention : exclut les offres d'une autre filière (les offres sans filière restent). */
+    trackId?: string;
     lat: number | null;
     lng: number | null;
     format: SearchFormat;
@@ -82,6 +84,7 @@ export class SearchService {
         WHERE o."isActive" = true AND o."disabledByAdminAt" IS NULL
           AND o."subjectId" = ${params.subjectId}
           AND (${params.levelId ?? null}::text IS NULL OR o."educationLevelId" = ${params.levelId ?? null})
+          AND (${params.trackId ?? null}::text IS NULL OR o."trackId" IS NULL OR o."trackId" = ${params.trackId ?? null})
           AND (
             (${wantOnline}::boolean AND p.type = 'ONLINE' AND o.format IN ('ONLINE', 'BOTH'))
             OR (${wantInPerson}::boolean AND p.type <> 'ONLINE' AND o.format IN ('IN_PERSON', 'BOTH')

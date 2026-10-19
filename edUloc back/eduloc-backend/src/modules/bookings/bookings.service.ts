@@ -109,9 +109,14 @@ export class BookingsService {
       });
 
       const place = rule.placeId ? await tx.place.findUnique({ where: { id: rule.placeId } }) : null;
+      // Conversion du matching : seule une recherche du demandeur lui-même est rattachée (sinon ignorée, sans bloquer la réservation).
+      const matchingSearch = dto.matchingSearchId
+        ? await tx.matchingSearch.findFirst({ where: { id: dto.matchingSearchId, requesterId }, select: { id: true } })
+        : null;
       const booking = await tx.booking.create({
         data: {
           requesterId,
+          matchingSearchId: matchingSearch?.id ?? null,
           beneficiaryId: beneficiary.id,
           tutorProfileId: offer.tutorProfileId,
           offerId: offer.id,

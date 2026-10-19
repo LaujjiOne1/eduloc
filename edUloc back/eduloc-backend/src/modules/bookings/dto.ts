@@ -17,6 +17,8 @@ export class CreateBookingDto {
   @IsOptional() @IsUUID() voiceNoteUploadId?: string;
   @IsOptional() @IsString() @MaxLength(500) beneficiaryAddress?: string;
   @IsOptional() @IsString() @MaxLength(1000) requesterNote?: string;
+  /** Recherche (POST /matching/search) d'où vient la réservation : mesure de conversion du matching. */
+  @IsOptional() @IsUUID() matchingSearchId?: string;
 }
 
 export class RefuseBookingDto {

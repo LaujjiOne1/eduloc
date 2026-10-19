@@ -31,7 +31,8 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
-  app.setGlobalPrefix('api');
+  // /health hors du préfixe : sonde Docker / reverse proxy (spec §14.5).
+  app.setGlobalPrefix('api', { exclude: ['health'] });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

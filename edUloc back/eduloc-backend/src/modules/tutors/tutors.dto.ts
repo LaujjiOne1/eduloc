@@ -15,6 +15,11 @@ export class ProfileDto {
   @IsOptional() @IsIn(['MALE', 'FEMALE']) gender?: 'MALE' | 'FEMALE';
   @IsOptional() @IsString() @MaxLength(2000) experience?: string;
   @IsOptional() @IsString() @MaxLength(2000) educationBackground?: string;
+  @IsOptional() @IsString() @MaxLength(300) degreeTitle?: string;
+  @IsOptional() @IsString() @MaxLength(200) fieldOfStudy?: string;
+  @IsOptional() @IsString() @MaxLength(500) specialization?: string;
+  @IsOptional() @IsString() @MaxLength(200) degreeInstitution?: string;
+  @IsOptional() @IsString() @MaxLength(100) degreeCountry?: string;
 }
 
 export class SubjectDto {
@@ -26,6 +31,8 @@ export class SubjectDto {
 export class OfferDto {
   @IsUUID() subjectId!: string;
   @IsOptional() @IsUUID() educationLevelId?: string;
+  /** Série (Première/Terminale, obligatoire) ou mention (université). */
+  @IsOptional() @IsUUID() trackId?: string | null;
   @IsString() @MaxLength(200) title!: string;
   @IsString() @MaxLength(5000) description!: string;
   @IsOptional() @IsEnum(['ONLINE', 'IN_PERSON', 'BOTH']) format?: string;

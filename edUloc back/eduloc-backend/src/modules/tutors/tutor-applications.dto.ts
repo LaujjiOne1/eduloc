@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import {
-  IsArray, IsBoolean, IsEmail, IsIn, IsInt, IsNumber, IsOptional, IsString, IsUUID,
+  ArrayUnique, IsArray, IsBoolean, IsEmail, IsIn, IsInt, IsNumber, IsOptional, IsString, IsUUID,
   Matches, Max, MaxLength, Min, ValidateNested,
 } from 'class-validator';
 
@@ -8,13 +8,22 @@ import { DEGREES } from '../catalog/domain/degree-policy';
 
 const FORMATS =['ONLINE', 'IN_PERSON', 'BOTH'] as const;
 const PLACE_TYPES = ['TUTOR_HOME', 'BENEFICIARY_HOME', 'PUBLIC_PLACE', 'ONLINE'] as const;
-const DOCUMENT_TYPES = ['IDENTITY', 'DIPLOMA', 'CERTIFICATE', 'PROFESSIONAL_PROOF', 'OTHER'] as const;
+const DOCUMENT_TYPES = [
+  'IDENTITY', 'DIPLOMA', 'CERTIFICATE', 'PROFESSIONAL_PROOF', 'CV', 'TRANSCRIPT', 'ENROLLMENT_CERTIFICATE', 'OTHER',
+] as const;
+
+export const EXPERIENCE_TYPES = ['TEACHING', 'SUPERVISION', 'PROFESSIONAL', 'ACADEMIC', 'VOLUNTEER'] as const;
+export const EXPERIENCE_AUDIENCES = ['Primaire', 'Collège', 'Lycée', 'Université'] as const;
 
 export class TutorExperienceInputDto {
-  @IsIn(['PROFESSIONAL', 'ACADEMIC']) type!: 'PROFESSIONAL' | 'ACADEMIC';
+  @IsIn(EXPERIENCE_TYPES) type!: (typeof EXPERIENCE_TYPES)[number];
   @IsString() @MaxLength(200) title!: string;
   @IsString() @MaxLength(200) organization!: string;
   @IsString() @MaxLength(100) period!: string;
+  /** Niveaux ou public encadrés (primaire, collège, lycée, université). */
+  @IsOptional() @IsArray() @ArrayUnique() @IsIn(EXPERIENCE_AUDIENCES, { each: true }) audience?: (typeof EXPERIENCE_AUDIENCES)[number][];
+  /** Matières ou compétences enseignées. */
+  @IsOptional() @IsString() @MaxLength(300) subjectsTaught?: string;
   @IsOptional() @IsString() @MaxLength(5000) description?: string;
 }
 
@@ -27,6 +36,8 @@ class TutorSubjectInputDto {
 class TutorOfferInputDto {
   @IsUUID() subjectId!: string;
   @IsOptional() @IsUUID() educationLevelId?: string;
+  /** Série (Première/Terminale, obligatoire) ou mention (université). */
+  @IsOptional() @IsUUID() trackId?: string;
   @IsString() @MaxLength(200) title!: string;
   @IsString() @MaxLength(5000) description!: string;
   @IsIn(FORMATS) format!: (typeof FORMATS)[number];
@@ -67,6 +78,13 @@ export class TutorApplicationInputDto {
   @IsOptional() @IsString() @MaxLength(2000) educationBackground?: string;
   /** Plus haut diplôme : fixe les niveaux que le tuteur peut déclarer (voir degree-policy). */
   @IsOptional() @IsIn(DEGREES) highestDegree?: (typeof DEGREES)[number];
+  /** Intitulé exact du diplôme le plus élevé (ex. « Master Informatique, parcours Sécurité des systèmes »). */
+  @IsOptional() @IsString() @MaxLength(300) degreeTitle?: string;
+  @IsOptional() @IsString() @MaxLength(200) fieldOfStudy?: string;
+  @IsOptional() @IsString() @MaxLength(500) specialization?: string;
+  @IsOptional() @IsString() @MaxLength(200) degreeInstitution?: string;
+  /** Pays / système éducatif du diplôme : exigé à l'envoi du dossier quand highestDegree = OTHER (équivalence). */
+  @IsOptional() @IsString() @MaxLength(100) degreeCountry?: string;
   /** Sexe : avatar par défaut (silhouette) tant que le tuteur n'a pas de photo. */
   @IsOptional() @IsIn(['MALE', 'FEMALE']) gender?: 'MALE' | 'FEMALE';
 

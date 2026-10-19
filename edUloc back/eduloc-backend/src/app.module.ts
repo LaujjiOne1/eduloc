@@ -26,6 +26,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { GeoModule } from './modules/geo/geo.module';
+import { MatchingModule } from './modules/matching/matching.module';
+import { CvImportModule } from './modules/cv-import/cv-import.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { GeoModule } from './modules/geo/geo.module';
     RealtimeModule,
     AdminModule,
     GeoModule,
+    MatchingModule,
+    CvImportModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

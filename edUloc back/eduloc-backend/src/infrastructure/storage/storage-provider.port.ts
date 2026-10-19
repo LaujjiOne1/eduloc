@@ -15,6 +15,8 @@ export interface StorageProvider {
   createSignedReadUrl(bucket: string, storagePath: string, expiresInSeconds?: number): Promise<string>;
   getObjectInfo(bucket: string, storagePath: string): Promise<StoredObjectInfo>;
   deleteObject(bucket: string, storagePath: string): Promise<void>;
+  /** Contenu du fichier (extraction de texte des justificatifs, côté serveur uniquement). */
+  downloadObject(bucket: string, storagePath: string): Promise<Buffer>;
 }
 
 export const STORAGE_PROVIDER = Symbol('STORAGE_PROVIDER');
@@ -32,11 +34,14 @@ export function tutorDocumentPath(applicationId: string, documentId: string, ext
 export function tutorIntroVideoPath(tutorProfileId: string, videoId: string, ext: string): string {
   return `tutor-videos/${tutorProfileId}/${videoId}${ext}`;
 }
+export function cvImportPath(userId: string, importId: string, ext: string): string {
+  return `cv-imports/${userId}/${importId}${ext}`;
+}
 export function extFromMime(mime: string): string {
   const map: Record<string, string> = {
     'audio/webm': '.webm', 'audio/mp4': '.m4a', 'audio/ogg': '.ogg', 'audio/mpeg': '.mp3',
     'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp',
-    'video/mp4': '.mp4', 'video/quicktime': '.mov', 'video/webm': '.webm',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx', 'video/mp4': '.mp4', 'video/quicktime': '.mov', 'video/webm': '.webm',
   };
   return map[mime] ?? '.bin';
 }

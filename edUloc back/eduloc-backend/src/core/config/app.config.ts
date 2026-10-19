@@ -40,6 +40,23 @@ const envSchema = z.object({
   BOOKING_MIN_NOTICE_HOURS: z.coerce.number().default(2),
   CANCELLATION_FREE_NOTICE_HOURS: z.coerce.number().default(24),
   MEDIA_RETENTION_MONTHS: z.coerce.number().default(12),
+  /** Ollama (embeddings du matching) : joignable uniquement depuis le réseau privé, jamais publié sur Internet. */
+  OLLAMA_URL: z.string().url().default('http://localhost:11434'),
+  EMBEDDING_MODEL: z.string().min(1).default('hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL'),
+  EMBEDDING_DIM: z.coerce.number().int().positive().default(768),
+  /** Import de CV : OCR PaddleOCR (service docker/paddleocr) — absent, l'OCR retombe sur Tesseract. */
+  PADDLEOCR_URL: z.string().url().optional().or(z.literal('').transform(() => undefined)),
+  /** Modèle Ollama d'extraction structurée du CV (génération, distinct du modèle d'embeddings). */
+  CV_EXTRACTION_MODEL: z.string().min(1).default('qwen2.5:3b'),
+  CV_EXTRACTION_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000),
+  /** Poids du scoring du matching (spec §6.4) : valeurs initiales, à calibrer avec le jeu d'évaluation. */
+  MATCHING_CORROBORATION_WEIGHT: z.coerce.number().min(0).default(0.02),
+  MATCHING_CORROBORATION_WINDOW: z.coerce.number().min(0).default(0.1),
+  MATCHING_SUBJECT_BONUS: z.coerce.number().min(0).default(0.03),
+  MATCHING_RATING_BONUS: z.coerce.number().min(0).default(0.02),
+  MATCHING_RATING_PRIOR_MEAN: z.coerce.number().min(0).max(5).default(3.5),
+  MATCHING_RATING_PRIOR_WEIGHT: z.coerce.number().min(0).default(5),
+  MATCHING_RELEVANCE_WINDOW: z.coerce.number().min(0).default(0.15),
 });
 
 @Injectable()
@@ -75,6 +92,16 @@ export class AppConfig {
   readonly bookingMinNoticeHours: number;
   readonly cancellationFreeNoticeHours: number;
   readonly mediaRetentionMonths: number;
+  readonly ollamaUrl: string;
+  readonly embeddingModel: string;
+  readonly embeddingDim: number;
+  readonly paddleOcrUrl: string | null;
+  readonly cvExtractionModel: string;
+  readonly cvExtractionTimeoutMs: number;
+  readonly matchingScoring: {
+    corroborationWeight: number; corroborationWindow: number; subjectBonus: number; ratingBonus: number;
+    ratingPriorMean: number; ratingPriorWeight: number; relevanceWindow: number;
+  };
 
   constructor() {
     const parsed = envSchema.parse(process.env);
@@ -116,5 +143,20 @@ export class AppConfig {
     this.bookingMinNoticeHours = parsed.BOOKING_MIN_NOTICE_HOURS;
     this.cancellationFreeNoticeHours = parsed.CANCELLATION_FREE_NOTICE_HOURS;
     this.mediaRetentionMonths = parsed.MEDIA_RETENTION_MONTHS;
+    this.ollamaUrl = parsed.OLLAMA_URL.replace(/\/$/, '');
+    this.embeddingModel = parsed.EMBEDDING_MODEL;
+    this.embeddingDim = parsed.EMBEDDING_DIM;
+    this.paddleOcrUrl = parsed.PADDLEOCR_URL ? parsed.PADDLEOCR_URL.replace(/\/$/, '') : null;
+    this.cvExtractionModel = parsed.CV_EXTRACTION_MODEL;
+    this.cvExtractionTimeoutMs = parsed.CV_EXTRACTION_TIMEOUT_MS;
+    this.matchingScoring = {
+      corroborationWeight: parsed.MATCHING_CORROBORATION_WEIGHT,
+      corroborationWindow: parsed.MATCHING_CORROBORATION_WINDOW,
+      subjectBonus: parsed.MATCHING_SUBJECT_BONUS,
+      ratingBonus: parsed.MATCHING_RATING_BONUS,
+      ratingPriorMean: parsed.MATCHING_RATING_PRIOR_MEAN,
+      ratingPriorWeight: parsed.MATCHING_RATING_PRIOR_WEIGHT,
+      relevanceWindow: parsed.MATCHING_RELEVANCE_WINDOW,
+    };
   }
 }

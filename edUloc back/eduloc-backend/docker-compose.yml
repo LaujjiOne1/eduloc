@@ -1,6 +1,8 @@
 services:
   db:
-    image: postgis/postgis:16-3.4-alpine
+    # PostGIS + pgvector (recherche sémantique) : docker/db/Dockerfile. Même base Alpine PG16 : le volume pgdata reste valide.
+    build: ./docker/db
+    image: eduloc-db:pg16-postgis3.4-pgvector0.8.0
     container_name: eduloc-db
     environment:
       POSTGRES_USER: eduloc
@@ -86,8 +88,17 @@ services:
       REDIS_URL: redis://redis:6379
       CENTRIFUGO_URL: http://centrifugo:8000
       LIVEKIT_URL: ws://livekit:7880
+      # Ollama : nom du service sur le réseau privé « eduloc » (jamais une URL publique).
+      OLLAMA_URL: http://ollama:11434
+      # Ancien modèle (EmbeddingGemma 1) : # EMBEDDING_MODEL: ${EMBEDDING_MODEL:-embeddinggemma:300m}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-768}
+      # Import de CV : OCR PaddleOCR et modèle de génération Ollama (extraction structurée).
+      PADDLEOCR_URL: http://paddleocr:5000
+      CV_EXTRACTION_MODEL: ${CV_EXTRACTION_MODEL:-qwen2.5:3b}
     ports:
       - "3000:3000"
+    networks: [default, eduloc]
     depends_on:
       db:
         condition: service_healthy
@@ -97,8 +108,86 @@ services:
         condition: service_started
       livekit:
         condition: service_started
+      ollama-init:
+        condition: service_completed_successfully
+      paddleocr:
+        condition: service_healthy
+
+  # --- Embeddings du matching sémantique (spec §14) -------------------------------------------------------------
+  # Pas de « ports » : Ollama n'a aucune authentification, il n'est joignable que par l'API via le réseau « eduloc ».
+  ollama:
+    # Version épinglée, jamais « latest » : à faire évoluer volontairement (elle doit supporter le modèle ci-dessous).
+    # 0.40.3 (stable) ne sait pas charger embeddinggemma-2 (« unknown model architecture: gemma-embedding2 ») ;
+    # le support arrive avec la 0.40.4 (ici en release candidate) : # image: ollama/ollama:${OLLAMA_VERSION:-0.40.3}
+    image: ollama/ollama:${OLLAMA_VERSION:-0.40.4-rc1}
+    container_name: eduloc-ollama
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      OLLAMA_KEEP_ALIVE: "-1"           # garde le modèle en mémoire : pas de latence de rechargement
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    deploy:
+      resources:
+        limits:
+          memory: 5g                    # embeddings (~1 Go) + modèle d'extraction de CV qwen2.5:3b (~2,5 Go) ; à ajuster après mesure
+    restart: unless-stopped
+    networks: [eduloc]
+
+  # Tâche ponctuelle : « pull » (pas « run ») du modèle texte, idempotente si le modèle est déjà là.
+  ollama-init:
+    # 0.40.3 (stable) ne sait pas charger embeddinggemma-2 (« unknown model architecture: gemma-embedding2 ») ;
+    # le support arrive avec la 0.40.4 (ici en release candidate) : # image: ollama/ollama:${OLLAMA_VERSION:-0.40.3}
+    image: ollama/ollama:${OLLAMA_VERSION:-0.40.4-rc1}
+    container_name: eduloc-ollama-init
+    environment:
+      OLLAMA_HOST: http://ollama:11434  # le CLI pilote le serveur du service « ollama »
+    # Ancien modèle : # entrypoint: ["ollama", "pull", "${EMBEDDING_MODEL:-embeddinggemma:300m}"]
+    entrypoint: ["ollama", "pull", "${EMBEDDING_MODEL:-hf.co/unsloth/embeddinggemma-2-GGUF:UD-Q4_K_XL}"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+    networks: [eduloc]
+
+  # Modèle de GÉNÉRATION pour l'import de CV (JSON structuré) : un second « pull », car ollama-init n'en tire qu'un.
+  ollama-init-cv:
+    image: ollama/ollama:${OLLAMA_VERSION:-0.40.4-rc1}
+    container_name: eduloc-ollama-init-cv
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["ollama", "pull", "${CV_EXTRACTION_MODEL:-qwen2.5:3b}"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+    networks: [eduloc]
+
+  # --- OCR des CV et justificatifs (PaddleOCR, CPU) ---------------------------------------------------------------
+  # Interne : pas de « ports » en production (voir docker-compose.dev.yml pour tester avec curl).
+  paddleocr:
+    build: ./docker/paddleocr
+    image: eduloc-paddleocr:2.7-cpu
+    container_name: eduloc-paddleocr
+    volumes:
+      - paddleocr_models:/models
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+    restart: unless-stopped
+    networks: [eduloc]
 
 volumes:
   pgdata:
   pgadmindata:
   redisdata:
+  ollama_models:
+  paddleocr_models:
+
+networks:
+  eduloc:
+    driver: bridge

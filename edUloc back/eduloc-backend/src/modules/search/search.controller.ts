@@ -10,6 +10,8 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 class SearchQueryDto {
   @IsUUID() subjectId!: string;
   @IsOptional() @IsUUID() levelId?: string;
+  /** Série (Première/Terminale) ou mention : filtre les offres de cette filière. */
+  @IsOptional() @IsUUID() trackId?: string;
 
   /**
    * Coordonnées de la personne qui cherche. Obligatoires pour une recherche en présentiel ;
@@ -49,6 +51,7 @@ export class SearchController {
     return this.service.searchOffers({
       subjectId: q.subjectId,
       levelId: q.levelId,
+      trackId: q.trackId,
       lat: hasCoordinates ? q.lat! : null,
       lng: hasCoordinates ? q.lng! : null,
       format,

@@ -52,6 +52,10 @@ export class LocalStorageProvider implements StorageProvider {
     }
   }
 
+  async downloadObject(bucket: string, storagePath: string): Promise<Buffer> {
+    return fs.readFile(this.pathFor(bucket, storagePath));
+  }
+
   async deleteObject(bucket: string, storagePath: string): Promise<void> {
     const file = this.pathFor(bucket, storagePath);
     await fs.rm(file, { force: true });

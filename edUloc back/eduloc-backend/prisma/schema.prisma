@@ -38,7 +38,29 @@ enum TutorDocumentType {
   DIPLOMA
   CERTIFICATE
   PROFESSIONAL_PROOF
+  CV
+  /// Relevé de notes : la liste réelle des cours suivis est un indice fort.
+  TRANSCRIPT
+  /// Certificat de scolarité : preuve du niveau en cours d'un tuteur qui prépare encore son diplôme.
+  ENROLLMENT_CERTIFICATE
   OTHER
+}
+
+enum SearchChunkSource {
+  PROFILE
+  SUBJECT
+  EXPERIENCE
+  OFFER
+  DOCUMENT
+}
+
+enum DegreeEquivalenceStatus {
+  /// Diplôme rencontré, pas encore tranché.
+  PENDING
+  /// Équivalence retenue par EduLoc, réutilisable.
+  VALIDATED
+  /// Aucune équivalence reconnue.
+  REJECTED
 }
 
 enum TutorDocumentStatus {
@@ -48,8 +70,15 @@ enum TutorDocumentStatus {
 }
 
 enum TutorExperienceType {
+  /// Expérience professionnelle sans lien direct avec l'enseignement.
   PROFESSIONAL
+  /// Projet académique (recherche, mémoire, concours…).
   ACADEMIC
+  /// Enseignement / soutien scolaire (répétiteur, animateur pédagogique, aide aux devoirs…).
+  TEACHING
+  /// Encadrement académique (monitorat, tutorat étudiant, jury, direction de travaux…).
+  SUPERVISION
+  VOLUNTEER
 }
 
 enum RelationshipType {
@@ -248,9 +277,13 @@ model User {
   reviewedApplications     TutorApplication[] @relation("ApplicationReviewer")
   bookingEvents            BookingEvent[]
   resolvedConflicts        Conflict[]         @relation("ConflictResolver")
+  matchingSearches         MatchingSearch[]   @relation("RequesterMatchingSearches")
+  validatedDegreeEquivalences DegreeEquivalence[] @relation("DegreeEquivalenceValidator")
+  validatedAcademicLevels  TutorProfile[]     @relation("AcademicLevelValidator")
 
   @@index([status])
   @@map("users")
+  cvImports CvImport[]
 }
 
 // ============================================================
@@ -309,11 +342,16 @@ model Beneficiary {
   preferredRhythm RhythmType?
   notes           String?         @db.Text
 
+  /// Filière / parcours universitaire (ex. « Licence Informatique, parcours Génie logiciel »).
+  studyProgram String?
+  institution  String?
+
   archivedAt DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  bookings Booking[]
+  bookings         Booking[]
+  matchingSearches MatchingSearch[]
 
   @@index([requesterId])
   @@index([educationLevelId])
@@ -332,16 +370,53 @@ model EducationLevel {
   isActive     Boolean  @default(true)
   /// Diplôme minimal pour enseigner ce niveau : BAC | LICENCE | MASTER | DOCTORAT.
   requiredDegree String @default("BAC")
+  /// Rang sur l'échelle académique ordonnée (1 = Primaire … 9 = Doctorat, cf. academic-scale.ts). Sert à l'éligibilité
+  /// du matching ; distinct de displayOrder (affichage, réordonnable). Null = hors échelle (ex. « Formation pro »).
+  academicRank Int?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   beneficiaries Beneficiary[]
   tutorSubjects TutorSubject[]
   offers        Offer[]
+  /// Tuteurs dont le niveau académique validé est ce niveau.
+  validatedTutors TutorProfile[] @relation("TutorAcademicLevel")
+  equivalences    DegreeEquivalence[]
 
   @@unique([name, category])
   @@index([isActive])
   @@map("education_levels")
+}
+
+enum TrackKind {
+  SERIE
+  MENTION
+}
+
+/// Filière académique : série du lycée (OSE, S, L, A1, A2, C, D) ou mention universitaire (nomenclature SISE).
+/// Les mentions portent leur `domain` (Domaine mère), retrouvé côté serveur pour construire le texte d'embedding.
+model AcademicTrack {
+  id           String    @id @default(uuid())
+  kind         TrackKind
+  /// Série : « OSE », « A1 »… ; mention : slug stable (« INFORMATIQUE »).
+  code         String
+  name         String
+  /// Mention : Domaine mère (« Sciences, Technologies et Santé »). Null pour une série.
+  domain       String?
+  /// Série : « NOUVEAU » (réforme) ou « ANCIEN » programme. Null pour une mention.
+  programme    String?
+  /// Série : niveau auquel elle appartient (« Première » ou « Terminale »). Null pour une mention.
+  levelName    String?
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  offers Offer[]
+
+  @@unique([kind, code])
+  @@index([kind, isActive])
+  @@map("academic_tracks")
 }
 
 model Subject {
@@ -352,6 +427,11 @@ model Subject {
   isActive    Boolean  @default(true)
   /// Catégories de niveaux où la matière s'enseigne (« Lycée », « Université »…). Vide = tous les niveaux.
   levelCategories String[] @default([])
+  /// Synonymes et intitulés alternatifs (ex. « Algèbre 1 », « Algèbre linéaire L1 »). Inclus dans le chunk SUBJECT.
+  aliases     String[] @default([])
+  /// Codes des séries du lycée (AcademicTrack.code) pour lesquelles la matière est proposée en Première/Terminale.
+  /// Vide = toutes les séries. Sans effet hors du lycée.
+  trackCodes  String[] @default([])
   /// false = compétence ajoutée librement par un tuteur : visible de lui seul jusqu'à l'approbation de son dossier.
   isVerified  Boolean  @default(true)
   createdById String?
@@ -384,6 +464,20 @@ model TutorProfile {
   educationBackground String?   @db.Text
   /// Plus haut diplôme déclaré : BAC | LICENCE | MASTER | DOCTORAT | OTHER (détermine les niveaux enseignables).
   highestDegree       String?
+  /// Si highestDegree = OTHER : équivalence appliquée par l'admin. À l'application, highestDegree reçoit
+  /// equivalentDegree ; le lien garde la trace de la décision.
+  degreeEquivalenceId String?
+  degreeEquivalence   DegreeEquivalence? @relation(fields: [degreeEquivalenceId], references: [id], onDelete: SetNull)
+  /// Intitulé exact du diplôme le plus élevé (ex. « Master Informatique, parcours Sécurité des systèmes »).
+  degreeTitle         String?
+  /// Domaine d'études (ex. « Informatique », « Économie », « Mathématiques »).
+  fieldOfStudy        String?
+  /// Spécialisation, parcours ou sujet de mémoire.
+  specialization      String?
+  /// Établissement ayant délivré le diplôme le plus élevé.
+  degreeInstitution   String?
+  /// Pays / système éducatif du diplôme (demandé quand highestDegree = OTHER, clé de DegreeEquivalence).
+  degreeCountry       String?
   /// MALE | FEMALE : choisit l'avatar par défaut du tuteur (silhouette) tant qu'il n'a pas de photo.
   gender              String?
 
@@ -394,9 +488,24 @@ model TutorProfile {
   rating       Float @default(0)
   reviewsCount Int   @default(0)
 
+  /// Niveau académique VALIDÉ par un admin (seul celui-ci compte pour l'éligibilité universitaire). Null = non validé.
+  /// Un tuteur qui prépare encore son diplôme est validé à son niveau en cours (L2, L3, M1…). Un expert professionnel
+  /// sans doctorat est validé au niveau Doctorat avec une justification obligatoire (academicLevelNote).
+  academicLevelId            String?
+  academicLevel              EducationLevel? @relation("TutorAcademicLevel", fields: [academicLevelId], references: [id], onDelete: Restrict)
+  academicLevelValidatedById String?
+  academicLevelValidatedBy   User?           @relation("AcademicLevelValidator", fields: [academicLevelValidatedById], references: [id], onDelete: SetNull)
+  academicLevelValidatedAt   DateTime?
+  /// Motif de la décision (obligatoire pour un expert professionnel validé Doctorat sans doctorat).
+  academicLevelNote          String?         @db.Text
+
+  /// Dernière réindexation réussie de la recherche sémantique.
+  searchIndexedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  searchChunks   TutorSearchChunk[]
   applications   TutorApplication[]
   experiences    TutorExperience[]
   introVideo     TutorIntroVideo?
@@ -410,6 +519,7 @@ model TutorProfile {
   reviews        Review[]
 
   @@index([isVisible])
+  @@index([academicLevelId])
   @@map("tutor_profiles")
 }
 
@@ -446,6 +556,10 @@ model TutorExperience {
   organization String
   period       String
   description  String?            @db.Text
+  /// Public encadré : catégories de niveaux (« Primaire », « Collège », « Lycée », « Université »).
+  audience     String[]           @default([])
+  /// Matières ou compétences enseignées, en texte libre.
+  subjectsTaught String?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
@@ -482,6 +596,12 @@ model TutorDocument {
 
   status          TutorDocumentStatus @default(PENDING)
   rejectionReason String?             @db.Text
+
+  /// Texte extrait (PDF texte ou OCR). Jamais exposé au Demandeur.
+  extractedText    String?          @db.Text
+  extractionStatus TranscriptStatus @default(NONE) // réutilise NONE | PENDING | DONE | FAILED
+  /// Pré-contrôle automatique INDICATIF pour l'admin (type détecté, champs extraits, incohérences). Jamais décisionnel.
+  autoCheck        Json?
 
   uploadedAt DateTime  @default(now())
   reviewedAt DateTime?
@@ -522,6 +642,10 @@ model Offer {
   educationLevelId String?
   educationLevel   EducationLevel? @relation(fields: [educationLevelId], references: [id])
 
+  /// Série (Première/Terminale) ou mention (université) visée. Obligatoire à la création pour Première/Terminale.
+  trackId String?
+  track   AcademicTrack? @relation(fields: [trackId], references: [id])
+
   title           String
   description     String         @db.Text
   format          TeachingFormat @default(BOTH)
@@ -541,6 +665,7 @@ model Offer {
 
   @@index([tutorProfileId])
   @@index([subjectId, educationLevelId])
+  @@index([trackId])
   @@index([isActive])
   @@map("offers")
 }
@@ -679,6 +804,10 @@ model Booking {
   cancellationReason String?       @db.Text
   refusalReason      String?       @db.Text
 
+  /// Recherche d'où vient la réservation (mesure de conversion du matching).
+  matchingSearchId String?
+  matchingSearch   MatchingSearch? @relation(fields: [matchingSearchId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -695,6 +824,7 @@ model Booking {
   @@index([offerId])
   @@index([availabilityId])
   @@index([status, startAt])
+  @@index([matchingSearchId])
   @@map("bookings")
 }
 
@@ -876,6 +1006,101 @@ model Review {
 }
 
 // ============================================================
+// RECHERCHE SÉMANTIQUE (eduloc-recherche-semantique.md, §3.2)
+// ============================================================
+
+/// Table administrable des équivalences de diplômes hors catégories principales (spec §13, décision 2).
+/// Une équivalence validée une fois est réutilisée pour les tuteurs suivants qui déclarent le même diplôme.
+model DegreeEquivalence {
+  id                String                  @id @default(uuid())
+  /// Intitulé du diplôme tel que déclaré (ex. « Diplôme d'ingénieur en informatique », « DUT Génie électrique »).
+  degreeTitle       String
+  /// Pays ou système éducatif (ex. « Madagascar », « France », « Maurice »).
+  country           String
+  /// Spécialité, si elle conditionne l'équivalence ("" sinon : pas de null, pour que l'unicité fonctionne).
+  specialty         String                  @default("")
+  /// Niveau retenu par EduLoc : BAC | LICENCE | MASTER | DOCTORAT. Null si REJECTED.
+  equivalentDegree  String?
+  /// Niveau académique retenu (échelle E2). Alimente TutorProfile.academicLevelId à l'application. Null si REJECTED.
+  equivalentLevelId String?
+  equivalentLevel   EducationLevel?         @relation(fields: [equivalentLevelId], references: [id], onDelete: Restrict)
+  status            DegreeEquivalenceStatus @default(PENDING)
+  notes             String?                 @db.Text
+  validatedById     String?
+  validatedBy       User?                   @relation("DegreeEquivalenceValidator", fields: [validatedById], references: [id], onDelete: SetNull)
+  validatedAt       DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  tutorProfiles TutorProfile[]
+
+  @@unique([degreeTitle, country, specialty])
+  @@index([status])
+  @@map("degree_equivalences")
+}
+
+/// Unité de texte indexée pour la recherche sémantique d'un tuteur.
+model TutorSearchChunk {
+  id             String       @id @default(uuid())
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  sourceType SearchChunkSource
+  /// Id de la source : tutorProfileId (PROFILE), subjectId (SUBJECT), TutorExperience.id, Offer.id, TutorDocument.id
+  sourceId   String
+  chunkIndex Int    @default(0)
+
+  /// Libellé affichable pour expliquer un match. Jamais d'extrait de document.
+  label       String
+  /// Texte exact envoyé au modèle (préfixe inclus), données personnelles retirées.
+  content     String  @db.Text
+  /// sha256(embeddingModel + EMBEDDING_DIM + content) : ne recalculer que si ça change.
+  contentHash String
+  /// Dénormalisé pour le bonus « matière déclarée » (SUBJECT et OFFER).
+  subjectId   String?
+
+  /// Lecture / écriture via SQL brut uniquement.
+  embedding      Unsupported("vector(768)")?
+  embeddingModel String
+  embeddedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tutorProfileId, sourceType, sourceId, chunkIndex])
+  @@index([tutorProfileId])
+  @@map("tutor_search_chunks")
+}
+
+/// Journal des recherches : sert à évaluer et calibrer le matching.
+model MatchingSearch {
+  id            String       @id @default(uuid())
+  requesterId   String
+  requester     User         @relation("RequesterMatchingSearches", fields: [requesterId], references: [id], onDelete: Cascade)
+  beneficiaryId String?
+  beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: SetNull)
+
+  educationLevelId String
+  subjectId        String?
+  subjectText      String?
+  needDescription  String          @db.Text
+  objective        ObjectiveType?
+  format           TeachingFormat?
+
+  candidateCount Int
+  /// [{ tutorProfileId, rank, finalScore, bestSim, bestSource }]
+  results        Json
+  embeddingModel String
+  durationMs     Int?
+  createdAt      DateTime @default(now())
+
+  bookings Booking[]
+
+  @@index([requesterId, createdAt])
+  @@map("matching_searches")
+}
+
+// ============================================================
 // NOTIFICATIONS & OUTBOX
 // ============================================================
 
@@ -941,4 +1166,46 @@ model Conflict {
   @@unique([bookingId, type])
   @@index([status, createdAt])
   @@map("conflicts")
+}
+
+enum CvImportStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+/// Import de CV pour pré-remplir le dossier tuteur : fichier original, texte extrait (PaddleOCR / PDF), JSON proposé
+/// par le LLM. Le JSON n'est jamais la vérité : le tuteur relit et confirme dans le formulaire.
+model CvImport {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status      CvImportStatus @default(PENDING)
+  fileName    String?
+  mimeType    String
+  sizeBytes   Int
+  storagePath String         @unique
+  /// Texte lu dans le CV (nettoyé). Reste côté serveur.
+  extractedText String?      @db.Text
+  /// Résultat normalisé et validé (schéma strict, champs null quand absents, confiance par champ).
+  result      Json?
+  /// Code stable de l'échec (UNREADABLE, OCR_UNAVAILABLE, LLM_UNAVAILABLE, INVALID_OUTPUT) : l'app propose la saisie manuelle.
+  errorCode   String?
+  ocrEngine   String?
+  model       String?
+  durationMs  Int?
+  /// Étape en cours (READING, ANALYZING, MATCHING) : affichée dans l'app pendant l'analyse.
+  stage       String?
+  /// SHA-256 du fichier : un même CV ré-importé réutilise le texte et les entrées déjà trouvées.
+  fileHash    String?
+  /// Numéros de ligne désignés par le modèle (cache) ; les règles de lecture sont rejouées à chaque import.
+  llmEntries  Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId, fileHash])
+  @@map("cv_imports")
 }

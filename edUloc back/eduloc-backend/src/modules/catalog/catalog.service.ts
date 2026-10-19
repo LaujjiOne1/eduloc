@@ -4,6 +4,7 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import { RateLimitService } from '../../common/rate-limit.service';
 import { CacheKeys, CacheService } from '../../infrastructure/cache/cache.service';
 import { canTeachLevel, normalizeSkillName, subjectCoversCategory } from './domain/degree-policy';
+import { trackKindOfLevel } from './domain/education-levels';
 
 const SUGGESTION_LIMIT = 8;
 
@@ -13,6 +14,7 @@ type SubjectRow = {
   category: string | null;
   description: string | null;
   levelCategories: string[];
+  trackCodes: string[];
   isVerified: boolean;
 };
 
@@ -22,6 +24,7 @@ const toDto = (s: SubjectRow) => ({
   category: s.category,
   description: s.description,
   levelCategories: s.levelCategories,
+  trackCodes: s.trackCodes,
   isVerified: s.isVerified,
 });
 
@@ -44,12 +47,34 @@ export class CatalogService {
     );
   }
 
+  /** Niveaux actifs, avec le type de filière à choisir ensuite (`trackKind` : SERIE, MENTION ou null). */
   levels() {
     return this.cache.wrap(
       CacheKeys.levels(),
       86_400,
-      () => this.prisma.educationLevel.findMany({ where: { isActive: true }, orderBy: { displayOrder: 'asc' } }),
+      async () =>
+        (await this.prisma.educationLevel.findMany({ where: { isActive: true }, orderBy: { displayOrder: 'asc' } })).map(
+          (level) => ({ ...level, trackKind: trackKindOfLevel(level.category, level.name) }),
+        ),
       { cacheEmpty: false },
+    );
+  }
+
+  /**
+   * Étape 2 de l'entonnoir : séries du lycée (SERIE) ou mentions universitaires (MENTION, avec leur Domaine mère).
+   * Sans `kind`, les deux.
+   */
+  tracks(kind?: 'SERIE' | 'MENTION', levelName?: string) {
+    return this.cache.wrap(
+      CacheKeys.tracks(),
+      86_400,
+      async () =>
+        (await this.prisma.academicTrack.findMany({ where: { isActive: true }, orderBy: [{ kind: 'asc' }, { displayOrder: 'asc' }] })).map(
+          (t) => ({ id: t.id, kind: t.kind, code: t.code, name: t.name, domain: t.domain, programme: t.programme, levelName: t.levelName }),
+        ),
+      { cacheEmpty: false },
+    ).then((tracks) =>
+      tracks.filter((t) => (!kind || t.kind === kind) && (!levelName || t.levelName === levelName)),
     );
   }
 
