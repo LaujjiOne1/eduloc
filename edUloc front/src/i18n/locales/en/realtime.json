@@ -1,0 +1,22 @@
+{
+  "realtimeEffects": {
+    "newRequest": "New request",
+    "aRequesterWantsToBook": "A requester wants to book a lesson with you.",
+    "yourAppointmentIsConfirmed": "Your appointment is confirmed.",
+    "requestDeclined": "Request declined",
+    "theTutorCouldNotAccept": "The tutor could not accept your request.",
+    "appointmentCancelled": "Appointment cancelled",
+    "anAppointmentHasBeenCancelled": "An appointment has been cancelled.",
+    "slotUnavailable": "Slot unavailable",
+    "theRequestedSlotIsNo": "The requested slot is no longer available. Choose another slot or another room.",
+    "yourLessonIsComingUp": "Your lesson is coming up",
+    "aLessonStartsSoon": "A lesson starts soon.",
+    "sessionStarted": "Session started",
+    "yourSessionHasJustStarted": "Your session has just started.",
+    "giveYourFeedbackOnThe": "Give your feedback on the session.",
+    "newVoiceMessage": "New voice message",
+    "youHaveReceivedAVoice": "You have received a voice message.",
+    "newDocument": "New document",
+    "aDocumentWasSharedIn": "A document was shared in your conversation."
+  }
+}

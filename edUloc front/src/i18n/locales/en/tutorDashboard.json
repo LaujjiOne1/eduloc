@@ -1,0 +1,185 @@
+{
+  "appointmentDetail": {
+    "with": "with {{firstName}}",
+    "thisRequestWasDeclined": "This request was declined."
+  },
+  "availabilityEdit": {
+    "setTheDatesTimeRanges": "Set the dates, time ranges and places where you can teach",
+    "n1Repetition": "1. Repetition",
+    "n2DaysAndTimes": "2. Days and times",
+    "n2DaysOfTheWeek": "2. Days of the week",
+    "n2Date": "2. Date",
+    "n3TimeRangeWheel": "3. Time range (wheel)",
+    "scheduledSlots": "Scheduled slots {{value}} ({{length}})",
+    "lessonLocation": "{{value}}. Lesson location",
+    "addTeachingLocationsInYour": "Add teaching locations in your settings to offer them here in addition to the \"Online\" location.",
+    "pleaseSelectAStartAnd": "Please select a start and an end time.",
+    "thisTimeSlotHasAlready": "This time slot has already been added.",
+    "editTheAvailability": "Edit the availability",
+    "addAvailabilities": "Add availabilities",
+    "thisSlotIsOfferedEvery": "This slot is offered every week, on the chosen days, until you delete it.",
+    "thisSlotIsOnlyOffered": "This slot is only offered on that day, once.",
+    "every": "Every {{toLowerCase}}",
+    "chooseTheDayOfThis": "Choose the day of this weekly slot.",
+    "youCanTickSeveralDays": "You can tick several days: the same slot is created for each one.",
+    "addThisTimeSlot": "Add this time slot",
+    "theEndTimeMustBe": "The end time must be after the start time.",
+    "every2": "every {{value}}",
+    "for": "for {{selectedDateLabel}}",
+    "deleteTheToSlot": "Delete the {{startTime}} to {{endTime}} slot",
+    "whereDoYouGiveThis": "Where do you give this lesson?",
+    "selectAPlace": "Select a place",
+    "availabilityEvery": "Availability every",
+    "availabilityFor": "Availability for",
+    "slotS": "{{length}} slot(s)",
+    "noPlaceChosen": "No place chosen",
+    "saveSlots": "Save ({{weeklySlotCount}} slots)",
+    "saveSlots2": "Save ({{length}} slots)",
+    "saveTheAvailability": "Save the availability",
+    "repeatsOnTheChosenDays": "Repeats on the chosen days",
+    "timeRange": "{{startTime}} to {{endTime}}"
+  },
+  "calendar": {
+    "myCalendar": "My calendar",
+    "viewAndManageYourAvailabilities": "View and manage your availabilities and your lesson appointments",
+    "upcomingScheduledDates": "Upcoming scheduled dates"
+  },
+  "completeSession": {
+    "with": "{{subjectLabel}} with {{firstName}}",
+    "backToTheDashboard": "Back to the dashboard"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Exchange voice messages and documents with your students",
+    "noConversations": "No conversations",
+    "youWillBeAbleTo": "You will be able to chat with your students as soon as a lesson request or an appointment is accepted."
+  },
+  "dashboard": {
+    "yourActivity": "Your activity",
+    "fileUnderReview": "FILE UNDER REVIEW",
+    "yourApplicationIsCurrentlyBeing": "Your application is currently being reviewed by the EduLoc team. Your profile stays hidden from public search until your file is validated.",
+    "myCalendarAvailabilities": "My calendar & availabilities",
+    "manage": "Manage",
+    "pendingRequests": "Pending requests",
+    "seeAll": "See all",
+    "switchModeTutor": "Switch mode: Tutor",
+    "viewAllReceivedRequests": "View all received requests",
+    "viewAllAppointments": "View all appointments",
+    "openTheFullCalendar": "Open the full calendar",
+    "seeAllRequests": "See all requests",
+    "viewSRequest": "View {{firstName}}'s request"
+  },
+  "manageOffer": {
+    "otherDurationsOffered": "Other durations offered",
+    "theRequesterWillChooseAmong": "The requester will choose among these durations. The price entered applies to the default duration; the price of the other durations is calculated pro rata.",
+    "title": "Title",
+    "pythonForBeginners": "Python for beginners",
+    "noSubjectRegistered": "No subject registered",
+    "chooseASubjectFirst": "Choose a subject first",
+    "degreeProgrammeOptional": "Degree programme (optional)",
+    "aConcreteIntroductionToPython": "A concrete introduction to Python…",
+    "offerDescription": "Offer description",
+    "priceAr": "Price (Ar)",
+    "deactivateTheOffer": "Deactivate the offer",
+    "reactivateTheOffer": "Reactivate the offer",
+    "updating": "Updating...",
+    "n1Hour30": "1 hour 30",
+    "n2Hours": "2 hours",
+    "n3Hours": "3 hours"
+  },
+  "myProfile": {
+    "validated": "Validated",
+    "teachingSpace": "Teaching space",
+    "switchToLearner": "Switch to Learner",
+    "teachingProfile": "Teaching profile",
+    "keySkills": "Key skills",
+    "subjectsLevels": "Subjects & Levels",
+    "offersPlaces": "Offers & Places",
+    "manageAndPublishMyLessons": "Manage and publish my lessons",
+    "chooseWhereITeach": "Choose where I teach",
+    "areaOfActivity": "Area of activity",
+    "placesWhereYouGiveYour": "Places where you give your lessons",
+    "noPlaceRegistered": "No place registered",
+    "editTheProfile": "Edit the profile",
+    "tutorModeSwitchMode": "Tutor mode — switch mode",
+    "switchToLearnerMode": "Switch to Learner mode",
+    "editTheBio": "Edit the bio",
+    "manageMyLessonOffers": "Manage my lesson offers",
+    "tutoringOffers": "Tutoring offers",
+    "manageMyPartnerRooms": "Manage my partner rooms",
+    "km": " ({{radiusKm}} km)",
+    "editMyPersonalInformation": "Edit my personal information",
+    "logOutOfTheAccount": "Log out of the account",
+    "activeOfferCount_one": "{{count}} active offer",
+    "activeOfferCount_other": "{{count}} active offers"
+  },
+  "offers": {
+    "myOffers": "My offers",
+    "youHaveNotCreatedAn": "You have not created an offer yet.",
+    "active": "Active",
+    "deactivated": "Deactivated"
+  },
+  "requestAccepted": {
+    "requestAccepted": "Request accepted",
+    "theAppointmentWithIsNow": "The appointment with {{firstName}} is now confirmed."
+  },
+  "requestConflict": {
+    "unableToAccept": "Unable to accept",
+    "thisSlotIsNoLonger": "This slot is no longer available.",
+    "theRequestRemainsPendingThe": "The request remains pending. The requester has been informed and invited to choose another slot or another room; you can also decline it.",
+    "errorCode": "ERROR CODE",
+    "theRoomIsNoLonger": "The room is no longer available for this slot (already booked, closed or withdrawn). Nothing has been confirmed: neither the session nor the room.",
+    "anotherRequestWasConfirmedIn": "Another request was confirmed in the meantime for this slot."
+  },
+  "requestDetail": {
+    "youCanOnlyAcceptOne": "You can only accept one: accepting this request will automatically decline {{value}}. Compare them before choosing.",
+    "view": "{{requesterName}} · View →",
+    "declining": "Declining...",
+    "accepting": "Accepting...",
+    "difficulty": "Difficulty",
+    "otherRequestsTargetTheSame": "{{length}} other requests target the same time",
+    "anotherRequestTargetsTheSame": "Another request targets the same time",
+    "theOthers": "the others",
+    "theOtherOne": "the other one",
+    "viewSRequest": "View {{beneficiaryFirstName}}'s request",
+    "notSpecifiedMasculine": "Not specified",
+    "notSpecifiedFeminine": "Not specified"
+  },
+  "requests": {
+    "requests": "Requests",
+    "sameTimeRequested": "Same time requested {{value}}",
+    "noConfirmedRequestsYet": "No confirmed requests yet.",
+    "by1OtherPerson": "by 1 other person",
+    "byOtherPeople": "by {{length}} other people",
+    "confirmed": "Confirmed"
+  },
+  "rooms": {
+    "indicateTheRoomsWhereYou": "Indicate the rooms where you agree to teach. This does not reserve any room: it is only taken when you accept a learner's request. Also remember to open \"Partner rooms\" availabilities in your calendar.",
+    "youHaveNotAcceptedAny": "You have not accepted any room yet.",
+    "noOtherPartnerRoomIs": "No other partner room is published at the moment.",
+    "roomsWhereITeach": "Rooms where I teach",
+    "withdrawMyAgreement": "Withdraw my agreement",
+    "availableRooms": "Available rooms",
+    "iAgreeToTeachHere": "I agree to teach here",
+    "currentlyNotBookable": "Currently not bookable (unpublished, suspended or plan expired). Sessions already confirmed are kept."
+  },
+  "sessionInProgressPresential": {
+    "inPersonLesson": "In-person lesson",
+    "since": "Since {{startTime}}",
+    "end": "End"
+  },
+  "sessionInProgress": {
+    "endTheSession": "End the session"
+  },
+  "startSession": {
+    "lesson": "{{subjectLabel}} lesson",
+    "thisSessionCanOnlyStart": "This session can only start from a confirmed appointment.",
+    "theBeneficiarySendsYouTheir": "The beneficiary sends you their session code in the conversation (\"Session code\" message), or reads it to you by call or voice message.",
+    "theBeneficiaryTellsYouTheir": "The beneficiary tells you their session code out loud.",
+    "starting": "Starting...",
+    "digitOfTheCode": "Digit {{value}} of the code"
+  },
+  "appointmentConversation": {
+    "forNameConfirmed": "For {{name}} • appointment confirmed",
+    "forNamePending": "For {{name}} • awaiting confirmation"
+  }
+}

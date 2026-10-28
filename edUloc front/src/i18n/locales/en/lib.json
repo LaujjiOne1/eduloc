@@ -1,0 +1,63 @@
+{
+  "attachments": {
+    "chooseAPdfOrAn": "Choose a PDF or an image (JPEG, PNG, WebP).",
+    "theDocumentMustBe20": "The document must be 20 MB at most."
+  },
+  "experienceWarnings": {
+    "missingPeriodSayWhenOr": "Missing period: say when, or for how long.",
+    "missingInstitutionCompanyOrOrganisation": "Missing institution, company or organisation.",
+    "audienceNotSpecifiedPrimaryMiddle": "Audience not specified: primary, middle school, high school or university?",
+    "subjectsTaughtNotSpecifiedThey": "Subjects taught not specified: they help students find you."
+  },
+  "offerLabels": {
+    "lessonsForTheLevel": "{{label}} lessons for the {{offerLevelLabel}} level."
+  },
+  "push": {
+    "incomingCalls": "Incoming calls"
+  },
+  "experienceTypes": {
+    "teachingTutoring": "Teaching / Tutoring",
+    "academicSupervision": "Academic supervision",
+    "professional": "Professional",
+    "academicProject": "Academic project",
+    "volunteering": "Volunteering",
+    "university": "University"
+  },
+  "partnerLabels": {
+    "trainingCentre": "Training centre",
+    "schoolEducationalInstitution": "School / educational institution",
+    "libraryMediaLibrary": "Library / media library",
+    "coworkingSpace": "Coworking space",
+    "companyRoomSuitedToLearning": "Company (room suited to learning)",
+    "association": "Association",
+    "communityCentre": "Community centre",
+    "proofOfTheRightTo": "Proof of the right to manage the venue",
+    "managerSIdDocument": "Manager's ID document",
+    "insurance": "Insurance",
+    "otherSupportingDocument": "Other supporting document",
+    "draft": "Draft",
+    "pendingVerification": "Pending verification",
+    "underVerification": "Under verification",
+    "correctionsRequested": "Corrections requested",
+    "suspended": "Suspended",
+    "rejected": "Rejected",
+    "disabled": "Disabled",
+    "notPublished": "Not published",
+    "published": "Published",
+    "unpublishedByEduloc": "Unpublished by EduLoc",
+    "awaitingActivation": "Awaiting activation",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "exactAddress": "Exact address",
+    "positionLatitudeAndLongitude": "Position (latitude and longitude)",
+    "capacity": "Capacity",
+    "hourlyRate": "Hourly rate"
+  },
+  "teachingMode": {
+    "atHome": "At home"
+  },
+  "call": {
+    "requiresDevBuild": "Calls require the compiled EduLoc app (development build), not Expo Go.",
+    "requiresNativeOrWeb": "Calls require the compiled native EduLoc app (dev build) or the web version."
+  }
+}

@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   app.use(json({ limit: '1mb' }));
   app.use(urlencoded({ extended: true, limit: '1mb' }));
   // En développement, toute origine locale (Expo web 8081/3000, LAN) est acceptée ; en production, la liste blanche seule.
-  const devOrigin = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/;
+  const devOrigin = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/;
   app.enableCors({
     origin: (origin, callback) =>
       callback(null, !origin || cfg.corsOrigins.includes(origin) || (cfg.nodeEnv !== 'production' && devOrigin.test(origin))),

@@ -1,0 +1,20 @@
+{
+  "recurringDayCard": {
+    "unavailable": "Indisponible",
+    "noTimeRangeSetFor": "Aucune plage définie pour ce jour. Cliquez sur « Ajouter » pour définir vos heures.",
+    "turnOnOrOff": "Activer ou désactiver {{dayLabel}}",
+    "addATimeRangeFor": "Ajouter une plage horaire pour {{dayLabel}}"
+  },
+  "slotModal": {
+    "addASlot": "Ajouter un créneau",
+    "teachingFormat": "Format d'enseignement",
+    "confirmTimeRange": "Valider la plage horaire",
+    "inPersonOnline": "Présentiel & En ligne",
+    "inPersonOnly": "Présentiel uniquement",
+    "onlineOnly": "En ligne uniquement"
+  },
+  "slotPill": {
+    "deleteThisSlot": "Supprimer ce créneau",
+    "videoCall": "Visio"
+  }
+}

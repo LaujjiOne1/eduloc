@@ -1,0 +1,48 @@
+{
+  "level": {
+    "whatIsTheStudyLevel": "Inona ny ambaratonga ara-pianarana?",
+    "chooseALevelThenSpecify": "Fidio ny ambaratonga, avy eo faritano",
+    "collapseBlock": "{{label}}, akatony",
+    "expandBlock": "{{label}}, sokafy"
+  },
+  "need": {
+    "noSubjectsAvailableForThis": "Tsy misy taranja ho an'ity ambaratonga ity amin'izao fotoana izao.",
+    "noSubjectMatches": "Tsy misy taranja mifanaraka amin'ny \"{{trim}}\".",
+    "chooseASubjectOrType": " — fidio ny taranja na soraty ny lesonao",
+    "searchOrTypeACourse": "Karohy na soraty lesona (ohatra Analyse 2)",
+    "searchForASubject": "Karohy taranja",
+    "searchFor": "Karohy \"{{typed}}\"",
+    "mySubjectIsNotIn": "Tsy ao amin'ny lisitra ny taranjako: izaho no hanoratra azy",
+    "searchForTheTypedSubject": "Karohy ny taranja nosoratana: {{typed}}",
+    "tryLoadingTheSubjectsAgain": "Andramo indray ny fandraisana ireo taranja"
+  },
+  "summary": {
+    "summaryOfYourSearch": "Famintinana ny fikarohanao",
+    "checkYourCriteriaBeforeDiscovering": "Hamarino ny fenitrao alohan'ny hijerena ireo mpampianatra misy. Ho faritanao rehefa mandrisika izay hampianarina, ny tanjona ary ny filanao.",
+    "yourSelectedCriteria": "Ny fenitra nofidinao",
+    "editAll": "Ovay daholo",
+    "editASpecificCriterion": "Ovay ny fenitra iray",
+    "startTheSearchOver": "Atombohy indray ny fikarohana",
+    "editACriterion": "Ovay ny fenitra",
+    "chooseTheItemToAdjust": "Fidio ny zavatra hovaina tsy ho very ny fenitra hafa",
+    "notSpecified": "Tsy voafaritra",
+    "notSpecified2": "Tsy voafaritra",
+    "studyLevel": "Ambaratonga ara-pianarana",
+    "degreeProgramme": "Sampana",
+    "subjectSearched": "Taranja karohina",
+    "openTheEditMenu": "Sokafy ny menio fanovana",
+    "startTheSearch": "Atombohy ny fikarohana",
+    "resetAllCriteria": "Averina amin'ny laoniny ny fenitra rehetra",
+    "closeTheWindow": "Akatony ny varavarankely"
+  },
+  "track": {
+    "noTracksAvailableAtThe": "Tsy misy sampana amin'izao fotoana izao.",
+    "noDegreeProgrammeMatches": "Tsy misy sampana mifanaraka amin'ny \"{{trim}}\".",
+    "whatIsYourTrack": "Inona ny sampanao?",
+    "whatIsYourDegreeProgramme": "Inona ny sampana ianarana?",
+    "searchForADegreeProgramme": "Karohy sampana",
+    "tryLoadingTheTracksAgain": "Andramo indray ny fandraisana ireo sampana",
+    "newProgramme": "Programa vaovao",
+    "oldProgramme": "Programa taloha"
+  }
+}

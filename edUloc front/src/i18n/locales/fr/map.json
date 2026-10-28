@@ -1,0 +1,18 @@
+{
+  "maplibreResultsMap": {
+    "tutorsMap": "Carte des tuteurs"
+  },
+  "webviewResultsMap": {
+    "unableToLoadTheMap": "Impossible de charger la carte. Vérifiez votre connexion.",
+    "tryLoadingTheMapAgain": "Réessayer de charger la carte"
+  },
+  "resultsMapHtml": {
+    "loadingTheMap": "Chargement de la carte…",
+    "toggle3d": "Basculer entre la vue 3D et la vue à plat",
+    "fitMap": "Recadrer la carte sur vous et les tuteurs",
+    "mapUnavailable": "Carte indisponible (connexion requise).",
+    "you": "Vous",
+    "yourPosition": "Votre position",
+    "unableToLoad": "Impossible de charger la carte. Vérifiez votre connexion."
+  }
+}

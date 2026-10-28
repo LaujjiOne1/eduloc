@@ -1,0 +1,185 @@
+{
+  "appointmentDetail": {
+    "with": "miaraka amin'i {{firstName}}",
+    "thisRequestWasDeclined": "Nolavina io fangatahana io."
+  },
+  "availabilityEdit": {
+    "setTheDatesTimeRanges": "Faritano ny daty, ora ary toerana ahafahanao mampianatra",
+    "n1Repetition": "1. Famerimberenana",
+    "n2DaysAndTimes": "2. Andro sy ora",
+    "n2DaysOfTheWeek": "2. Andron'ny herinandro",
+    "n2Date": "2. Daty",
+    "n3TimeRangeWheel": "3. Fe-potoana (kodia)",
+    "scheduledSlots": "Fotoana voalahatra {{value}} ({{length}})",
+    "lessonLocation": "{{value}}. Toeran'ny lesona",
+    "addTeachingLocationsInYour": "Ampio toerana fampianarana ao amin'ny paramétranao hatolotra eto, ankoatra ny toerana \"An-tserasera\".",
+    "pleaseSelectAStartAnd": "Fidio ora fanombohana sy ora famaranana azafady.",
+    "thisTimeSlotHasAlready": "Efa nampiana io fotoana io.",
+    "editTheAvailability": "Ovay ny fotoana malalaka",
+    "addAvailabilities": "Ampio fotoana malalaka",
+    "thisSlotIsOfferedEvery": "Atolotra isaky ny herinandro ity fotoana ity, amin'ny andro nofidina, mandra-pamafanao azy.",
+    "thisSlotIsOnlyOffered": "Atolotra amin'io andro io ihany indray mandeha ity fotoana ity.",
+    "every": "Isaky ny {{toLowerCase}}",
+    "chooseTheDayOfThis": "Fidio ny andron'ity fotoana isan-kerinandro ity.",
+    "youCanTickSeveralDays": "Azonao atao ny mifidy andro maromaro: noforonina ho an'ny tsirairay ny fotoana mitovy.",
+    "addThisTimeSlot": "Ampio ity fotoana ity",
+    "theEndTimeMustBe": "Tsy maintsy aorian'ny ora fanombohana ny ora famaranana.",
+    "every2": "isaky ny {{value}}",
+    "for": "ho an'ny {{selectedDateLabel}}",
+    "deleteTheToSlot": "Fafao ny fotoana {{startTime}} ka hatramin'ny {{endTime}}",
+    "whereDoYouGiveThis": "Aiza no ampianaranao io lesona io?",
+    "selectAPlace": "Fidio toerana",
+    "availabilityEvery": "Fotoana malalaka isaky ny",
+    "availabilityFor": "Fotoana malalaka ho an'ny",
+    "slotS": "fotoana {{length}}",
+    "noPlaceChosen": "Tsy nisafidy toerana",
+    "saveSlots": "Tehirizo (fotoana {{weeklySlotCount}})",
+    "saveSlots2": "Tehirizo (fotoana {{length}})",
+    "saveTheAvailability": "Tehirizo ny fotoana malalaka",
+    "repeatsOnTheChosenDays": "Miverimberina amin'ny andro nofidina",
+    "timeRange": "{{startTime}} ka hatramin'ny {{endTime}}"
+  },
+  "calendar": {
+    "myCalendar": "Ny kalandrierako",
+    "viewAndManageYourAvailabilities": "Jereo sy tantano ny fotoana malalaka sy ny fihaonana lesona",
+    "upcomingScheduledDates": "Daty voalahatra ho avy"
+  },
+  "completeSession": {
+    "with": "{{subjectLabel}} miaraka amin'i {{firstName}}",
+    "backToTheDashboard": "Hiverina amin'ny tabilao fanaraha-maso"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Mifampiraisa hafatra an-peo sy antontan-taratasy amin'ireo mpianatrao",
+    "noConversations": "Tsy misy resaka",
+    "youWillBeAbleTo": "Ho afaka hifampiresaka amin'ireo mpianatrao ianao raha vao ekena ny fangatahana lesona na fihaonana."
+  },
+  "dashboard": {
+    "yourActivity": "Ny asanao",
+    "fileUnderReview": "RAKITRA EO AM-PAMARINANA",
+    "yourApplicationIsCurrentlyBeing": "Eo am-pandinihana ny fangatahanao ny ekipan'ny EduLoc. Mijanona ho miafina amin'ny fikarohana ampahibemaso ny mombamombanao mandra-pahamarinina ny rakitrao.",
+    "myCalendarAvailabilities": "Ny kalandrierako sy ny fotoana malalaka",
+    "manage": "Tantano",
+    "pendingRequests": "Fangatahana miandry",
+    "seeAll": "Jereo daholo",
+    "switchModeTutor": "Hiova fomba: Mpampianatra",
+    "viewAllReceivedRequests": "Jereo ireo fangatahana rehetra voaray",
+    "viewAllAppointments": "Jereo ireo fihaonana rehetra",
+    "openTheFullCalendar": "Sokafy ny kalandrie feno",
+    "seeAllRequests": "Jereo ireo fangatahana rehetra",
+    "viewSRequest": "Jereo ny fangatahan'i {{firstName}}"
+  },
+  "manageOffer": {
+    "otherDurationsOffered": "Faharetana hafa atolotra",
+    "theRequesterWillChooseAmong": "Hifidy amin'ireo faharetana ireo ny mpangataka. Ny vidiny nampidirina dia mihatra amin'ny faharetana mahazatra; ny vidin'ny faharetana hafa dia kajina araka ny tahan'ny faharetana.",
+    "title": "Lohateny",
+    "pythonForBeginners": "Python ho an'ny vao manomboka",
+    "noSubjectRegistered": "Tsy misy taranja voasoratra",
+    "chooseASubjectFirst": "Fidio aloha ny taranja",
+    "degreeProgrammeOptional": "Sampana (tsy voatery)",
+    "aConcreteIntroductionToPython": "Fampidirana mazava amin'ny Python…",
+    "offerDescription": "Famaritana ny tolotra",
+    "priceAr": "Vidiny (Ar)",
+    "deactivateTheOffer": "Atsaharo ny tolotra",
+    "reactivateTheOffer": "Ampandehano indray ny tolotra",
+    "updating": "Eo am-panavaozana...",
+    "n1Hour30": "ora 1 sy sasany 30",
+    "n2Hours": "ora 2",
+    "n3Hours": "ora 3"
+  },
+  "myProfile": {
+    "validated": "Voamarina",
+    "teachingSpace": "Toerana fampianarana",
+    "switchToLearner": "Mivadika ho mpianatra",
+    "teachingProfile": "Mombamomba ny fampianarana",
+    "keySkills": "Fahaizana manan-danja",
+    "subjectsLevels": "Taranja sy ambaratonga",
+    "offersPlaces": "Tolotra sy toerana",
+    "manageAndPublishMyLessons": "Tantano sy avoaka ny lesoko",
+    "chooseWhereITeach": "Fidio izay toerana ampianarako",
+    "areaOfActivity": "Faritra iasana",
+    "placesWhereYouGiveYour": "Toerana ampianaranao",
+    "noPlaceRegistered": "Tsy misy toerana voasoratra",
+    "editTheProfile": "Ovay ny mombamomba",
+    "tutorModeSwitchMode": "Fomba mpampianatra — ovay ny fomba",
+    "switchToLearnerMode": "Mivadika amin'ny fomba mpianatra",
+    "editTheBio": "Ovay ny tantaram-piainana",
+    "manageMyLessonOffers": "Tantano ny tolotra lesoko",
+    "tutoringOffers": "Tolotra fampianarana",
+    "manageMyPartnerRooms": "Tantano ny efitrano mpiara-miasa",
+    "km": " ({{radiusKm}} km)",
+    "editMyPersonalInformation": "Ovay ny fampahalalana manokana",
+    "logOutOfTheAccount": "Hivoaka amin'ny kaonty",
+    "activeOfferCount_one": "tolotra mandeha {{count}}",
+    "activeOfferCount_other": "tolotra mandeha {{count}}"
+  },
+  "offers": {
+    "myOffers": "Ny tolotro",
+    "youHaveNotCreatedAn": "Mbola tsy nanao tolotra ianao.",
+    "active": "Mandeha",
+    "deactivated": "Tsy mandeha"
+  },
+  "requestAccepted": {
+    "requestAccepted": "Nekena ny fangatahana",
+    "theAppointmentWithIsNow": "Voamafy ankehitriny ny fihaonana miaraka amin'i {{firstName}}."
+  },
+  "requestConflict": {
+    "unableToAccept": "Tsy afaka manaiky",
+    "thisSlotIsNoLonger": "Tsy misy intsony io fotoana io.",
+    "theRequestRemainsPendingThe": "Mijanona miandry ny fangatahana. Nampandrenesina ny mpangataka sy nasaina nifidy fotoana hafa na efitrano hafa; azonao laviana koa izany.",
+    "errorCode": "KAODY FAHADISOANA",
+    "theRoomIsNoLonger": "Tsy misy intsony ny efitrano amin'io fotoana io (efa voatokana, voakatona na nesorina). Tsy nisy nohamafisina: na ny session na ny efitrano.",
+    "anotherRequestWasConfirmedIn": "Misy fangatahana hafa voamafy tamin'io fotoana io tato anelanelany."
+  },
+  "requestDetail": {
+    "youCanOnlyAcceptOne": "Iray ihany no azonao ekena: ny fanekena ity fangatahana ity dia handà ho azy ny {{value}}. Fampitahao aloha alohan'ny hifidianana.",
+    "view": "{{requesterName}} · Jereo →",
+    "declining": "Eo am-pandavana...",
+    "accepting": "Eo am-pandraisana...",
+    "difficulty": "Fahasarotana",
+    "otherRequestsTargetTheSame": "Fangatahana hafa {{length}} no mitondra ny ora mitovy",
+    "anotherRequestTargetsTheSame": "Fangatahana hafa iray no mitondra ny ora mitovy",
+    "theOthers": "ireo hafa",
+    "theOtherOne": "ilay hafa",
+    "viewSRequest": "Jereo ny fangatahan'i {{beneficiaryFirstName}}",
+    "notSpecifiedMasculine": "Tsy voafaritra",
+    "notSpecifiedFeminine": "Tsy voafaritra"
+  },
+  "requests": {
+    "requests": "Fangatahana",
+    "sameTimeRequested": "Nangatahina ny ora mitovy {{value}}",
+    "noConfirmedRequestsYet": "Mbola tsy misy fangatahana voamafy.",
+    "by1OtherPerson": "avy amin'olona iray hafa",
+    "byOtherPeople": "avy amin'olona hafa {{length}}",
+    "confirmed": "Voamafy"
+  },
+  "rooms": {
+    "indicateTheRoomsWhereYou": "Asehoy ny efitrano ekenao hampianarana. Tsy mandrisika efitrano izany: voaray ihany rehefa manaiky ny fangatahan'ny mpianatra ianao. Tadidio koa ny hanokatra fotoana \"Efitrano mpiara-miasa\" ao amin'ny kalandrierinao.",
+    "youHaveNotAcceptedAny": "Mbola tsy nanaiky efitrano ianao.",
+    "noOtherPartnerRoomIs": "Tsy misy efitrano mpiara-miasa hafa navoaka amin'izao fotoana izao.",
+    "roomsWhereITeach": "Efitrano ampianarako",
+    "withdrawMyAgreement": "Esory ny fanekeko",
+    "availableRooms": "Efitrano misy",
+    "iAgreeToTeachHere": "Manaiky hampianatra eto aho",
+    "currentlyNotBookable": "Tsy azo antsoina amin'izao fotoana izao (tsy navoaka, natsahatra na lany daty ny tolotra). Voatazona ny session efa voamafy."
+  },
+  "sessionInProgressPresential": {
+    "inPersonLesson": "Lesona an-toerana",
+    "since": "Hatramin'ny {{startTime}}",
+    "end": "Farany"
+  },
+  "sessionInProgress": {
+    "endTheSession": "Ampitaino ny session"
+  },
+  "startSession": {
+    "lesson": "Lesona {{subjectLabel}}",
+    "thisSessionCanOnlyStart": "Ny fihaonana voamafy ihany no ahafahana manomboka ity session ity.",
+    "theBeneficiarySendsYouTheir": "Alefan'ny mpandray soa any aminao ao amin'ny resaka ny kaody session (hafatra \"Kaody session\"), na vakiany aminao amin'ny antso na hafatra an-peo.",
+    "theBeneficiaryTellsYouTheir": "Lazain'ny mpandray soa aminao feo ny kaody session.",
+    "starting": "Manomboka...",
+    "digitOfTheCode": "Isa {{value}} amin'ny kaody"
+  },
+  "appointmentConversation": {
+    "forNameConfirmed": "Ho an'i {{name}} • voamafy ny fihaonana",
+    "forNamePending": "Ho an'i {{name}} • miandry fanamafisana"
+  }
+}

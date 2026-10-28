@@ -1,0 +1,39 @@
+{
+  "conversationView": {
+    "noMessagesYetSendA": "Aucun message pour le moment. Envoyez un vocal ou un document pour démarrer la conversation.",
+    "recordAVoiceNote": "Enregistrer un vocal",
+    "thisConversationIsReadOnly": "Cette conversation est en lecture seule : aucune séance n'est en cours ou à venir avec ce contact.",
+    "noTextMessagesVoiceNotes": "Pas de message texte — vocal et documents uniquement",
+    "recordAVoiceMessage": "Enregistrer un message vocal"
+  },
+  "conversationsListView": {
+    "conversations": "Conversations",
+    "readOnly": "Lecture seule",
+    "noMessages": "Aucun message",
+    "conversationWith": "Conversation avec {{name}}",
+    "conversationWithUnread_one": "Conversation avec {{name}}, {{count}} non lu",
+    "conversationWithUnread_other": "Conversation avec {{name}}, {{count}} non lus"
+  },
+  "documentExchangeView": {
+    "sharedDocuments": "Documents partagés",
+    "noSharedDocumentsYet": "Aucun document partagé pour le moment.",
+    "thisConversationIsReadOnly": "Cette conversation est en lecture seule.",
+    "pdfJpegPngOrWebp": "PDF, JPEG, PNG ou WebP — 20 Mo maximum"
+  },
+  "voiceMessagePlayer": {
+    "playbackFailedTapToTry": "Lecture impossible. Touchez pour réessayer.",
+    "new": "Nouveau",
+    "pauseTheVoiceMessage": "Mettre en pause le message vocal",
+    "playTheVoiceMessage": "Écouter le message vocal"
+  },
+  "voiceRecordingView": {
+    "maximumDurationMin": "Durée maximale : {{round}} min",
+    "tapSendToFinish": "Appuyez sur « Envoyer » pour terminer",
+    "messageTooShortHoldThe": "Message trop court : maintenez l'enregistrement un peu plus longtemps.",
+    "microphoneAccessDenied": "Accès au micro refusé",
+    "recordingUnavailable": "Enregistrement impossible",
+    "allowTheMicrophoneInYour": "Autorisez le micro dans les réglages de votre appareil (ou de votre navigateur) pour envoyer un message vocal.",
+    "preparingTheMicrophone": "Préparation du micro...",
+    "recordingInProgress": "Enregistrement en cours"
+  }
+}

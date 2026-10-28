@@ -1,0 +1,23 @@
+{
+  "offerDetail": {
+    "chooseASlot": "Choose a slot"
+  },
+  "results": {
+    "verified": "Verified",
+    "noTutorMatchesYourSearch": "No tutor matches your search at the moment.",
+    "retryWithMyPosition": "Retry with my position",
+    "list": "List",
+    "map": "Map",
+    "noTutorToShowOn": "No tutor to show on the map.",
+    "km": "{{label}}, {{distanceKm}} km",
+    "tryLoadingTheTutorsAgain": "Try loading the tutors again"
+  },
+  "tutorProfile": {
+    "verifiedTutor": "Verified tutor",
+    "subjects": "Subjects",
+    "levels": "Levels",
+    "formats": "Formats",
+    "offers": "Offers",
+    "viewTheOffer": "View the offer"
+  }
+}

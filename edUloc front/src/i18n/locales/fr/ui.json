@@ -1,0 +1,163 @@
+{
+  "birthDateField": {
+    "chooseADate": "Choisir une date",
+    "labelValue": "{{label}} : {{value}}",
+    "notSpecified": "non renseignée"
+  },
+  "birthDateSelectModal": {
+    "closeWithoutSaving": "Fermer sans enregistrer",
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année",
+    "youMustBeAtLeast": "Vous devez avoir au moins {{minAge}} ans."
+  },
+  "cancelBookingModal": {
+    "cancellationIsNotPossibleLess": "Annulation impossible à moins de {{MIN_NOTICE_HOURS}} h du début. Contactez le tuteur par message vocal.",
+    "theAppointmentIsInLess": "Le rendez-vous a lieu dans moins de {{FREE_NOTICE_HOURS}} h : indiquez le motif de l'annulation.",
+    "thisActionIsFinalYou": "Cette action est définitive. Vous pouvez préciser un motif (facultatif).",
+    "reasonForCancellationRequired": "Motif de l'annulation (obligatoire)",
+    "reasonForCancellation": "Motif de l'annulation"
+  },
+  "dayAgenda": {
+    "slot": "Créneau",
+    "noSlotsOnThisDay": "Aucun créneau ce jour",
+    "youHaveNoAvailabilityOr": "Vous n'avez ni disponibilité ni cours prévu pour cette date.",
+    "availableSlot": "Créneau disponible",
+    "edit": "Modifier →",
+    "nothingPlanned": "Rien de prévu",
+    "addASlotOn": "Ajouter un créneau le {{dateLabel}}",
+    "addASlotOnThis": "Ajouter un créneau ce jour",
+    "editTheAvailabilityFrom": "Modifier la disponibilité de {{startTime}}",
+    "everyWeek": "Chaque semaine",
+    "oneTimeOnly": "Une seule fois",
+    "available": "Disponible",
+    "slotOrLessonCount_one": "{{count}} créneau",
+    "slotOrLessonCount_other": "{{count}} créneaux / cours"
+  },
+  "fieldCombobox": {
+    "useAsAField": "Utiliser « {{text}} » comme domaine",
+    "chooseYourStudyLevelFirst": "Choisissez d'abord votre niveau d'études",
+    "tryLoadingTheListAgain": "Réessayer de charger la liste",
+    "choose": "Choisir {{suggestion}}",
+    "typeYourField": "Tapez votre domaine…"
+  },
+  "habitCalendar": {
+    "backToToday": "Revenir à aujourd'hui",
+    "collapseToWeek": "Réduire en semaine",
+    "showTheMonth": "Afficher le mois",
+    "collapseTheCalendar": "Réduire le calendrier",
+    "expandTheCalendar": "Étendre le calendrier",
+    "addASlot": "Ajouter un créneau"
+  },
+  "lessonAlarmCard": {
+    "lessonAlarm": "Alarme de cours",
+    "aReminderRingsBeforeEach": "Un rappel sonne avant chacun de vos cours confirmés.",
+    "remindMe": "Me prévenir",
+    "before": "{{leadLabel}} avant",
+    "unableToSaveThisSetting": "Impossible d'enregistrer ce paramètre. Réessayez.",
+    "turnOnTheLessonAlarm": "Activer l'alarme de cours",
+    "remindMeBeforeTheLesson": "Me prévenir {{leadLabel}} avant le cours"
+  },
+  "phoneInputField": {
+    "validNumber": "Numéro valide",
+    "chooseACountryDialingCode": "Choisir un indicatif pays",
+    "selectTheCountryOfYour": "Sélectionnez le pays de votre ligne téléphonique",
+    "example": "Exemple : {{placeholder}}",
+    "selectedCountryDialingCode": "Pays sélectionné : {{name}}, indicatif {{dialCode}}",
+    "clearTheNumber": "Effacer le numéro",
+    "internationalFormat": "Format international : {{dialCode}} {{nationalNumber}}",
+    "eGWithoutTheLeading": "Ex : {{placeholder}} (sans le 0 initial)",
+    "searchForACountryOr": "Rechercher un pays ou un indicatif...",
+    "dialingCode": "{{name}}, indicatif {{dialCode}}",
+    "madagascar": "Madagascar",
+    "france": "France",
+    "reunion": "La Réunion",
+    "comoros": "Comores",
+    "mauritius": "Maurice",
+    "mayotte": "Mayotte",
+    "canada": "Canada",
+    "belgium": "Belgique",
+    "switzerland": "Suisse",
+    "senegal": "Sénégal",
+    "coteDIvoire": "Côte d'Ivoire",
+    "morocco": "Maroc",
+    "algeria": "Algérie",
+    "tunisia": "Tunisie",
+    "germany": "Allemagne",
+    "spain": "Espagne",
+    "italy": "Italie",
+    "phone": "Téléphone",
+    "unitedStates": "États-Unis",
+    "unitedKingdom": "Royaume-Uni"
+  },
+  "placeSearchField": {
+    "noAddressFoundTryA": "Aucune adresse trouvée. Essayez un quartier ou une ville (ex. « Ankorondrano »).",
+    "searchIsUnavailableAtThe": "Recherche impossible pour le moment.",
+    "searchForAnAddressA": "Rechercher une adresse, un quartier...",
+    "searchForAnAddress": "Rechercher une adresse",
+    "choose": "Choisir {{label}}"
+  },
+  "resultsLoginGate": {
+    "signInToSeeThe": "Connectez-vous pour voir les résultats : profils, tarifs et créneaux.",
+    "tutorsAvailableNearYou_one": "tuteur disponible près de vous",
+    "tutorsAvailableNearYou_other": "tuteurs disponibles près de vous"
+  },
+  "skillCombobox": {
+    "searching": "Recherche…",
+    "suggestionsForYourLevel": "Suggestions pour votre niveau",
+    "mySkill": "Ma compétence",
+    "atLeastCharacters": "Au moins {{MIN_NAME_LENGTH}} caractères.",
+    "charactersMaximum": "{{MAX_NAME_LENGTH}} caractères maximum.",
+    "charactersNotAllowed": "Caractères non autorisés.",
+    "unableToAddThisSkill": "Impossible d'ajouter cette compétence.",
+    "typeASubjectOrA": "Tapez une matière ou une compétence…",
+    "searchForOrAddA": "Rechercher ou ajouter une compétence",
+    "tryTheSearchAgain": "Réessayer la recherche",
+    "thisSkillIsAlreadyIn": "Cette compétence est déjà dans votre liste.",
+    "addAsANewSkill": "Ajouter « {{name}} » comme nouvelle compétence",
+    "adding": "Ajout…"
+  },
+  "timeRangeWheelPicker": {
+    "start": "Début",
+    "end": "Fin",
+    "startHour": "Heure de début",
+    "startMinute": "Minute de début",
+    "endHour": "Heure de fin",
+    "endMinute": "Minute de fin"
+  },
+  "weekStrip": {
+    "thisWeek": " · cette semaine",
+    "backToThisWeek": "Revenir à cette semaine",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "weekOf": "Semaine du {{range}}"
+  },
+  "statusBadge": {
+    "confirmed": "CONFIRMÉ",
+    "cancelled": "ANNULÉ",
+    "inProgress": "EN COURS",
+    "completed": "TERMINÉ"
+  },
+  "tutorBottomNav": {
+    "messages": "Messages"
+  },
+  "notificationBell": {
+    "unreadCount_one": "Notifications, {{count}} non lue",
+    "unreadCount_other": "Notifications, {{count}} non lues"
+  },
+  "stepProgress": {
+    "stepOf": "Étape {{step}} sur {{total}}"
+  },
+  "codeInput": {
+    "verificationCode": "Code de vérification"
+  },
+  "selectField": {
+    "select": "Sélectionner"
+  },
+  "languageSelector": {
+    "language": "Langue",
+    "chooseTheAppLanguage": "Choisissez la langue de l'application",
+    "close": "Fermer",
+    "currentLanguage": "Langue : {{language}} — modifier"
+  }
+}

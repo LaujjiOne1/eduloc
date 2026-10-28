@@ -1,0 +1,46 @@
+{
+  "bookingDetail": {
+    "requestPendingMustAcceptIt": "Miandry ny fanekena. Tsy maintsy manaiky azy i {{value}} vao ekena ny fihaonana.",
+    "communication": "Fifandraisana",
+    "youCanCommunicateWithThe": "Afaka mifandray amin'ny mpampianatra amin'ny hafatra an-peo ianao. Azo atao ny miantso aorian'ny fanamafisana.",
+    "toBeGivenToThe": "Omena ny mpampianatra amin'ny fiandohan'ny session",
+    "cancelTheRequest": "Foano ny fangatahana",
+    "cancelTheAppointment": "Foano ny fihaonana",
+    "sendAVoiceNote": "Alefaso hafatra an-peo",
+    "viewTheSessionCode": "Jereo ny kaody session",
+    "thisRequestWasDeclinedBy": "Nolavin'ny mpampianatra io fangatahana io."
+  },
+  "conversation": {
+    "awaitingConfirmation": "Miandry fanamafisana"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Mifampiraisa hafatra an-peo sy antontan-taratasy amin'ireo mpampianatrao",
+    "noActiveConversations": "Tsy misy resaka mihetsika",
+    "bookATutorOrSend": "Mandrisika mpampianatra na mandefa fangatahana mba hifanakalozanao hafatra an-peo sy antontan-taratasy."
+  },
+  "dashboard": {
+    "whatWouldYouLikeTo": "Inona no tianao atao?",
+    "myActivities": "Ny asa ataoko",
+    "switchModeLearner": "Hiova fomba: Mpianatra",
+    "beneficiaries": "Mpandray soa"
+  },
+  "reviewTutor": {
+    "howDidTheSessionGo": "Nahoana ny session?",
+    "yourComment": "Ny hevitrao",
+    "youWillBeAbleTo": "Ho afaka manome hevitra momba ny mpampianatra ianao rehefa vita ny session.",
+    "shareYourExperience": "Zarao ny traikefanao…",
+    "starCount_one": "kintana {{count}}",
+    "starCount_other": "kintana {{count}}"
+  },
+  "sessionInProgress": {
+    "waitingForToEndThe": "Miandry an'i {{value}} hamarana ny session."
+  },
+  "sessionOtp": {
+    "giveThisCodeToWhen": "Omeo an'i {{value}} io kaody io rehefa manomboka ny session {{subjectLabel}}.",
+    "onlineLessonYouCanSend": "Lesona an-tserasera: azonao alefa any amin'ny mpampianatra ao amin'ny resaka io kaody io, na vakio amin'ny antso na hafatra an-peo.",
+    "codeSentToTheTutor": "Nalefa tany amin'ny mpampianatra ao amin'ny resaka ny kaody.",
+    "thisScreenUpdatesByItself": "Miova ho azy ity efijery ity raha vao manomboka ny session ny mpampianatra.",
+    "theSessionCodeIsOnly": "Ny kaody session dia azo ampiasaina amin'ny fihaonana voamafy ihany.",
+    "sendTheCodeToThe": "Alefaso any amin'ny mpampianatra ny kaody"
+  }
+}

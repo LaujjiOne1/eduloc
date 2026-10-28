@@ -11,6 +11,12 @@ import { CancelBookingDto, CreateBookingDto, ListBookingsQueryDto, RefuseBooking
 export class BookingsController {
   constructor(private readonly service: BookingsService) {}
 
+  /** Devis : prix détaillé + blocage du créneau (Tuteur et salle) le temps de finaliser. */
+  @Post('quote')
+  quote(@CurrentUser() user: AuthUser, @Body() dto: CreateBookingDto) {
+    return this.service.quote(user.userId, dto);
+  }
+
   @Post()
   @UseInterceptors(IdempotencyInterceptor)
   create(@CurrentUser() user: AuthUser, @Body() dto: CreateBookingDto) {
@@ -45,6 +51,12 @@ export class BookingsController {
   @Get(':id/otp')
   otp(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.service.getOtp(user.userId, id);
+  }
+
+  /** Cours en ligne : envoie le code au Tuteur dans la conversation (message système, pas de texte libre). */
+  @Post(':id/otp/share')
+  shareOtp(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.service.shareOtp(user.userId, id);
   }
 
   @Post(':id/start')

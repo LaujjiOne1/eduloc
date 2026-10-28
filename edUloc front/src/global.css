@@ -1,0 +1,134 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+/* EduLoc design tokens — shared across all screens (see assets/implemented screens/*.html) */
+@theme {
+  --color-ink: #14162b;
+  --color-ink-soft: #585b78;
+  --color-ink-faint: #9799af;
+
+  --color-paper: #faf9f4;
+  --color-surface: #ffffff;
+  --color-paper-alt: #f1eee5;
+
+  --color-line: #e7e3d7;
+  --color-line-soft: #f0ede3;
+
+  --color-primary: #332e86;
+  --color-primary-dark: #211c5e;
+  --color-primary-tint: #eceaf9;
+  --color-violet: #8d7fe3;
+  --color-violet-tint: #f3f0fc;
+
+  --color-accent: #0e9c82;
+  --color-accent-tint: #e1f5ef;
+
+  --color-warning: #bd7e28;
+  --color-warning-tint: #faf0de;
+
+  --color-error: #ac4a40;
+  --color-error-tint: #f6e9e6;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
+
+/* Glowing Aura Button Effect (EduLoc Theme) */
+@keyframes eduloc-button-glow-effect {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.eduloc-glowing-btn-orb {
+  animation: eduloc-button-glow-effect 3.5s linear infinite;
+  filter: blur(14px);
+  will-change: transform;
+}
+
+/* EduLoc MapLibre Custom Markers & Controls */
+.eduloc-map-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.eduloc-marker-wrapper {
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.eduloc-marker-pin {
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background-color: #ffffff;
+  border: 2.5px solid #332e86;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(20, 22, 43, 0.22);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.eduloc-marker-wrapper:hover .eduloc-marker-pin {
+  transform: rotate(-45deg) scale(1.1);
+  box-shadow: 0 6px 16px rgba(20, 22, 43, 0.3);
+}
+
+.eduloc-marker-pin.is-selected {
+  background-color: #332e86;
+  border-color: #332e86;
+  transform: rotate(-45deg) scale(1.15);
+  box-shadow: 0 8px 20px rgba(51, 46, 134, 0.45);
+}
+
+.eduloc-marker-icon {
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.maplibregl-ctrl-top-right {
+  top: 14px !important;
+  right: 14px !important;
+}
+
+.maplibregl-ctrl-group {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(20, 22, 43, 0.12) !important;
+  border: 1px solid #e7e3d7 !important;
+  overflow: hidden;
+  background-color: #ffffff !important;
+}
+
+.maplibregl-ctrl-group button {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #f0ede3 !important;
+}
+
+.maplibregl-ctrl-group button:last-child {
+  border-bottom: none !important;
+}
+
+.maplibregl-ctrl-group button:hover {
+  background-color: #f1eee5 !important;
+}

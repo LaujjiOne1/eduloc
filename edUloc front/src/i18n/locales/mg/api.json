@@ -1,0 +1,57 @@
+{
+  "errors": {
+    "unexpectedError": "Nisy fahadisoana tsy nampoizina.",
+    "someInformationIsInvalid": "Misy vaovao tsy mety.",
+    "yourSessionHasExpiredPlease": "Tapitra ny session-nao. Midira indray azafady.",
+    "thisEmailAddressIsAlready": "Efa misy mampiasa io adiresy mailaka io.",
+    "invalidCode": "Kaody tsy mety.",
+    "thisCodeHasExpiredRequest": "Efa lany daty io kaody io. Mangataha vaovao.",
+    "youDoNotHaveAccess": "Tsy manana alalana hanao izany ianao.",
+    "itemNotFound": "Tsy hita ilay zavatra.",
+    "thisActionIsNoLonger": "Tsy azo atao intsony izany amin'ity fihaonana ity.",
+    "incorrectCodeCheckTheCode": "Diso ny kaody. Hamarino ny kaody nomen'ny mpandray soa.",
+    "tooManyAttemptsStartingWith": "Be loatra ny fiezahana. Voasakana ny fanombohana amin'ny kaody.",
+    "theSessionCannotStartYet": "Mbola tsy afaka manomboka ny session.",
+    "youHaveAlreadyReviewedThis": "Efa nanome hevitra momba ity session ity ianao.",
+    "waitForTheTutorS": "Miandrasa ny valin'ny mpampianatra mialoha ny handefasana hafatra an-peo hafa.",
+    "tooManyAttemptsPleaseTry": "Be loatra ny fiezahana. Andramo indray afaka fotoana kely.",
+    "thisAccountIsDisabled": "Tsy miasa ity kaonty ity.",
+    "verifyYourEmailAddressBefore": "Hamarino ny adiresy mailakao alohan'ny hidirana.",
+    "theLocationServiceIsTemporarily": "Tsy mandeha vetivety ny serivisy fitadiavana toerana.",
+    "unableToConnectCheckYour": "Tsy afaka mifandray. Hamarino ny tambajotranao.",
+    "theServerIsTakingToo": "Maharitra loatra ny valin'ny serveur.",
+    "anErrorOccurredPleaseTry": "Nisy fahadisoana. Andramo indray any aoriana kely."
+  },
+  "datetime": {
+    "yesterday": "Omaly",
+    "justNow": "Zao monja"
+  },
+  "mappers": {
+    "toBeDefined": "Mbola hamaritana",
+    "allLevels": "Ambaratonga rehetra",
+    "noSlotsThisWeek": "Tsy misy fotoana amin'ity herinandro ity",
+    "tutorSFee": "Karamany ny mpampianatra",
+    "travelFee": "Sarany fiaingana",
+    "roomFee": "Sarany efitrano",
+    "edulocServiceFee": "Sarany serivisy EduLoc",
+    "placeToBeSpecified": "Toerana hamaritana",
+    "you": "Ianao",
+    "eduloc": "EduLoc",
+    "nextSlot": "Fotoana manaraka: {{day}} {{time}}"
+  },
+  "partnerMappers": {
+    "free": "Maimaim-poana",
+    "days": "{{durationDays}} andro",
+    "until": "hatramin'ny {{dateLabel}}",
+    "document": "Antontan-taratasy",
+    "years_one": "{{count}} taona",
+    "years_other": "{{count}} taona"
+  },
+  "upload": {
+    "theUploadExpiredPleaseTry": "Lany daty ny fandefasana. Andramo indray azafady.",
+    "theFileCouldNotBe": "Tsy tafiditra ny rakitra (kaody {{status}}). Andramo indray azafady.",
+    "theSelectedFileIsUnreadable": "Tsy voavaky ny rakitra nofidina. Fidio indray azafady.",
+    "theFileUploadFailedCheck": "Tsy nahomby ny fandefasana ny rakitra. Hamarino ny fifandraisanao ary andramo indray.",
+    "uploadFailedCheckConnection": "Tsy nahomby ny fandefasana ny rakitra. Hamarino ny fifandraisanao ary andramo indray."
+  }
+}

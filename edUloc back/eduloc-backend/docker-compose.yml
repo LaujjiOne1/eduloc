@@ -65,12 +65,16 @@ services:
     depends_on:
       - redis
 
+  # Appels audio / vidéo. LIVEKIT_NODE_IP = adresse que les CLIENTS (navigateur, téléphone) utilisent pour joindre le
+  # serveur média. Sans elle, LiveKit annonce l'IP interne de Docker (172.x), injoignable depuis l'extérieur du conteneur :
+  # l'appel sonne mais échoue avec « could not establish pc connection ». Mettre l'IP LAN du PC pour tester sur téléphone.
   livekit:
     image: livekit/livekit-server:latest
     container_name: eduloc-livekit
     command: |
       --dev
       --bind 0.0.0.0
+      --node-ip ${LIVEKIT_NODE_IP:-127.0.0.1}
       --keys "devkey: secretsecretsecretsecretsecretsecret"
     ports:
       - "7880:7880"

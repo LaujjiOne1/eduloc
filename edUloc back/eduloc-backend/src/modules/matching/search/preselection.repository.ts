@@ -13,6 +13,8 @@ export interface PreselectionParams {
   embeddingModel: string;
   /** Un demandeur qui est aussi tuteur ne se propose pas lui-même. */
   requesterId: string;
+  /** Mention (université) choisie : barrière dure, une offre liée à une AUTRE filière ne qualifie pas le tuteur. */
+  trackId?: string | null;
 }
 
 /**
@@ -48,6 +50,7 @@ export class PreselectionRepository {
         AND EXISTS (SELECT 1 FROM offers o
                     WHERE o."tutorProfileId" = tp.id AND o."isActive" AND o."disabledByAdminAt" IS NULL
                       AND (o."educationLevelId" = ANY(${p.levelIds}::text[]) OR o."educationLevelId" IS NULL)
+                      AND (${p.trackId ?? null}::text IS NULL OR o."trackId" IS NULL OR o."trackId" = ${p.trackId ?? null})
                       AND o.format = ANY(${p.formats}::"TeachingFormat"[]))
         AND EXISTS (SELECT 1 FROM tutor_search_chunks c
                     WHERE c."tutorProfileId" = tp.id AND c."embeddingModel" = ${p.embeddingModel}

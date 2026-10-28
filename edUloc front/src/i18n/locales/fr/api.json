@@ -1,0 +1,57 @@
+{
+  "errors": {
+    "unexpectedError": "Erreur inattendue.",
+    "someInformationIsInvalid": "Certaines informations sont invalides.",
+    "yourSessionHasExpiredPlease": "Votre session a expiré. Reconnectez-vous.",
+    "thisEmailAddressIsAlready": "Cette adresse e-mail est déjà utilisée.",
+    "invalidCode": "Code invalide.",
+    "thisCodeHasExpiredRequest": "Ce code a expiré. Demandez-en un nouveau.",
+    "youDoNotHaveAccess": "Vous n'avez pas accès à cette action.",
+    "itemNotFound": "Élément introuvable.",
+    "thisActionIsNoLonger": "Cette action n'est plus possible pour ce rendez-vous.",
+    "incorrectCodeCheckTheCode": "Code incorrect. Vérifiez le code communiqué par le bénéficiaire.",
+    "tooManyAttemptsStartingWith": "Trop de tentatives. Le démarrage par code est bloqué.",
+    "theSessionCannotStartYet": "La séance ne peut pas encore démarrer.",
+    "youHaveAlreadyReviewedThis": "Vous avez déjà évalué cette séance.",
+    "waitForTheTutorS": "Attendez la réponse du tuteur avant d'envoyer d'autres vocaux.",
+    "tooManyAttemptsPleaseTry": "Trop de tentatives. Réessayez dans quelques instants.",
+    "thisAccountIsDisabled": "Ce compte est désactivé.",
+    "verifyYourEmailAddressBefore": "Vérifiez votre adresse e-mail avant de vous connecter.",
+    "theLocationServiceIsTemporarily": "Le service de localisation est momentanément indisponible.",
+    "unableToConnectCheckYour": "Connexion impossible. Vérifiez votre réseau.",
+    "theServerIsTakingToo": "Le serveur met trop de temps à répondre.",
+    "anErrorOccurredPleaseTry": "Une erreur est survenue. Réessayez plus tard."
+  },
+  "datetime": {
+    "yesterday": "Hier",
+    "justNow": "À l'instant"
+  },
+  "mappers": {
+    "toBeDefined": "À définir",
+    "allLevels": "Tous niveaux",
+    "noSlotsThisWeek": "Aucun créneau cette semaine",
+    "tutorSFee": "Rémunération du tuteur",
+    "travelFee": "Frais de déplacement",
+    "roomFee": "Frais de salle",
+    "edulocServiceFee": "Frais de service EduLoc",
+    "placeToBeSpecified": "Lieu à préciser",
+    "you": "Vous",
+    "eduloc": "EduLoc",
+    "nextSlot": "Prochain créneau : {{day}} {{time}}"
+  },
+  "partnerMappers": {
+    "free": "Gratuit",
+    "days": "{{durationDays}} jours",
+    "until": "jusqu'au {{dateLabel}}",
+    "document": "Document",
+    "years_one": "{{count}} an",
+    "years_other": "{{count}} ans"
+  },
+  "upload": {
+    "theUploadExpiredPleaseTry": "L'envoi a expiré. Recommencez.",
+    "theFileCouldNotBe": "Le fichier n'a pas pu être envoyé (code {{status}}). Réessayez.",
+    "theSelectedFileIsUnreadable": "Le fichier sélectionné est illisible. Choisissez-le à nouveau.",
+    "theFileUploadFailedCheck": "L'envoi du fichier a échoué. Vérifiez votre connexion et réessayez.",
+    "uploadFailedCheckConnection": "L'envoi du fichier a échoué. Vérifiez votre connexion et réessayez."
+  }
+}

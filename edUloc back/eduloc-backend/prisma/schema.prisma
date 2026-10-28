@@ -123,6 +123,8 @@ enum PlaceType {
   BENEFICIARY_HOME
   PUBLIC_PLACE
   ONLINE
+  /// Lieu symbolique « salles partenaires » : restreint une plage de disponibilité à ce mode (comme ONLINE).
+  PARTNER_ROOM
 }
 
 enum BookingStatus {
@@ -146,6 +148,8 @@ enum TeachingMode {
   AT_HOME_BENEFICIARY
   AT_HOME_TUTOR
   PUBLIC_PLACE
+  /// Salle d'un lieu partenaire : exige Booking.roomId (contrainte SQL bookings_room_mode).
+  PARTNER_ROOM
 }
 
 enum ConversationStatus {
@@ -220,12 +224,75 @@ enum ConflictType {
   AVAILABILITY_REMOVED
   OFFER_INACTIVE
   TUTOR_SUSPENDED
+  /// Salle devenue indisponible (réservée, suspendue, dépubliée, fermée) entre la demande et l'acceptation.
+  ROOM_UNAVAILABLE
 }
 
 enum ConflictStatus {
   OPEN
   RESOLVED
   DISMISSED
+}
+
+// ============================================================
+// LIEUX PARTENAIRES (structures, salles, souscriptions)
+// ============================================================
+
+enum VenueType {
+  TRAINING_CENTER
+  COMPANY
+  SCHOOL
+  LIBRARY
+  COWORKING
+  ASSOCIATION
+  COMMUNITY_CENTER
+  OTHER
+}
+
+/// Dossier de structure. Le dossier de chaque salle a son propre statut (RoomStatus).
+enum VenueStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  SUSPENDED
+  /// Refusé par l'administrateur (motif obligatoire) : ni carte ni réservation ; une nouvelle soumission reste possible.
+  REJECTED
+  /// Désactivé par l'administrateur : retiré de la carte, séances déjà confirmées conservées.
+  DISABLED
+}
+
+enum RoomStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  REJECTED
+  SUSPENDED
+}
+
+enum RoomPublication {
+  UNPUBLISHED
+  PUBLISHED
+  UNPUBLISHED_BY_ADMIN
+}
+
+/// Absence de ligne = NOT_SELECTED (exposé tel quel par l'API).
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum VenueDocumentType {
+  OWNERSHIP_PROOF
+  BUSINESS_REGISTRATION
+  MANAGER_IDENTITY
+  INSURANCE
+  OTHER
 }
 
 // ============================================================
@@ -263,27 +330,34 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  beneficiaries            Beneficiary[]
-  bookings                 Booking[]          @relation("RequesterBookings")
-  tutorProfile             TutorProfile?
-  createdSubjects          Subject[]     @relation("SubjectCreator")
-  sentMessages             Message[]          @relation("SentMessages")
-  conversationsAsRequester Conversation[]     @relation("RequesterConversations")
-  reviews                  Review[]           @relation("RequesterReviews")
-  refreshTokens            RefreshToken[]
-  notifications            Notification[]
-  deviceTokens             DeviceToken[]
-  initiatedCalls           CallSession[]      @relation("InitiatedCalls")
-  reviewedApplications     TutorApplication[] @relation("ApplicationReviewer")
-  bookingEvents            BookingEvent[]
-  resolvedConflicts        Conflict[]         @relation("ConflictResolver")
-  matchingSearches         MatchingSearch[]   @relation("RequesterMatchingSearches")
-  validatedDegreeEquivalences DegreeEquivalence[] @relation("DegreeEquivalenceValidator")
-  validatedAcademicLevels  TutorProfile[]     @relation("AcademicLevelValidator")
+  beneficiaries               Beneficiary[]
+  bookings                    Booking[]            @relation("RequesterBookings")
+  tutorProfile                TutorProfile?
+  createdSubjects             Subject[]            @relation("SubjectCreator")
+  sentMessages                Message[]            @relation("SentMessages")
+  conversationsAsRequester    Conversation[]       @relation("RequesterConversations")
+  reviews                     Review[]             @relation("RequesterReviews")
+  refreshTokens               RefreshToken[]
+  notifications               Notification[]
+  deviceTokens                DeviceToken[]
+  initiatedCalls              CallSession[]        @relation("InitiatedCalls")
+  reviewedApplications        TutorApplication[]   @relation("ApplicationReviewer")
+  bookingEvents               BookingEvent[]
+  resolvedConflicts           Conflict[]           @relation("ConflictResolver")
+  matchingSearches            MatchingSearch[]     @relation("RequesterMatchingSearches")
+  validatedDegreeEquivalences DegreeEquivalence[]  @relation("DegreeEquivalenceValidator")
+  validatedAcademicLevels     TutorProfile[]       @relation("AcademicLevelValidator")
+  managedVenue                PartnerVenue?        @relation("VenueManager")
+  reviewedVenues              PartnerVenue[]       @relation("VenueReviewer")
+  reviewedRooms               Room[]               @relation("RoomReviewer")
+  bookingHolds                BookingHold[]        @relation("RequesterHolds")
+  roomReviews                 RoomReview[]         @relation("RoomReviewAuthor")
+  roomReviewsHidden           RoomReview[]         @relation("RoomReviewHider")
+  partnerStatusEvents         PartnerStatusEvent[]
+  cvImports                   CvImport[]
 
   @@index([status])
   @@map("users")
-  cvImports CvImport[]
 }
 
 // ============================================================
@@ -346,6 +420,18 @@ model Beneficiary {
   studyProgram String?
   institution  String?
 
+  // --- Préférences de recherche (jamais d'adresse exacte à l'inscription : seulement une zone) ---
+  /// Quartier ou adresse approximative de référence (« Antananarivo – Anosy »).
+  areaLabel           String?
+  /// Rayon de recherche souhaité, en mètres (classement par proximité, jamais éligibilité).
+  searchRadiusM       Int?
+  /// Lieu préféré pour les séances (domicile, chez le tuteur, en ligne, salle partenaire…).
+  preferredPlace      TeachingMode?
+  /// Budget maximum par séance : les offres plus chères ne sont pas proposées.
+  maxBudget           Decimal?      @db.Decimal(12, 2)
+  /// Créneaux de disponibilité : [{ dayOfWeek, startTime, endTime }] (HH:mm).
+  availabilityWindows Json?
+
   archivedAt DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -363,24 +449,24 @@ model Beneficiary {
 // ============================================================
 
 model EducationLevel {
-  id           String   @id @default(uuid())
-  name         String
-  category     String   @default("")
-  displayOrder Int      @default(0)
-  isActive     Boolean  @default(true)
+  id             String   @id @default(uuid())
+  name           String
+  category       String   @default("")
+  displayOrder   Int      @default(0)
+  isActive       Boolean  @default(true)
   /// Diplôme minimal pour enseigner ce niveau : BAC | LICENCE | MASTER | DOCTORAT.
-  requiredDegree String @default("BAC")
+  requiredDegree String   @default("BAC")
   /// Rang sur l'échelle académique ordonnée (1 = Primaire … 9 = Doctorat, cf. academic-scale.ts). Sert à l'éligibilité
   /// du matching ; distinct de displayOrder (affichage, réordonnable). Null = hors échelle (ex. « Formation pro »).
-  academicRank Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  academicRank   Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  beneficiaries Beneficiary[]
-  tutorSubjects TutorSubject[]
-  offers        Offer[]
+  beneficiaries   Beneficiary[]
+  tutorSubjects   TutorSubject[]
+  offers          Offer[]
   /// Tuteurs dont le niveau académique validé est ce niveau.
-  validatedTutors TutorProfile[] @relation("TutorAcademicLevel")
+  validatedTutors TutorProfile[]      @relation("TutorAcademicLevel")
   equivalences    DegreeEquivalence[]
 
   @@unique([name, category])
@@ -420,24 +506,24 @@ model AcademicTrack {
 }
 
 model Subject {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?  @db.Text
-  category    String?
-  isActive    Boolean  @default(true)
+  id              String   @id @default(uuid())
+  name            String   @unique
+  description     String?  @db.Text
+  category        String?
+  isActive        Boolean  @default(true)
   /// Catégories de niveaux où la matière s'enseigne (« Lycée », « Université »…). Vide = tous les niveaux.
   levelCategories String[] @default([])
   /// Synonymes et intitulés alternatifs (ex. « Algèbre 1 », « Algèbre linéaire L1 »). Inclus dans le chunk SUBJECT.
-  aliases     String[] @default([])
+  aliases         String[] @default([])
   /// Codes des séries du lycée (AcademicTrack.code) pour lesquelles la matière est proposée en Première/Terminale.
   /// Vide = toutes les séries. Sans effet hors du lycée.
-  trackCodes  String[] @default([])
+  trackCodes      String[] @default([])
   /// false = compétence ajoutée librement par un tuteur : visible de lui seul jusqu'à l'approbation de son dossier.
-  isVerified  Boolean  @default(true)
-  createdById String?
-  createdBy   User?    @relation("SubjectCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isVerified      Boolean  @default(true)
+  createdById     String?
+  createdBy       User?    @relation("SubjectCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   tutorSubjects TutorSubject[]
   offers        Offer[]
@@ -457,11 +543,11 @@ model TutorProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   displayName         String?
-  bio                 String?   @db.Text
+  bio                 String?            @db.Text
   birthDate           DateTime?
   profilePhoto        String?
-  experience          String?   @db.Text
-  educationBackground String?   @db.Text
+  experience          String?            @db.Text
+  educationBackground String?            @db.Text
   /// Plus haut diplôme déclaré : BAC | LICENCE | MASTER | DOCTORAT | OTHER (détermine les niveaux enseignables).
   highestDegree       String?
   /// Si highestDegree = OTHER : équivalence appliquée par l'admin. À l'application, highestDegree reçoit
@@ -505,18 +591,24 @@ model TutorProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  searchChunks   TutorSearchChunk[]
-  applications   TutorApplication[]
-  experiences    TutorExperience[]
-  introVideo     TutorIntroVideo?
-  subjects       TutorSubject[]
-  offers         Offer[]
-  places         Place[]
-  availabilities Availability[]
-  blockedPeriods BlockedPeriod[]
-  bookings       Booking[]          @relation("TutorBookings")
-  conversations  Conversation[]     @relation("TutorConversations")
-  reviews        Review[]
+  searchChunks       TutorSearchChunk[]
+  applications       TutorApplication[]
+  experiences        TutorExperience[]
+  introVideo         TutorIntroVideo?
+  subjects           TutorSubject[]
+  offers             Offer[]
+  places             Place[]
+  availabilities     Availability[]
+  blockedPeriods     BlockedPeriod[]
+  acceptedRooms      TutorRoom[]
+  bookings           Booking[]          @relation("TutorBookings")
+  bookingHolds       BookingHold[]
+  /// Rayon (mètres) autour de sa position de référence dans lequel il accepte une salle partenaire ; null = illimité.
+  partnerRoomRadiusM Int?
+  /// Taux de commission propre au Tuteur : prévu au modèle, NON lu au MVP (taux global COMMISSION_RATE).
+  commissionRate     Decimal?           @db.Decimal(5, 4)
+  conversations      Conversation[]     @relation("TutorConversations")
+  reviews            Review[]
 
   @@index([isVisible])
   @@index([academicLevelId])
@@ -551,17 +643,17 @@ model TutorExperience {
   tutorProfileId String
   tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
 
-  type         TutorExperienceType
-  title        String
-  organization String
-  period       String
-  description  String?            @db.Text
+  type           TutorExperienceType
+  title          String
+  organization   String
+  period         String
+  description    String?             @db.Text
   /// Public encadré : catégories de niveaux (« Primaire », « Collège », « Lycée », « Université »).
-  audience     String[]           @default([])
+  audience       String[]            @default([])
   /// Matières ou compétences enseignées, en texte libre.
   subjectsTaught String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   @@index([tutorProfileId, type])
   @@map("tutor_experiences")
@@ -650,6 +742,8 @@ model Offer {
   description     String         @db.Text
   format          TeachingFormat @default(BOTH)
   durationMinutes Int            @default(60)
+  /// Durées supplémentaires proposées (minutes), en plus de durationMinutes. Le prix est proportionnel à la durée.
+  durationOptions Int[]          @default([])
   price           Decimal        @db.Decimal(12, 2)
   currency        String         @default("MGA")
 
@@ -682,7 +776,7 @@ model Place {
   /// Rayon de déplacement en mètres (type BENEFICIARY_HOME)
   radius    Int?
   type      PlaceType
-  isPrimary Boolean @default(false)
+  isPrimary Boolean   @default(false)
 
   /// Colonne générée PostGIS (cf. 001_constraints.sql). Lecture via $queryRaw uniquement.
   location Unsupported("geography(Point, 4326)")?
@@ -748,6 +842,255 @@ model BlockedPeriod {
 }
 
 // ============================================================
+// LIEUX PARTENAIRES
+// ============================================================
+
+/// Structure partenaire. Son Gestionnaire (managerId) n'a pas de rôle global : posséder une structure suffit.
+model PartnerVenue {
+  id        String @id @default(uuid())
+  managerId String @unique
+  manager   User   @relation("VenueManager", fields: [managerId], references: [id], onDelete: Cascade)
+
+  name               String
+  type               VenueType @default(OTHER)
+  description        String?   @db.Text
+  legalName          String?
+  registrationNumber String?
+  /// NIF et STAT : facultatifs à l'inscription, obligatoires pour être « Vérifié ». Jamais dans une API publique.
+  nif                String?
+  stat               String?
+  contactPhone       String?
+  contactEmail       String?
+
+  status       VenueStatus @default(DRAFT)
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewedById String?
+  reviewedBy   User?       @relation("VenueReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  /// Dernière décision de l'administrateur (corrections demandées, motif de suspension…).
+  reviewNote   String?     @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents     VenueDocument[]
+  rooms         Room[]
+  subscriptions VenueSubscription[]
+  statusEvents  PartnerStatusEvent[]
+
+  @@index([status])
+  @@map("partner_venues")
+}
+
+model VenueDocument {
+  id      String            @id @default(uuid())
+  venueId String
+  venue   PartnerVenue      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  type    VenueDocumentType
+
+  storagePath String   @unique
+  mimeType    String
+  sizeBytes   Int
+  fileName    String?
+  uploadedAt  DateTime @default(now())
+
+  @@index([venueId])
+  @@map("venue_documents")
+}
+
+model Room {
+  id      String       @id @default(uuid())
+  venueId String
+  venue   PartnerVenue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String? @db.Text
+
+  // --- Position EXACTE : jamais dans une API publique ni avant la confirmation de la séance ---
+  addressLine        String?
+  city               String?
+  latitude           Float?
+  longitude          Float?
+  accessInstructions String?                                @db.Text
+  /// Colonne générée PostGIS (cf. migration). Lecture via $queryRaw uniquement.
+  location           Unsupported("geography(Point, 4326)")?
+
+  // --- Affichage public ---
+  /// Zone approximative (quartier, ville) : seul repère géographique de la fiche publique.
+  zoneLabel          String?
+  capacity           Int      @default(1)
+  equipment          String[] @default([])
+  accessibility      String[] @default([])
+  /// Règles particulières d'accueil des mineurs à confirmer (spec §13.8) : refus par défaut.
+  welcomesMinors     Boolean  @default(false)
+  pricePerHour       Decimal? @db.Decimal(12, 2)
+  currency           String   @default("MGA")
+  rules              String?  @db.Text
+  cancellationPolicy String?  @db.Text
+  timezone           String   @default("Indian/Antananarivo")
+
+  status       RoomStatus      @default(DRAFT)
+  publication  RoomPublication @default(UNPUBLISHED)
+  publishedAt  DateTime?
+  /// Fermeture temporaire décidée par le Gestionnaire (la salle reste validée).
+  isActive     Boolean         @default(true)
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewedById String?
+  reviewedBy   User?           @relation("RoomReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNote   String?         @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos         RoomPhoto[]
+  availabilities RoomAvailability[]
+  blockedPeriods RoomBlockedPeriod[]
+  tutorRooms     TutorRoom[]
+  bookingHolds   BookingHold[]
+  /// Moyenne des notes « expérience globale » des avis visibles, et leur nombre (recalculés à chaque avis / masquage).
+  rating         Float                @default(0)
+  reviewsCount   Int                  @default(0)
+  roomReviews    RoomReview[]
+  /// Taux de commission propre à la salle : prévu au modèle, NON lu au MVP.
+  commissionRate Decimal?             @db.Decimal(5, 4)
+  bookings       Booking[]
+  statusEvents   PartnerStatusEvent[]
+
+  @@index([venueId])
+  @@index([status, publication, isActive])
+  @@map("rooms")
+}
+
+model RoomPhoto {
+  id     String @id @default(uuid())
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  storagePath String   @unique
+  mimeType    String
+  sizeBytes   Int
+  position    Int      @default(0)
+  uploadedAt  DateTime @default(now())
+
+  @@index([roomId, position])
+  @@map("room_photos")
+}
+
+/// Plage d'ouverture récurrente d'une salle (même forme qu'Availability, fuseau de la salle).
+model RoomAvailability {
+  id     String @id @default(uuid())
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  /// 0 = dimanche ... 6 = samedi
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  validFrom  DateTime?
+  validUntil DateTime?
+  isActive   Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomId, isActive, dayOfWeek])
+  @@map("room_availabilities")
+}
+
+model RoomBlockedPeriod {
+  id      String   @id @default(uuid())
+  roomId  String
+  room    Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startAt DateTime
+  endAt   DateTime
+  reason  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([roomId, startAt, endAt])
+  @@map("room_blocked_periods")
+}
+
+/// Le Tuteur accepte d'intervenir dans cette salle. Ne réserve JAMAIS la salle (spec §3.1).
+model TutorRoom {
+  id             String       @id @default(uuid())
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  roomId         String
+  room           Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  isActive       Boolean      @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tutorProfileId, roomId])
+  @@index([roomId])
+  @@map("tutor_rooms")
+}
+
+/// Catalogue des offres commerciales : prix et durées sont des données, pas du code (spec §8.4, points à confirmer).
+model PartnerPlan {
+  id           String  @id @default(uuid())
+  code         String  @unique
+  name         String
+  description  String? @db.Text
+  priceAmount  Decimal @db.Decimal(12, 2)
+  currency     String  @default("MGA")
+  durationDays Int
+  isActive     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions VenueSubscription[]
+
+  @@map("partner_plans")
+}
+
+/// Souscription rattachée à la STRUCTURE (couvre ses salles). Au plus une PENDING/ACTIVE par structure.
+model VenueSubscription {
+  id      String       @id @default(uuid())
+  venueId String
+  venue   PartnerVenue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  planId  String
+  plan    PartnerPlan  @relation(fields: [planId], references: [id])
+
+  status      SubscriptionStatus @default(PENDING)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId, status])
+  @@map("venue_subscriptions")
+}
+
+/// Historique des changements de statut d'une structure, d'une salle, d'une publication ou d'une souscription.
+model PartnerStatusEvent {
+  id      String       @id @default(uuid())
+  venueId String
+  venue   PartnerVenue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  roomId  String?
+  room    Room?        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  /// VENUE | ROOM | PUBLICATION | SUBSCRIPTION
+  scope       String
+  fromStatus  String?
+  toStatus    String
+  actorUserId String?
+  actor       User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  note        String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([venueId, createdAt])
+  @@index([roomId, createdAt])
+  @@map("partner_status_events")
+}
+
+// ============================================================
 // BOOKING
 // ============================================================
 
@@ -772,6 +1115,11 @@ model Booking {
   placeId String?
   place   Place?  @relation(fields: [placeId], references: [id], onDelete: SetNull)
 
+  /// Salle partenaire (teachingMode = PARTNER_ROOM). La salle n'est réservée qu'à la confirmation (CONFIRMED / IN_PROGRESS) :
+  /// l'exclusion SQL bookings_room_no_overlap la rend inchevauchable, dans la même ligne que la séance.
+  roomId String?
+  room   Room?   @relation(fields: [roomId], references: [id], onDelete: Restrict)
+
   startAt DateTime
   endAt   DateTime
   status  BookingStatus @default(PENDING)
@@ -787,6 +1135,26 @@ model Booking {
   latitude        Float?
   longitude       Float?
   requesterNote   String? @db.Text
+
+  // --- Salle partenaire ---
+  /// Besoins de la séance, revérifiés à l'acceptation.
+  participantsCount Int      @default(1)
+  requiredEquipment String[] @default([])
+  /// Tarif de la salle pour la durée = part du partenaire (le paiement en ligne est hors périmètre).
+  roomFee           Decimal? @db.Decimal(12, 2)
+
+  // --- Décomposition du prix (figée à la réservation ; `price` reste le tarif du Tuteur) ---
+  /// Forfait de déplacement (grille commune), dû au Tuteur pour un cours chez le Bénéficiaire.
+  travelFee              Decimal @default(0) @db.Decimal(12, 2)
+  /// Distance à vol d'oiseau tuteur ↔ adresse approximative, arrondie au mètre (null hors cours à domicile).
+  travelDistanceM        Int?
+  /// Frais de service EduLoc = commission sur le tarif du Tuteur, payée EN PLUS par le Demandeur.
+  serviceFee             Decimal @default(0) @db.Decimal(12, 2)
+  serviceFeeRate         Decimal @default(0) @db.Decimal(5, 4)
+  /// Montant unique payé par le Demandeur : price + travelFee + roomFee + serviceFee.
+  totalAmount            Decimal @default(0) @db.Decimal(12, 2)
+  /// Copié à la confirmation seulement : jamais renvoyé avant (locationAddress, latitude et longitude non plus).
+  roomAccessInstructions String? @db.Text
 
   // --- Séance ---
   startOtpCipher String? // AES-256-GCM
@@ -816,6 +1184,8 @@ model Booking {
   review        Review?
   events        BookingEvent[]
   conflicts     Conflict[]
+  hold          BookingHold?
+  roomReviews   RoomReview[]
 
   @@index([requesterId, startAt])
   @@index([beneficiaryId])
@@ -825,7 +1195,50 @@ model Booking {
   @@index([availabilityId])
   @@index([status, startAt])
   @@index([matchingSearchId])
+  @@index([roomId, status, startAt])
   @@map("bookings")
+}
+
+/// Blocage temporaire (15 min) du créneau du Tuteur et de la salle pendant que le Demandeur finalise sa réservation.
+/// Géré côté serveur : un blocage ACTIVE et non expiré compte comme occupé pour les AUTRES demandeurs.
+model BookingHold {
+  id String @id @default(uuid())
+
+  requesterId String
+  requester   User   @relation("RequesterHolds", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  beneficiaryId  String
+  offerId        String
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  roomId         String?
+  room           Room?        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  teachingMode    TeachingMode
+  startAt         DateTime
+  endAt           DateTime
+  durationMinutes Int
+  /// Total annoncé au Demandeur : à la finalisation, un total différent annule le blocage (PRICE_CHANGED).
+  totalAmount     Decimal      @db.Decimal(12, 2)
+
+  status    HoldStatus @default(ACTIVE)
+  expiresAt DateTime
+  bookingId String?    @unique
+  booking   Booking?   @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([tutorProfileId, status, expiresAt])
+  @@index([roomId, status, expiresAt])
+  @@index([requesterId, status])
+  @@map("booking_holds")
+}
+
+enum HoldStatus {
+  ACTIVE
+  CONSUMED
+  RELEASED
+  EXPIRED
 }
 
 /// Journal d'audit des transitions (machine d'états).
@@ -1005,6 +1418,45 @@ model Review {
   @@map("reviews")
 }
 
+/// Avis sur une salle partenaire : lié à une séance TERMINÉE tenue dans cette salle, écrit par une personne qui y a assisté
+/// (le Demandeur ou le Tuteur de la séance). Un seul avis par séance et par auteur.
+model RoomReview {
+  id String @id @default(uuid())
+
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  roomId    String
+  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User    @relation("RoomReviewAuthor", fields: [authorId], references: [id])
+
+  // Critères, de 1 à 5.
+  cleanliness   Int
+  safety        Int
+  accessibility Int
+  equipment     Int
+  /// Respect des horaires (ouverture, accueil, disponibilité de la salle à l'heure).
+  punctuality   Int
+  overall       Int
+  comment       String? @db.Text
+
+  /// Réponse du partenaire : une seule, non modifiable.
+  partnerReply String?   @db.Text
+  repliedAt    DateTime?
+
+  /// Masqué par l'administrateur (avis frauduleux, offensant ou contenant des informations privées) : motif obligatoire.
+  hiddenAt     DateTime?
+  hiddenReason String?   @db.Text
+  hiddenById   String?
+  hiddenBy     User?     @relation("RoomReviewHider", fields: [hiddenById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([bookingId, authorId])
+  @@index([roomId, createdAt])
+  @@map("room_reviews")
+}
+
 // ============================================================
 // RECHERCHE SÉMANTIQUE (eduloc-recherche-semantique.md, §3.2)
 // ============================================================
@@ -1048,7 +1500,7 @@ model TutorSearchChunk {
   sourceType SearchChunkSource
   /// Id de la source : tutorProfileId (PROFILE), subjectId (SUBJECT), TutorExperience.id, Offer.id, TutorDocument.id
   sourceId   String
-  chunkIndex Int    @default(0)
+  chunkIndex Int               @default(0)
 
   /// Libellé affichable pour expliquer un match. Jamais d'extrait de document.
   label       String
@@ -1182,28 +1634,28 @@ model CvImport {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  status      CvImportStatus @default(PENDING)
-  fileName    String?
-  mimeType    String
-  sizeBytes   Int
-  storagePath String         @unique
+  status        CvImportStatus @default(PENDING)
+  fileName      String?
+  mimeType      String
+  sizeBytes     Int
+  storagePath   String         @unique
   /// Texte lu dans le CV (nettoyé). Reste côté serveur.
-  extractedText String?      @db.Text
+  extractedText String?        @db.Text
   /// Résultat normalisé et validé (schéma strict, champs null quand absents, confiance par champ).
-  result      Json?
+  result        Json?
   /// Code stable de l'échec (UNREADABLE, OCR_UNAVAILABLE, LLM_UNAVAILABLE, INVALID_OUTPUT) : l'app propose la saisie manuelle.
-  errorCode   String?
-  ocrEngine   String?
-  model       String?
-  durationMs  Int?
+  errorCode     String?
+  ocrEngine     String?
+  model         String?
+  durationMs    Int?
   /// Étape en cours (READING, ANALYZING, MATCHING) : affichée dans l'app pendant l'analyse.
-  stage       String?
+  stage         String?
   /// SHA-256 du fichier : un même CV ré-importé réutilise le texte et les entrées déjà trouvées.
-  fileHash    String?
+  fileHash      String?
   /// Numéros de ligne désignés par le modèle (cache) ; les règles de lecture sont rejouées à chaque import.
-  llmEntries  Json?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  llmEntries    Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([userId, createdAt])
   @@index([userId, fileHash])

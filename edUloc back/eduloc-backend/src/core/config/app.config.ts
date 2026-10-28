@@ -20,6 +20,9 @@ const envSchema = z.object({
   SUPABASE_VOICE_BUCKET: z.string().default('voice-messages'),
   SUPABASE_DOCUMENTS_BUCKET: z.string().default('documents'),
   SUPABASE_TUTOR_DOCS_BUCKET: z.string().default('tutor-documents'),
+  /** Justificatifs des structures partenaires (privé) et photos des salles (lecture par URL signée). */
+  SUPABASE_PARTNER_DOCS_BUCKET: z.string().default('partner-documents'),
+  SUPABASE_ROOM_PHOTOS_BUCKET: z.string().default('room-photos'),
   CENTRIFUGO_URL: z.string().url().default('http://localhost:8000'),
   /** URL WebSocket que le CLIENT utilise (par défaut dérivée de CENTRIFUGO_URL). Sur appareil réel : IP du LAN / domaine public. */
   CENTRIFUGO_PUBLIC_URL: z.string().optional(),
@@ -37,7 +40,19 @@ const envSchema = z.object({
     return z.string().email().safeParse(displayName?.[1] ?? value).success;
   }, 'MAIL_FROM doit être une adresse e-mail ou un expéditeur au format Nom <email>.')
     .default('onboarding@resend.dev'),
-  BOOKING_MIN_NOTICE_HOURS: z.coerce.number().default(2),
+  /** Préavis minimal entre l'envoi d'une demande et le début de la séance (spec lieux partenaires 4.5 : 12 h). */
+  BOOKING_MIN_NOTICE_HOURS: z.coerce.number().default(24),
+  /** Pas de démarrage des créneaux proposés (minutes) et marges entre séances : valeurs à confirmer (spec 4.4). */
+  BOOKING_SLOT_STEP_MINUTES: z.coerce.number().int().min(5).max(120).default(30),
+  BOOKING_BUFFER_MINUTES: z.coerce.number().int().min(0).max(240).default(15),
+  BOOKING_TRAVEL_BUFFER_MINUTES: z.coerce.number().int().min(0).max(480).default(30),
+  ROOM_TURNOVER_BUFFER_MINUTES: z.coerce.number().int().min(0).max(240).default(0),
+  /** Frais de service EduLoc : taux global sur le tarif du Tuteur (MVP : 10 %). */
+  PLATFORM_COMMISSION_RATE: z.coerce.number().min(0).max(1).default(0.1),
+  /** Durée du blocage temporaire du créneau (Tuteur + salle) pendant la finalisation d'une réservation. */
+  BOOKING_HOLD_MINUTES: z.coerce.number().int().min(1).max(120).default(15),
+  /** Plafond du tarif horaire d'une salle : jamais plus chère que le plus haut forfait de déplacement (Ar). */
+  ROOM_MAX_HOURLY_FEE: z.coerce.number().min(0).default(10_000),
   CANCELLATION_FREE_NOTICE_HOURS: z.coerce.number().default(24),
   MEDIA_RETENTION_MONTHS: z.coerce.number().default(12),
   /** Ollama (embeddings du matching) : joignable uniquement depuis le réseau privé, jamais publié sur Internet. */
@@ -57,6 +72,13 @@ const envSchema = z.object({
   MATCHING_RATING_PRIOR_MEAN: z.coerce.number().min(0).max(5).default(3.5),
   MATCHING_RATING_PRIOR_WEIGHT: z.coerce.number().min(0).default(5),
   MATCHING_RELEVANCE_WINDOW: z.coerce.number().min(0).default(0.15),
+  /** Plancher ABSOLU de similarité (meilleure source d'un tuteur), appliqué en SQL. Propre au modèle d'embedding : à recalibrer s'il change (eval/report.md). */
+  /** Classement final (somme = 1 si la proximité est connue) : pédagogie 0,60 / disponibilité 0,20 / proximité 0,10 / qualité 0,10. */
+  MATCHING_WEIGHT_PEDAGOGY: z.coerce.number().min(0).max(1).default(0.6),
+  MATCHING_WEIGHT_AVAILABILITY: z.coerce.number().min(0).max(1).default(0.2),
+  MATCHING_WEIGHT_PROXIMITY: z.coerce.number().min(0).max(1).default(0.1),
+  MATCHING_WEIGHT_QUALITY: z.coerce.number().min(0).max(1).default(0.1),
+  MATCHING_MIN_SIMILARITY: z.coerce.number().min(0).max(1).default(0.65),
 });
 
 @Injectable()
@@ -77,6 +99,8 @@ export class AppConfig {
   readonly voiceBucket: string;
   readonly documentsBucket: string;
   readonly tutorDocsBucket: string;
+  readonly partnerDocsBucket: string;
+  readonly roomPhotosBucket: string;
   readonly centrifugoUrl: string;
   readonly centrifugoPublicUrl: string;
   readonly centrifugoApiKey: string;
@@ -90,6 +114,10 @@ export class AppConfig {
   readonly resendApiKey: string;
   readonly mailFrom: string;
   readonly bookingMinNoticeHours: number;
+  readonly bookingSlotStepMinutes: number;
+  readonly bookingBufferMinutes: number;
+  readonly bookingTravelBufferMinutes: number;
+  readonly roomTurnoverBufferMinutes: number;
   readonly cancellationFreeNoticeHours: number;
   readonly mediaRetentionMonths: number;
   readonly ollamaUrl: string;
@@ -98,6 +126,11 @@ export class AppConfig {
   readonly paddleOcrUrl: string | null;
   readonly cvExtractionModel: string;
   readonly cvExtractionTimeoutMs: number;
+  readonly matchingMinSimilarity: number;
+  readonly matchingFinalWeights: { pedagogy: number; availability: number; proximity: number; quality: number };
+  readonly platformCommissionRate: number;
+  readonly bookingHoldMinutes: number;
+  readonly roomMaxHourlyFee: number;
   readonly matchingScoring: {
     corroborationWeight: number; corroborationWindow: number; subjectBonus: number; ratingBonus: number;
     ratingPriorMean: number; ratingPriorWeight: number; relevanceWindow: number;
@@ -127,6 +160,8 @@ export class AppConfig {
     this.voiceBucket = parsed.SUPABASE_VOICE_BUCKET;
     this.documentsBucket = parsed.SUPABASE_DOCUMENTS_BUCKET;
     this.tutorDocsBucket = parsed.SUPABASE_TUTOR_DOCS_BUCKET;
+    this.partnerDocsBucket = parsed.SUPABASE_PARTNER_DOCS_BUCKET;
+    this.roomPhotosBucket = parsed.SUPABASE_ROOM_PHOTOS_BUCKET;
     this.centrifugoUrl = parsed.CENTRIFUGO_URL;
     this.centrifugoPublicUrl = parsed.CENTRIFUGO_PUBLIC_URL
       ?? `${parsed.CENTRIFUGO_URL.replace(/^http/, 'ws').replace(/\/$/, '')}/connection/websocket`;
@@ -141,6 +176,10 @@ export class AppConfig {
     this.resendApiKey = parsed.RESEND_API_KEY;
     this.mailFrom = parsed.MAIL_FROM;
     this.bookingMinNoticeHours = parsed.BOOKING_MIN_NOTICE_HOURS;
+    this.bookingSlotStepMinutes = parsed.BOOKING_SLOT_STEP_MINUTES;
+    this.bookingBufferMinutes = parsed.BOOKING_BUFFER_MINUTES;
+    this.bookingTravelBufferMinutes = parsed.BOOKING_TRAVEL_BUFFER_MINUTES;
+    this.roomTurnoverBufferMinutes = parsed.ROOM_TURNOVER_BUFFER_MINUTES;
     this.cancellationFreeNoticeHours = parsed.CANCELLATION_FREE_NOTICE_HOURS;
     this.mediaRetentionMonths = parsed.MEDIA_RETENTION_MONTHS;
     this.ollamaUrl = parsed.OLLAMA_URL.replace(/\/$/, '');
@@ -149,6 +188,14 @@ export class AppConfig {
     this.paddleOcrUrl = parsed.PADDLEOCR_URL ? parsed.PADDLEOCR_URL.replace(/\/$/, '') : null;
     this.cvExtractionModel = parsed.CV_EXTRACTION_MODEL;
     this.cvExtractionTimeoutMs = parsed.CV_EXTRACTION_TIMEOUT_MS;
+    this.matchingMinSimilarity = parsed.MATCHING_MIN_SIMILARITY;
+    this.matchingFinalWeights = {
+      pedagogy: parsed.MATCHING_WEIGHT_PEDAGOGY, availability: parsed.MATCHING_WEIGHT_AVAILABILITY,
+      proximity: parsed.MATCHING_WEIGHT_PROXIMITY, quality: parsed.MATCHING_WEIGHT_QUALITY,
+    };
+    this.platformCommissionRate = parsed.PLATFORM_COMMISSION_RATE;
+    this.bookingHoldMinutes = parsed.BOOKING_HOLD_MINUTES;
+    this.roomMaxHourlyFee = parsed.ROOM_MAX_HOURLY_FEE;
     this.matchingScoring = {
       corroborationWeight: parsed.MATCHING_CORROBORATION_WEIGHT,
       corroborationWindow: parsed.MATCHING_CORROBORATION_WINDOW,

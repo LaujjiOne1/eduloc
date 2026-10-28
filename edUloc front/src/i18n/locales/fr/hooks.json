@@ -1,0 +1,166 @@
+{
+  "useAvailabilityActions": {
+    "unableToSaveThisAvailability": "Impossible d'enregistrer cette disponibilité.",
+    "unableToDeleteThisAvailability": "Impossible de supprimer cette disponibilité.",
+    "unableToSaveTheseAvailabilities": "Impossible d'enregistrer ces disponibilités."
+  },
+  "useAvailabilityDetail": {
+    "thisAvailabilityCouldNotBe": "Cette disponibilité est introuvable.",
+    "unableToLoadThisAvailability": "Impossible de charger cette disponibilité."
+  },
+  "useBookingCancelAction": {
+    "unableToCancelThisAppointment": "Impossible d'annuler ce rendez-vous."
+  },
+  "useBookingOptions": {
+    "unableToLoadTheBooking": "Impossible de charger les options de réservation."
+  },
+  "useBookingQuote": {
+    "unableToCalculateThePrice": "Impossible de calculer le prix. Réessayez."
+  },
+  "useBookingRequestAction": {
+    "unableToAcceptThisRequest": "Impossible d'accepter cette demande.",
+    "unableToDeclineThisRequest": "Impossible de refuser cette demande."
+  },
+  "useCall": {
+    "unableToStartTheCall": "Impossible de démarrer l'appel."
+  },
+  "useConversationMessages": {
+    "thisConversationCouldNotBe": "Cette conversation est introuvable.",
+    "unableToLoadTheConversation": "Impossible de charger la conversation."
+  },
+  "useConversations": {
+    "unableToLoadYourConversations": "Impossible de charger vos conversations."
+  },
+  "useCreateBeneficiary": {
+    "unableToAddThisBeneficiary": "Impossible d'ajouter ce bénéficiaire."
+  },
+  "useCreateBooking": {
+    "unableToSendTheRequest": "Impossible d'envoyer la demande. Réessayez."
+  },
+  "useCvImport": {
+    "theCvImportFailed": "L'import du CV a échoué."
+  },
+  "useDevicePosition": {
+    "positionUnavailable": "Position indisponible."
+  },
+  "useForgotPassword": {
+    "enterThe6DigitCode": "Saisissez les 6 chiffres du code reçu par e-mail."
+  },
+  "useLevels": {
+    "unableToLoadTheLevels": "Impossible de charger les niveaux."
+  },
+  "useMyBeneficiaries": {
+    "unableToLoadYourBeneficiaries": "Impossible de charger vos bénéficiaires."
+  },
+  "useMyBooking": {
+    "unableToLoadThisAppointment": "Impossible de charger ce rendez-vous."
+  },
+  "useMyBookings": {
+    "unableToLoadYourAppointments": "Impossible de charger vos rendez-vous."
+  },
+  "useMyNotifications": {
+    "unableToLoadYourNotifications": "Impossible de charger vos notifications."
+  },
+  "useObjectives": {
+    "unableToLoadTheObjectives": "Impossible de charger les objectifs."
+  },
+  "useOfferActions": {
+    "unableToSaveThisOffer": "Impossible d'enregistrer cette offre.",
+    "unableToUpdateThisOffer": "Impossible de mettre à jour cette offre."
+  },
+  "useOffer": {
+    "thisOfferCouldNotBe": "Cette offre est introuvable.",
+    "unableToLoadThisOffer": "Impossible de charger cette offre."
+  },
+  "usePartnerReservations": {
+    "unableToLoadTheReservations": "Impossible de charger les réservations."
+  },
+  "usePartnerRoom": {
+    "unableToLoadThisRoom": "Impossible de charger cette salle."
+  },
+  "usePartnerSubscription": {
+    "unableToLoadTheCommercial": "Impossible de charger l'offre commerciale."
+  },
+  "usePartnerVenue": {
+    "unableToLoadYourVenue": "Impossible de charger votre structure."
+  },
+  "usePopularCategories": {
+    "unableToLoadPopularSearches": "Impossible de charger les recherches populaires."
+  },
+  "useSelfBeneficiary": {
+    "unableToPrepareYourRequest": "Impossible de préparer votre demande."
+  },
+  "useSendMessage": {
+    "unableToSendTheVoice": "Impossible d'envoyer le message vocal. Réessayez.",
+    "unableToSendTheDocument": "Impossible d'envoyer le document. Réessayez."
+  },
+  "useSessionCode": {
+    "unableToLoadTheSession": "Impossible de charger le code de séance."
+  },
+  "useShareSessionCode": {
+    "unableToSendTheCode": "Impossible d'envoyer le code. Réessayez."
+  },
+  "useSignupForm": {
+    "lastNameIsRequired": "Le nom est requis.",
+    "phoneNumberIsRequired": "Le téléphone est requis."
+  },
+  "useSkillSuggestions": {
+    "unableToLoadTheSuggestions": "Impossible de charger les suggestions."
+  },
+  "useSubjects": {
+    "unableToLoadTheSubjects": "Impossible de charger les matières."
+  },
+  "useSubmitReview": {
+    "unableToSendYourReview": "Impossible d'envoyer votre évaluation. Réessayez."
+  },
+  "useSubmitTutorApplication": {
+    "unableToSendYourApplication": "Impossible d'envoyer votre dossier. Réessayez."
+  },
+  "useTracks": {
+    "unableToLoadTheTracks": "Impossible de charger les filières."
+  },
+  "useTutorAvailability": {
+    "unableToLoadYourCalendar": "Impossible de charger votre calendrier."
+  },
+  "useTutorBooking": {
+    "thisRequestCouldNotBe": "Cette demande est introuvable.",
+    "unableToLoadThisRequest": "Impossible de charger cette demande."
+  },
+  "useTutorBookings": {
+    "unableToLoadYourRequests": "Impossible de charger vos demandes."
+  },
+  "useTutorOffers": {
+    "unableToLoadYourOffers": "Impossible de charger vos offres."
+  },
+  "useTutorProfile": {
+    "unableToLoadYourProfile": "Impossible de charger votre profil."
+  },
+  "useTutorRooms": {
+    "unableToLoadThePartner": "Impossible de charger les salles partenaires.",
+    "actionUnavailablePleaseTryAgain": "Action impossible. Réessayez."
+  },
+  "useTutorSearch": {
+    "unableToLoadTheTutors": "Impossible de charger les tuteurs.",
+    "onlyOnlineLessonsShown": "{{reason}} Seuls les cours en ligne sont affichés.",
+    "positionUnavailable": "Votre position est indisponible."
+  },
+  "useTutorSessionAction": {
+    "unableToStartTheSession": "Impossible de démarrer la séance.",
+    "unableToEndTheSession": "Impossible de terminer la séance."
+  },
+  "useTutor": {
+    "thisTutorCouldNotBe": "Ce tuteur est introuvable.",
+    "unableToLoadThisTutor": "Impossible de charger ce tuteur."
+  },
+  "useVerifyForm": {
+    "aNewCodeHasJust": "Un nouveau code vient de vous être envoyé.",
+    "unableToResendTheCode": "Impossible de renvoyer le code. Réessayez."
+  },
+  "useVoiceRecorder": {
+    "unableToStart": "Impossible de démarrer l'enregistrement sur cet appareil.",
+    "unableToFinish": "L'enregistrement n'a pas pu être finalisé. Réessayez."
+  },
+  "usePartnerAction": {
+    "actionUnavailable": "Action impossible. Réessayez."
+  }
+}

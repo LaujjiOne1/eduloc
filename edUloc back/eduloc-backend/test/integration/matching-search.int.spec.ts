@@ -378,6 +378,44 @@ describe('lots 4-5 — recherche de matching (base réelle, embeddeur simulé)',
       assert.deepEqual(Object.keys(first.offers[0] as object).sort(), ['currency', 'format', 'id', 'price', 'title']);
     });
 
+    it('classement final : la position du demandeur ne fait que réordonner (proximité), jamais filtrer', async () => {
+      const subjectId = (await newSubject('Proximite')).id;
+      // Deux tuteurs identiques pour le modèle sémantique ; seul le lieu de présentiel les distingue.
+      const far = await makeTutor({ subjectId, name: 'A_LOIN', validated: { level: 'Master 1' }, topic: 'proximite', offerFormat: 'IN_PERSON' });
+      const near = await makeTutor({ subjectId, name: 'Z_PROCHE', validated: { level: 'Master 1' }, topic: 'proximite', offerFormat: 'IN_PERSON' });
+      const REQUESTER = { lat: -18.9, lng: 47.5 };
+      await prisma.place.create({ data: { tutorProfileId: far.id, label: 'Loin', type: 'PUBLIC_PLACE', latitude: REQUESTER.lat + 0.18, longitude: REQUESTER.lng } });
+      await prisma.place.create({ data: { tutorProfileId: near.id, label: 'Proche', type: 'PUBLIC_PLACE', latitude: REQUESTER.lat + 0.009, longitude: REQUESTER.lng } });
+
+      const { userId, beneficiaryId } = await makeRequester('Licence 2', { format: 'IN_PERSON' });
+      const without = asSearch(await service.search(userId, { beneficiaryId, subjectId, needDescription: need('proximite') }));
+      assert.deepEqual(names(without), ['A_LOIN', 'Z_PROCHE'], 'sans position : les deux tuteurs sont proposés');
+      assert.ok(without.results.every((r) => !('distanceMeters' in r)), 'contrat inchangé sans position');
+
+      const withPosition = asSearch(await service.search(userId, {
+        beneficiaryId, subjectId, needDescription: need('proximite'), latitude: REQUESTER.lat, longitude: REQUESTER.lng, radiusM: 30_000,
+      })) as unknown as { results: { displayName: string; distanceMeters: number | null }[] };
+      assert.deepEqual(withPosition.results.map((r) => r.displayName), ['Z_PROCHE', 'A_LOIN'], 'le tuteur proche passe devant');
+      assert.equal(withPosition.results[0].distanceMeters, 1_000, '≈ 1 km, arrondi au 500 m supérieur');
+      assert.ok((withPosition.results[1].distanceMeters ?? 0) >= 20_000);
+      assert.equal(withPosition.results.length, 2, 'la distance ne retire personne');
+    });
+
+    it('budget maximum : une offre plus chère n’est pas proposée, un tuteur sans offre dans le budget non plus', async () => {
+      const subjectId = (await newSubject('Budget')).id;
+      await makeTutor({ subjectId, name: 'BUDGET_TUTOR', validated: { level: 'Master 1' }, topic: 'budget' });
+      const { userId, beneficiaryId } = await makeRequester('Licence 2');
+      const search = async () => asSearch(await service.search(userId, { beneficiaryId, subjectId, needDescription: need('budget') }));
+
+      assert.deepEqual(names(await search()), ['BUDGET_TUTOR'], 'sans budget : proposé');
+      await prisma.beneficiary.update({ where: { id: beneficiaryId }, data: { maxBudget: 10_000 } });
+      assert.deepEqual((await search()).results, [], 'offre à 20 000 Ar > budget de 10 000 Ar');
+      await prisma.beneficiary.update({ where: { id: beneficiaryId }, data: { maxBudget: 25_000 } });
+      const within = await search();
+      assert.deepEqual(names(within), ['BUDGET_TUTOR']);
+      assert.equal((within.results[0].offers as { price: string }[])[0].price, '20000');
+    });
+
     it('la requête est préfixée et enrichie (matière, niveau, filière, objectif)', async () => {
       const subjectId = (await newSubject('Requete')).id;
       const { userId, beneficiaryId } = await makeRequester('Licence 2');

@@ -1,0 +1,7 @@
+{
+  "beneficiaries": {
+    "myBeneficiaries": "My beneficiaries",
+    "forMe": "For me • {{value}}",
+    "you": " (you)"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "days": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "monthsShort": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "hours_one": "{{count}} hour",
+  "hours_other": "{{count}} hours",
+  "minutes_one": "{{count}} minute",
+  "minutes_other": "{{count}} minutes",
+  "byteUnit": "B",
+  "kilobyteUnit": "KB",
+  "megabyteUnit": "MB"
+}

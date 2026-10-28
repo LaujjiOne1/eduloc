@@ -12,6 +12,9 @@ import { PreselectionRepository } from './preselection.repository';
 import { SemanticRankingRepository } from './semantic-ranking.repository';
 import { Format, allowedFormats, minimumTutorRank } from './level-eligibility';
 import { SourceSimilarity, TutorScoreInput, rankTutors } from './scoring';
+import { proximityScore, rankByFinalScore } from './final-score';
+import { SLOTS_PER_TUTOR, SLOT_WINDOW_DAYS } from './next-slots.service';
+import { approximateDistance } from '../../search/domain/public-location';
 
 const DEFAULT_LIMIT = 10;
 /** Rate limit (spec §9) : chaque appel déclenche un embedding. */
@@ -93,7 +96,11 @@ export class MatchingSearchService {
       : null;
     if (dto.trackId && !track) throw new UnprocessableEntityException('UNKNOWN_TRACK');
 
-    const format = dto.format ?? (beneficiary.preferredFormat as Format | null) ?? null;
+    // Format : la demande, sinon la préférence du bénéficiaire, sinon son lieu préféré (en ligne ⇒ ONLINE, tout autre ⇒ présentiel).
+    const format = dto.format ?? (beneficiary.preferredFormat as Format | null)
+      ?? (beneficiary.preferredPlace ? (beneficiary.preferredPlace === 'ONLINE' ? 'ONLINE' : 'IN_PERSON') : null);
+    // Budget maximum par séance : une offre plus chère n'est pas proposée (le tuteur sans offre dans le budget non plus).
+    const maxBudget = beneficiary.maxBudget ? Number(beneficiary.maxBudget) : null;
     const limit = dto.limit ?? DEFAULT_LIMIT;
 
     // Niveau non universitaire : recherche classique existante (règles déterministes), sans Phase 2.
@@ -125,8 +132,9 @@ export class MatchingSearchService {
         formats: allowedFormats(format),
         embeddingModel: this.cfg.embeddingModel,
         requesterId,
+        trackId: track?.id ?? null,
       };
-      candidateIds = await this.preselection.findCandidateIds(params);
+      candidateIds =await this.preselection.findCandidateIds(params);
       if (candidateIds.length === 0) {
         // Ne pas assouplir automatiquement : on dit seulement si un autre format aurait donné des tuteurs.
         const anyFormat = format && format !== 'BOTH'
@@ -152,7 +160,7 @@ export class MatchingSearchService {
     });
     const queryVector = await this.embeddings.embedQuery(queryText);
     const [similarities, declaring, profiles] = await Promise.all([
-      this.ranking.bestSimilarities(queryVector, candidateIds, this.cfg.embeddingModel),
+      this.ranking.bestSimilarities(queryVector, candidateIds, this.cfg.embeddingModel, this.cfg.matchingMinSimilarity),
       subject ? this.ranking.tutorsDeclaringSubject(candidateIds, subject.id) : Promise.resolve(new Set<string>()),
       this.prisma.tutorProfile.findMany({
         where: { id: { in: candidateIds } },
@@ -190,6 +198,8 @@ export class MatchingSearchService {
         tutorProfileId: { in: topIds }, isActive: true, disabledByAdminAt: null,
         OR: [{ educationLevelId: { in: sameRankIds } }, { educationLevelId: null }],
         format: { in: allowedFormats(format) },
+        ...(track ? { AND: [{ OR: [{ trackId: null }, { trackId: track.id }] }] } : {}),
+        ...(maxBudget !== null ? { price: { lte: maxBudget } } : {}),
       },
       orderBy: [{ price: 'asc' }, { id: 'asc' }],
     });
@@ -203,10 +213,48 @@ export class MatchingSearchService {
     ]));
     const nextSlots = await this.slots.nextSlots(slotInput);
 
-    const results: MatchingResult[] = ranked.map((r) => {
+    // --- Classement final : pédagogie 60 % + disponibilité 20 % + proximité 10 % + qualité 10 % ------------------------
+    // Les filtres durs sont déjà passés ; ceci ne fait que RÉORDONNER les tuteurs retenus (la distance reste hors du modèle).
+    const located = dto.latitude !== undefined && dto.longitude !== undefined;
+    const distances = located ? await this.nearestDistances(topIds, dto.latitude!, dto.longitude!) : new Map<string, number>();
+    const radiusM = dto.radiusM ?? beneficiary.searchRadiusM ?? 10_000;
+    const nowMs = Date.now();
+    const canTeachOnline = (id: string) => format !== 'IN_PERSON' && (offersByTutor.get(id) ?? []).some((o) => o.format !== 'IN_PERSON');
+    const finals = rankByFinalScore(
+      ranked.map((r) => {
+        const profile = profileById.get(r.tutorProfileId)!;
+        const slotsOfTutor = nextSlots.get(r.tutorProfileId) ?? [];
+        const prices = (offersByTutor.get(r.tutorProfileId) ?? []).map((o) => Number(o.price));
+        const distance = distances.get(r.tutorProfileId);
+        return {
+          tutorProfileId: r.tutorProfileId,
+          semanticScore: r.finalScore,
+          slotsCount: slotsOfTutor.length,
+          firstSlotInHours: slotsOfTutor.length ? (Date.parse(slotsOfTutor[0].startAt) - nowMs) / 3_600_000 : null,
+          // Cours en ligne possible : la distance est sans objet (1). Sinon, plus le lieu est proche, mieux c'est.
+          proximity: !located ? null : canTeachOnline(r.tutorProfileId) ? 1 : distance === undefined ? 0 : proximityScore(distance, radiusM),
+          rating: profile.rating,
+          reviewsCount: profile.reviewsCount,
+          price: prices.length ? Math.min(...prices) : null,
+        };
+      }),
+      {
+        weights: this.cfg.matchingFinalWeights, maxSlots: SLOTS_PER_TUTOR, windowHours: SLOT_WINDOW_DAYS * 24,
+        ratingPriorMean: this.cfg.matchingScoring.ratingPriorMean, ratingPriorWeight: this.cfg.matchingScoring.ratingPriorWeight,
+      },
+    );
+    const order = new Map(finals.map((f, index) => [f.tutorProfileId, index]));
+    const sorted = [...ranked].sort((a, b) => order.get(a.tutorProfileId)! - order.get(b.tutorProfileId)!);
+    // Budget : un tuteur dont aucune offre compatible ne rentre dans le budget n'est pas proposé.
+    const reordered = maxBudget === null ? sorted : sorted.filter((r) => (offersByTutor.get(r.tutorProfileId)?.length ?? 0) > 0);
+
+    const results: MatchingResult[] = reordered.map((r) => {
       const profile = profileById.get(r.tutorProfileId)!;
       const slotsOfTutor = nextSlots.get(r.tutorProfileId) ?? [];
+      const distance = distances.get(r.tutorProfileId);
       return {
+        // Présente seulement si le demandeur a donné sa position : le contrat de réponse reste inchangé sinon.
+        ...(located ? { distanceMeters: distance !== undefined ? approximateDistance(distance) : null } : {}),
         tutorProfileId: r.tutorProfileId,
         displayName: profile.displayName?.trim() || `${profile.user.firstName} ${profile.user.lastName}`.trim(),
         profilePhoto: profile.profilePhoto,
@@ -220,7 +268,19 @@ export class MatchingSearchService {
         hasNearSlot: slotsOfTutor.length > 0,
       };
     });
-    return this.finish(base, results, candidateIds.length, started, undefined, ranked);
+    return this.finish(base, results, candidateIds.length, started, undefined, reordered);
+  }
+
+  /** Distance au lieu de présentiel le plus proche de chaque tuteur (PostGIS) ; les domiciles ne sont jamais exposés. */
+  private async nearestDistances(tutorIds: string[], lat: number, lng: number): Promise<Map<string, number>> {
+    if (!tutorIds.length) return new Map();
+    const rows = await this.prisma.$queryRaw<{ tutorProfileId: string; d: number }[]>`
+      SELECT p."tutorProfileId", MIN(ST_Distance(p.location, ST_MakePoint(${lng}::float8, ${lat}::float8)::geography)) AS d
+      FROM places p
+      WHERE p."tutorProfileId" = ANY(${tutorIds}::text[]) AND p."isActive" = true
+        AND p.type NOT IN ('ONLINE', 'PARTNER_ROOM') AND p.location IS NOT NULL
+      GROUP BY p."tutorProfileId"`;
+    return new Map(rows.map((r) => [r.tutorProfileId, Number(r.d)]));
   }
 
   /** Journal MatchingSearch (calibrage) puis réponse. Les scores restent internes : jamais dans la réponse. */

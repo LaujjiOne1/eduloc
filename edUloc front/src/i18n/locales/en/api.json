@@ -1,0 +1,57 @@
+{
+  "errors": {
+    "unexpectedError": "Unexpected error.",
+    "someInformationIsInvalid": "Some information is invalid.",
+    "yourSessionHasExpiredPlease": "Your session has expired. Please sign in again.",
+    "thisEmailAddressIsAlready": "This email address is already in use.",
+    "invalidCode": "Invalid code.",
+    "thisCodeHasExpiredRequest": "This code has expired. Request a new one.",
+    "youDoNotHaveAccess": "You do not have access to this action.",
+    "itemNotFound": "Item not found.",
+    "thisActionIsNoLonger": "This action is no longer possible for this appointment.",
+    "incorrectCodeCheckTheCode": "Incorrect code. Check the code given by the beneficiary.",
+    "tooManyAttemptsStartingWith": "Too many attempts. Starting with a code is blocked.",
+    "theSessionCannotStartYet": "The session cannot start yet.",
+    "youHaveAlreadyReviewedThis": "You have already reviewed this session.",
+    "waitForTheTutorS": "Wait for the tutor's reply before sending more voice messages.",
+    "tooManyAttemptsPleaseTry": "Too many attempts. Please try again in a few moments.",
+    "thisAccountIsDisabled": "This account is disabled.",
+    "verifyYourEmailAddressBefore": "Verify your email address before signing in.",
+    "theLocationServiceIsTemporarily": "The location service is temporarily unavailable.",
+    "unableToConnectCheckYour": "Unable to connect. Check your network.",
+    "theServerIsTakingToo": "The server is taking too long to respond.",
+    "anErrorOccurredPleaseTry": "An error occurred. Please try again later."
+  },
+  "datetime": {
+    "yesterday": "Yesterday",
+    "justNow": "Just now"
+  },
+  "mappers": {
+    "toBeDefined": "To be defined",
+    "allLevels": "All levels",
+    "noSlotsThisWeek": "No slots this week",
+    "tutorSFee": "Tutor's fee",
+    "travelFee": "Travel fee",
+    "roomFee": "Room fee",
+    "edulocServiceFee": "EduLoc service fee",
+    "placeToBeSpecified": "Place to be specified",
+    "you": "You",
+    "eduloc": "EduLoc",
+    "nextSlot": "Next slot: {{day}} {{time}}"
+  },
+  "partnerMappers": {
+    "free": "Free",
+    "days": "{{durationDays}} days",
+    "until": "until {{dateLabel}}",
+    "document": "Document",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years"
+  },
+  "upload": {
+    "theUploadExpiredPleaseTry": "The upload expired. Please try again.",
+    "theFileCouldNotBe": "The file could not be uploaded (code {{status}}). Please try again.",
+    "theSelectedFileIsUnreadable": "The selected file is unreadable. Please choose it again.",
+    "theFileUploadFailedCheck": "The file upload failed. Check your connection and try again.",
+    "uploadFailedCheckConnection": "The file upload failed. Check your connection and try again."
+  }
+}

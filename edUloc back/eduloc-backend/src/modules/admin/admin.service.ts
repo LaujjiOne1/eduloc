@@ -90,7 +90,7 @@ export class AdminService {
         documents: {
           select: {
             id: true, type: true, status: true, fileName: true, mimeType: true, uploadedAt: true,
-            extractionStatus: true, autoCheck: true,
+            extractionStatus: true, autoCheck: true, reviewedAt: true, rejectionReason: true,
           },
           orderBy: { uploadedAt: 'asc' },
         },
@@ -99,6 +99,10 @@ export class AdminService {
             user: { select: { firstName: true, lastName: true, email: true } },
             academicLevel: { select: { id: true, name: true, category: true, academicRank: true } },
             degreeEquivalence: true,
+            experiences: { orderBy: { createdAt: 'asc' } },
+            subjects: {
+              include: { subject: { select: { name: true } }, educationLevel: { select: { name: true } } },
+            },
           },
         },
       },
@@ -298,6 +302,44 @@ export class AdminService {
     return result;
   }
 
+  /**
+   * Levée de suspension : le profil redevient visible (dossier APPROVED requis). Les conflits TUTOR_SUSPENDED encore
+   * ouverts n'ont plus de cause : ils sont classés. Les autres conflits (offre retirée, salle…) restent à traiter.
+   */
+  async reinstateTutor(adminId: string, tutorProfileId: string, note?: string) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      const tp = await tx.tutorProfile.findUnique({
+        where: { id: tutorProfileId },
+        select: { userId: true, suspendedAt: true, applications: { where: { status: 'APPROVED' }, select: { id: true }, take: 1 } },
+      });
+      if (!tp) throw new NotFoundException('TUTOR_NOT_FOUND');
+      if (!tp.suspendedAt) throw new UnprocessableEntityException('TUTOR_NOT_SUSPENDED');
+      if (tp.applications.length === 0) throw new UnprocessableEntityException('TUTOR_APPLICATION_NOT_APPROVED');
+      await tx.tutorProfile.update({ where: { id: tutorProfileId }, data: { isVisible: true, suspendedAt: null } });
+      const dismissed = await tx.conflict.updateMany({
+        where: { type: 'TUTOR_SUSPENDED', status: 'OPEN', booking: { tutorProfileId } },
+        data: {
+          status: 'DISMISSED', resolvedById: adminId, resolvedAt: new Date(),
+          resolution: note?.trim() ? `Suspension levée : ${note.trim()}` : 'Suspension levée',
+        },
+      });
+      await enqueueTutorReindex(tx, tutorProfileId);
+      await this.outbox.write(tx, {
+        aggregateType: 'tutor',
+        aggregateId: tutorProfileId,
+        eventType: 'tutor.reinstated',
+        recipientIds: [tp.userId],
+        payload: { tutorProfileId },
+        pushTitle: 'Compte rétabli',
+        pushBody: 'Votre profil tuteur est de nouveau visible.',
+        cacheKeys: [CacheKeys.tutorPublic(tutorProfileId)],
+      });
+      return { ok: true, dismissedConflicts: dismissed.count };
+    });
+    await this.cache.bumpSearch();
+    return result;
+  }
+
   /** UC-G08 : retrait d'offre par l'admin — le tuteur ne peut pas réactiver. */
   async moderateOffer(offerId: string, action: 'disable' | 'enable') {
     const offer = await this.prisma.offer.findUnique({ where: { id: offerId } });
@@ -311,15 +353,6 @@ export class AdminService {
     });
     await this.cache.bumpSearch();
     return { ok: true };
-  }
-
-  bookings(status?: string, page = 1) {
-    return this.prisma.booking.findMany({
-      where: status ? { status: status as never } : {},
-      orderBy: { startAt: 'desc' },
-      skip: (page - 1) * 50,
-      take: 50,
-    });
   }
 
   conflicts(status?: string) {

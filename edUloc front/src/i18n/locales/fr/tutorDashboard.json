@@ -1,0 +1,185 @@
+{
+  "appointmentDetail": {
+    "with": "avec {{firstName}}",
+    "thisRequestWasDeclined": "Cette demande a été refusée."
+  },
+  "availabilityEdit": {
+    "setTheDatesTimeRanges": "Définissez les dates, plages horaires et lieux où vous pouvez enseigner",
+    "n1Repetition": "1. Répétition",
+    "n2DaysAndTimes": "2. Jours et horaires",
+    "n2DaysOfTheWeek": "2. Jours de la semaine",
+    "n2Date": "2. Date",
+    "n3TimeRangeWheel": "3. Plage horaire (roue)",
+    "scheduledSlots": "Créneaux programmés {{value}} ({{length}})",
+    "lessonLocation": "{{value}}. Lieu du cours",
+    "addTeachingLocationsInYour": "Ajoutez des lieux d'intervention dans vos paramètres pour les proposer ici en plus du lieu « En ligne ».",
+    "pleaseSelectAStartAnd": "Veuillez sélectionner une heure de début et de fin.",
+    "thisTimeSlotHasAlready": "Ce créneau horaire a déjà été ajouté.",
+    "editTheAvailability": "Modifier la disponibilité",
+    "addAvailabilities": "Ajouter des disponibilités",
+    "thisSlotIsOfferedEvery": "Ce créneau est proposé chaque semaine, les jours choisis, jusqu'à ce que vous le supprimiez.",
+    "thisSlotIsOnlyOffered": "Ce créneau n'est proposé que ce jour-là, une seule fois.",
+    "every": "Chaque {{toLowerCase}}",
+    "chooseTheDayOfThis": "Choisissez le jour de ce créneau hebdomadaire.",
+    "youCanTickSeveralDays": "Vous pouvez cocher plusieurs jours : le même créneau est créé pour chacun.",
+    "addThisTimeSlot": "Ajouter ce créneau horaire",
+    "theEndTimeMustBe": "L'heure de fin doit être après l'heure de début.",
+    "every2": "chaque {{value}}",
+    "for": "pour le {{selectedDateLabel}}",
+    "deleteTheToSlot": "Supprimer le créneau {{startTime}} à {{endTime}}",
+    "whereDoYouGiveThis": "Où donnez-vous ce cours ?",
+    "selectAPlace": "Sélectionnez un lieu",
+    "availabilityEvery": "Disponibilité chaque ",
+    "availabilityFor": "Disponibilité pour le ",
+    "slotS": "{{length}} créneau(x)",
+    "noPlaceChosen": "Lieu non choisi",
+    "saveSlots": "Enregistrer ({{weeklySlotCount}} créneaux)",
+    "saveSlots2": "Enregistrer ({{length}} créneaux)",
+    "saveTheAvailability": "Enregistrer la disponibilité",
+    "repeatsOnTheChosenDays": "Se répète les jours choisis",
+    "timeRange": "{{startTime}} à {{endTime}}"
+  },
+  "calendar": {
+    "myCalendar": "Mon calendrier",
+    "viewAndManageYourAvailabilities": "Consultez et gérez vos disponibilités et vos rendez-vous de cours",
+    "upcomingScheduledDates": "Prochaines dates planifiées"
+  },
+  "completeSession": {
+    "with": "{{subjectLabel}} avec {{firstName}}",
+    "backToTheDashboard": "Retour au tableau de bord"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Échangez des messages vocaux et des documents avec vos élèves",
+    "noConversations": "Aucune conversation",
+    "youWillBeAbleTo": "Vous pourrez échanger avec vos élèves dès qu'une demande de cours ou un rendez-vous sera accepté."
+  },
+  "dashboard": {
+    "yourActivity": "Votre activité",
+    "fileUnderReview": "DOSSIER EN COURS DE VÉRIFICATION",
+    "yourApplicationIsCurrentlyBeing": "Votre candidature est actuellement examinée par l'équipe EduLoc. Votre profil reste masqué dans la recherche publique tant que votre dossier n'est pas validé.",
+    "myCalendarAvailabilities": "Mon calendrier & disponibilités",
+    "manage": "Gérer",
+    "pendingRequests": "Demandes en attente",
+    "seeAll": "Tout voir",
+    "switchModeTutor": "Changer de mode : Tuteur",
+    "viewAllReceivedRequests": "Voir toutes les demandes reçues",
+    "viewAllAppointments": "Voir tous les rendez-vous",
+    "openTheFullCalendar": "Ouvrir le calendrier complet",
+    "seeAllRequests": "Tout voir les demandes",
+    "viewSRequest": "Voir la demande de {{firstName}}"
+  },
+  "manageOffer": {
+    "otherDurationsOffered": "Autres durées proposées",
+    "theRequesterWillChooseAmong": "Le demandeur choisira parmi ces durées. Le prix saisi vaut pour la durée par défaut ; le prix des autres durées est calculé au prorata.",
+    "title": "Titre",
+    "pythonForBeginners": "Python pour débutants",
+    "noSubjectRegistered": "Aucune matière enregistrée",
+    "chooseASubjectFirst": "Choisissez d'abord une matière",
+    "degreeProgrammeOptional": "Mention (facultatif)",
+    "aConcreteIntroductionToPython": "Une introduction concrète à Python…",
+    "offerDescription": "Description de l'offre",
+    "priceAr": "Prix (Ar)",
+    "deactivateTheOffer": "Désactiver l'offre",
+    "reactivateTheOffer": "Réactiver l'offre",
+    "updating": "Mise à jour...",
+    "n1Hour30": "1 heure 30",
+    "n2Hours": "2 heures",
+    "n3Hours": "3 heures"
+  },
+  "myProfile": {
+    "validated": "Validé",
+    "teachingSpace": "Espace d'enseignement",
+    "switchToLearner": "Passer en Apprenti",
+    "teachingProfile": "Profil pédagogique",
+    "keySkills": "Compétences clés",
+    "subjectsLevels": "Matières & Niveaux",
+    "offersPlaces": "Offres & Lieux",
+    "manageAndPublishMyLessons": "Gérer et publier mes cours",
+    "chooseWhereITeach": "Choisir où je donne cours",
+    "areaOfActivity": "Périmètre d'intervention",
+    "placesWhereYouGiveYour": "Lieux où vous dispensez vos cours",
+    "noPlaceRegistered": "Aucun lieu enregistré",
+    "editTheProfile": "Modifier le profil",
+    "tutorModeSwitchMode": "Mode Tuteur — changer de mode",
+    "switchToLearnerMode": "Passer en mode Apprenti",
+    "editTheBio": "Modifier la bio",
+    "manageMyLessonOffers": "Gérer mes offres de cours",
+    "tutoringOffers": "Offres de tutorat",
+    "manageMyPartnerRooms": "Gérer mes salles partenaires",
+    "km": " ({{radiusKm}} km)",
+    "editMyPersonalInformation": "Modifier mes informations personnelles",
+    "logOutOfTheAccount": "Déconnexion du compte",
+    "activeOfferCount_one": "{{count}} offre active",
+    "activeOfferCount_other": "{{count}} offres actives"
+  },
+  "offers": {
+    "myOffers": "Mes offres",
+    "youHaveNotCreatedAn": "Vous n'avez pas encore créé d'offre.",
+    "active": "Active",
+    "deactivated": "Désactivée"
+  },
+  "requestAccepted": {
+    "requestAccepted": "Demande acceptée",
+    "theAppointmentWithIsNow": "Le rendez-vous avec {{firstName}} est maintenant confirmé."
+  },
+  "requestConflict": {
+    "unableToAccept": "Impossible d'accepter",
+    "thisSlotIsNoLonger": "Ce créneau n'est plus disponible.",
+    "theRequestRemainsPendingThe": "La demande reste en attente. Le demandeur a été informé et invité à choisir un autre créneau ou une autre salle ; vous pouvez aussi la refuser.",
+    "errorCode": "CODE ERREUR",
+    "theRoomIsNoLonger": "La salle n’est plus disponible pour ce créneau (déjà réservée, fermée ou retirée). Rien n’a été confirmé : ni la séance ni la salle.",
+    "anotherRequestWasConfirmedIn": "Une autre demande a été confirmée entre-temps pour ce créneau."
+  },
+  "requestDetail": {
+    "youCanOnlyAcceptOne": "Vous ne pouvez en accepter qu'une : accepter cette demande refusera automatiquement {{value}}. Comparez-les avant de choisir.",
+    "view": "{{requesterName}} · Voir →",
+    "declining": "Refus...",
+    "accepting": "Acceptation...",
+    "difficulty": "Difficulté",
+    "otherRequestsTargetTheSame": "{{length}} autres demandes visent le même horaire",
+    "anotherRequestTargetsTheSame": "Une autre demande vise le même horaire",
+    "theOthers": "les autres",
+    "theOtherOne": "l'autre",
+    "viewSRequest": "Voir la demande de {{beneficiaryFirstName}}",
+    "notSpecifiedMasculine": "Non précisé",
+    "notSpecifiedFeminine": "Non précisée"
+  },
+  "requests": {
+    "requests": "Demandes",
+    "sameTimeRequested": "Même horaire demandé {{value}}",
+    "noConfirmedRequestsYet": "Aucune demande confirmée pour le moment.",
+    "by1OtherPerson": "par 1 autre personne",
+    "byOtherPeople": "par {{length}} autres personnes",
+    "confirmed": "Confirmées"
+  },
+  "rooms": {
+    "indicateTheRoomsWhereYou": "Indiquez les salles où vous acceptez de donner des cours. Cela ne réserve aucune salle : elle n'est prise que lorsque vous acceptez la demande d'un élève. Pensez aussi à ouvrir des disponibilités « Salles partenaires » dans votre calendrier.",
+    "youHaveNotAcceptedAny": "Vous n'avez encore accepté aucune salle.",
+    "noOtherPartnerRoomIs": "Aucune autre salle partenaire n'est publiée pour le moment.",
+    "roomsWhereITeach": "Salles où j'interviens",
+    "withdrawMyAgreement": "Retirer mon accord",
+    "availableRooms": "Salles disponibles",
+    "iAgreeToTeachHere": "J'accepte d'intervenir ici",
+    "currentlyNotBookable": "Actuellement non réservable (retirée de la publication, suspendue ou offre expirée). Les séances déjà confirmées sont conservées."
+  },
+  "sessionInProgressPresential": {
+    "inPersonLesson": "Cours en présentiel",
+    "since": "Depuis {{startTime}}",
+    "end": "Terminer"
+  },
+  "sessionInProgress": {
+    "endTheSession": "Terminer la séance"
+  },
+  "startSession": {
+    "lesson": "Cours de {{subjectLabel}}",
+    "thisSessionCanOnlyStart": "Cette séance ne peut démarrer que depuis un rendez-vous confirmé.",
+    "theBeneficiarySendsYouTheir": "Le bénéficiaire vous envoie son code de séance dans la conversation (message « Code de séance »), ou vous le lit par appel ou vocal.",
+    "theBeneficiaryTellsYouTheir": "Le bénéficiaire vous communique son code de séance à voix haute.",
+    "starting": "Démarrage...",
+    "digitOfTheCode": "Chiffre {{value}} du code"
+  },
+  "appointmentConversation": {
+    "forNameConfirmed": "Pour {{name}} • rendez-vous confirmé",
+    "forNamePending": "Pour {{name}} • en attente de confirmation"
+  }
+}

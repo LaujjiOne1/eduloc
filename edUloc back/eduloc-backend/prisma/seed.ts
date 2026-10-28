@@ -128,6 +128,27 @@ async function seedCatalog() {
   console.log(`Catalogue : ${SUBJECTS.length} matières, ${order} niveaux, ${SERIES.length} séries, ${MENTIONS.length} mentions.`);
 }
 
+/**
+ * Offre commerciale de départ des lieux partenaires. Prix, durée et renouvellement ne sont pas arrêtés (spec 8.4) :
+ * ce plan PILOTE est gratuit (activation immédiate) ; les offres payantes se créent ensuite via
+ * POST /admin/partners/plans, sans toucher au code.
+ */
+async function seedPartnerPlans() {
+  await prisma.partnerPlan.upsert({
+    where: { code: 'PILOT' },
+    update: {},
+    create: {
+      code: 'PILOT',
+      name: 'Pilote',
+      description: 'Offre gratuite de lancement pour les premières structures partenaires.',
+      priceAmount: 0,
+      currency: 'MGA',
+      durationDays: 365,
+    },
+  });
+  console.log('Lieux partenaires : plan PILOT disponible.');
+}
+
 async function seedAdmin() {
   const email = (process.env.SEED_ADMIN_EMAIL ?? 'admin@eduloc.mg').toLowerCase();
   const password = process.env.SEED_ADMIN_PASSWORD ?? (isProduction ? '' : 'Admin12345!');
@@ -369,10 +390,70 @@ async function seedDemo_() {
   console.log('Demandeur démo : demo@eduloc.mg  (mot de passe des comptes démo : Demo12345!)');
 }
 
+/**
+ * Salle partenaire de démonstration, déjà validée, publiée et sous souscription active, acceptée par les tuteurs démo.
+ * Sans elle le mode « salle partenaire » n'apparaît jamais à la réservation (aucune salle réservable à proposer).
+ */
+async function seedDemoRoom() {
+  const manager = await prisma.user.upsert({
+    where: { email: 'salle@demo.eduloc.mg' },
+    update: {},
+    create: {
+      email: 'salle@demo.eduloc.mg', password: await argon2.hash('Demo12345!', { type: argon2.argon2id }),
+      firstName: 'Voahangy', lastName: 'Rakotomalala', phone: '+261 34 44 444 44', status: 'ACTIVE', emailVerified: true,
+    },
+  });
+  const now = new Date();
+  const venue = await prisma.partnerVenue.upsert({
+    where: { managerId: manager.id },
+    update: {},
+    create: {
+      managerId: manager.id, name: 'Espace Savoir Analakely', type: 'COWORKING',
+      description: 'Espace de travail calme pour les séances de tutorat.', contactPhone: '+261 34 44 444 44',
+      status: 'APPROVED', submittedAt: now, reviewedAt: now,
+    },
+  });
+  const plan = await prisma.partnerPlan.findUniqueOrThrow({ where: { code: 'PILOT' } });
+  if (!(await prisma.venueSubscription.count({ where: { venueId: venue.id, status: 'ACTIVE' } }))) {
+    await prisma.venueSubscription.create({
+      data: { venueId: venue.id, planId: plan.id, status: 'ACTIVE', startsAt: now, endsAt: new Date(now.getTime() + 365 * 86_400_000) },
+    });
+  }
+  let room = await prisma.room.findFirst({ where: { venueId: venue.id, name: 'Salle Tana 1' } });
+  if (!room) {
+    room = await prisma.room.create({
+      data: {
+        venueId: venue.id, name: 'Salle Tana 1', description: 'Salle de 6 places avec tableau blanc et wifi.',
+        addressLine: 'Rue Ratsimilaho, Analakely', city: 'Antananarivo', latitude: -18.9085, longitude: 47.5249,
+        zoneLabel: 'Analakely', capacity: 6, equipment: ['Tableau blanc', 'Wifi'], pricePerHour: 5000,
+        rules: 'Respect du calme et du matériel. Séances de tutorat uniquement.',
+        status: 'APPROVED', publication: 'PUBLISHED', publishedAt: now, submittedAt: now, reviewedAt: now,
+        availabilities: {
+          create: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({ dayOfWeek, startTime: '08:00', endTime: '20:00' })),
+        },
+      },
+    });
+  }
+  for (const t of DEMO_TUTORS) {
+    const user = await prisma.user.findUnique({ where: { email: t.email }, include: { tutorProfile: true } });
+    if (!user?.tutorProfile) continue;
+    await prisma.tutorRoom.upsert({
+      where: { tutorProfileId_roomId: { tutorProfileId: user.tutorProfile.id, roomId: room.id } },
+      create: { tutorProfileId: user.tutorProfile.id, roomId: room.id },
+      update: { isActive: true },
+    });
+  }
+  console.log('Salle démo : salle@demo.eduloc.mg  (Espace Savoir Analakely — Salle Tana 1)');
+}
+
 async function main() {
   await seedCatalog();
+  await seedPartnerPlans();
   await seedAdmin();
-  if (seedDemo) await seedDemo_();
+  if (seedDemo) {
+    await seedDemo_();
+    await seedDemoRoom();
+  }
 }
 
 main()

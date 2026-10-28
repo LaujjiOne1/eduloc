@@ -1,0 +1,18 @@
+{
+  "maplibreResultsMap": {
+    "tutorsMap": "Tutors map"
+  },
+  "webviewResultsMap": {
+    "unableToLoadTheMap": "Unable to load the map. Check your connection.",
+    "tryLoadingTheMapAgain": "Try loading the map again"
+  },
+  "resultsMapHtml": {
+    "loadingTheMap": "Loading the map…",
+    "toggle3d": "Switch between 3D and flat view",
+    "fitMap": "Re-centre the map on you and the tutors",
+    "mapUnavailable": "Map unavailable (connection required).",
+    "you": "You",
+    "yourPosition": "Your position",
+    "unableToLoad": "Unable to load the map. Check your connection."
+  }
+}

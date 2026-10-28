@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { allowedDurations } from '../bookings/domain/offer-durations';
 import { assertOfferTrack } from '../catalog/domain/offer-track';
+import { bookableRoomWhere } from '../partners/domain/room-bookability';
 import { enqueueTutorReindex } from '../matching/indexing/reindex-events';
 
 const offerResponseInclude = {
@@ -73,6 +75,7 @@ export class TutorsService {
       degreeTitle: p.degreeTitle,
       fieldOfStudy: p.fieldOfStudy,
       specialization: p.specialization,
+      partnerRoomRadiusM: p.partnerRoomRadiusM,
       degreeInstitution: p.degreeInstitution,
       degreeCountry: p.degreeCountry,
       // Niveau validé par EduLoc (lecture seule) ; le motif de la décision reste interne.
@@ -126,6 +129,7 @@ export class TutorsService {
           : null,
         format: offer.format,
         durationMinutes: offer.durationMinutes,
+        durationOptions: offer.durationOptions ?? [],
         price: { amount: offer.price.toString(), currency: offer.currency },
         isActive: offer.isActive,
       })),
@@ -204,7 +208,7 @@ export class OffersService {
   /** UC-E04 : cohérence offre / matières déclarées. */
   async create(userId: string, data: {
     subjectId: string; educationLevelId?: string; trackId?: string | null; title: string; description: string;
-    format?: string; durationMinutes?: number; price: number; currency?: string;
+    format?: string; durationMinutes?: number; durationOptions?: number[]; price: number; currency?: string;
   }) {
     const p = await this.profile(userId);
     const declared = await this.prisma.tutorSubject.findFirst({
@@ -225,7 +229,7 @@ export class OffersService {
 
   async update(userId: string, id: string, data: {
     subjectId?: string; educationLevelId?: string; trackId?: string | null; title?: string; description?: string;
-    format?: string; durationMinutes?: number; price?: number; currency?: string;
+    format?: string; durationMinutes?: number; durationOptions?: number[]; price?: number; currency?: string;
   }) {
     const p = await this.profile(userId);
     const offer = await this.prisma.offer.findFirst({ where: { id, tutorProfileId: p.id } });
@@ -301,6 +305,7 @@ export class OffersService {
         : null,
       format: offer.format,
       durationMinutes: offer.durationMinutes,
+      durationOptions: offer.durationOptions ?? [],
       price: { amount: offer.price.toString(), currency: offer.currency },
       isActive: offer.isActive,
       description: offer.description,
@@ -405,15 +410,19 @@ export class PlacesService {
   }
 }
 
-/** Lieu « En ligne » du tuteur — créé à la demande, un seul par tuteur. */
-async function ensureOnlinePlace(prisma: PrismaService | Prisma.TransactionClient, tutorProfileId: string) {
+/** Lieu symbolique « En ligne » / « Salles partenaires » du tuteur — créé à la demande, un seul de chaque par tuteur. */
+async function ensureSymbolicPlace(
+  prisma: PrismaService | Prisma.TransactionClient,
+  tutorProfileId: string,
+  type: 'ONLINE' | 'PARTNER_ROOM',
+) {
   const existing = await prisma.place.findFirst({
-    where: { tutorProfileId, type: 'ONLINE', isActive: true },
+    where: { tutorProfileId, type, isActive: true },
     select: { id: true },
   });
   if (existing) return existing.id;
   const created = await prisma.place.create({
-    data: { tutorProfileId, label: 'En ligne', type: 'ONLINE' },
+    data: { tutorProfileId, label: type === 'ONLINE' ? 'En ligne' : 'Salles partenaires', type },
     select: { id: true },
   });
   return created.id;
@@ -460,13 +469,15 @@ export class AvailabilitiesService {
 
   async create(userId: string, data: {
     dayOfWeek: number; startTime: string; endTime: string; timezone?: string;
-    placeId?: string | null; online?: boolean; offerId?: string | null;
+    placeId?: string | null; online?: boolean; partnerRoom?: boolean; offerId?: string | null;
     validFrom?: string | null; validUntil?: string | null;
   }) {
     const p = await this.profile(userId);
     this.assertTimeOrder(data.startTime, data.endTime);
-    const placeId = await this.resolvePlace(p.id, data.placeId, data.online);
+    const placeId = await this.resolvePlace(p.id, data.placeId, data.online, data.partnerRoom);
     await this.assertOffer(p.id, data.offerId);
+    await this.assertFitsOffers(p.id, data.startTime, data.endTime, data.offerId);
+    if (data.partnerRoom) await this.assertAcceptedRoom(p.id);
     const availability = await this.prisma.availability.create({
       data: {
         tutorProfileId: p.id,
@@ -486,7 +497,7 @@ export class AvailabilitiesService {
 
   async update(userId: string, id: string, data: {
     dayOfWeek?: number; startTime?: string; endTime?: string; timezone?: string;
-    placeId?: string | null; online?: boolean; offerId?: string | null;
+    placeId?: string | null; online?: boolean; partnerRoom?: boolean; offerId?: string | null;
     validFrom?: string | null; validUntil?: string | null;
   }) {
     const p = await this.profile(userId);
@@ -494,6 +505,11 @@ export class AvailabilitiesService {
     if (!current) throw new NotFoundException('AVAILABILITY_NOT_FOUND');
     this.assertTimeOrder(data.startTime ?? current.startTime, data.endTime ?? current.endTime);
     await this.assertOffer(p.id, data.offerId);
+    await this.assertFitsOffers(
+      p.id, data.startTime ?? current.startTime, data.endTime ?? current.endTime,
+      data.offerId !== undefined ? data.offerId : current.offerId,
+    );
+    if (data.partnerRoom) await this.assertAcceptedRoom(p.id);
 
     const patch: Prisma.AvailabilityUncheckedUpdateInput = {};
     if (data.dayOfWeek !== undefined) patch.dayOfWeek = data.dayOfWeek;
@@ -503,8 +519,8 @@ export class AvailabilitiesService {
     if (data.offerId !== undefined) patch.offerId = data.offerId;
     if (data.validFrom !== undefined) patch.validFrom = data.validFrom ? new Date(data.validFrom) : null;
     if (data.validUntil !== undefined) patch.validUntil = data.validUntil ? new Date(data.validUntil) : null;
-    if (data.online !== undefined || data.placeId !== undefined) {
-      patch.placeId = await this.resolvePlace(p.id, data.placeId, data.online);
+    if (data.online !== undefined || data.placeId !== undefined || data.partnerRoom !== undefined) {
+      patch.placeId = await this.resolvePlace(p.id, data.placeId, data.online, data.partnerRoom);
     }
     const availability = await this.prisma.availability.update({
       where: { id },
@@ -562,9 +578,11 @@ export class AvailabilitiesService {
     }
   }
 
-  /** `online` → lieu « En ligne » ; sinon le lieu doit appartenir au tuteur. */
-  private async resolvePlace(tutorProfileId: string, placeId?: string | null, online?: boolean) {
-    if (online) return ensureOnlinePlace(this.prisma, tutorProfileId);
+  /** `online` → lieu « En ligne » ; `partnerRoom` → « Salles partenaires » ; sinon le lieu doit appartenir au tuteur. */
+  private async resolvePlace(tutorProfileId: string, placeId?: string | null, online?: boolean, partnerRoom?: boolean) {
+    if (online && partnerRoom) throw new UnprocessableEntityException('AVAILABILITY_PLACE_INVALID');
+    if (online) return ensureSymbolicPlace(this.prisma, tutorProfileId, 'ONLINE');
+    if (partnerRoom) return ensureSymbolicPlace(this.prisma, tutorProfileId, 'PARTNER_ROOM');
     if (!placeId) return null;
     const place = await this.prisma.place.findFirst({
       where: { id: placeId, tutorProfileId, isActive: true },
@@ -572,6 +590,29 @@ export class AvailabilitiesService {
     });
     if (!place) throw new NotFoundException('PLACE_NOT_FOUND');
     return place.id;
+  }
+
+  /**
+   * Une plage plus courte que la plus petite durée réservable ne produirait AUCUN créneau (chaque séance doit tenir
+   * entièrement dans la plage) : on la refuse plutôt que de la laisser invisible à la réservation. Plage liée à une
+   * offre = durées de cette offre ; sinon la plus petite durée parmi les offres actives. Sans offre, rien à comparer.
+   */
+  private async assertFitsOffers(tutorProfileId: string, startTime: string, endTime: string, offerId?: string | null) {
+    const offers = await this.prisma.offer.findMany({
+      where: { tutorProfileId, isActive: true, disabledByAdminAt: null, ...(offerId ? { id: offerId } : {}) },
+      select: { durationMinutes: true, durationOptions: true },
+    });
+    if (!offers.length) return;
+    const shortest = Math.min(...offers.flatMap((o) => allowedDurations(o)));
+    if (HHMM_TO_MIN(endTime) - HHMM_TO_MIN(startTime) < shortest) throw new UnprocessableEntityException('AVAILABILITY_TOO_SHORT');
+  }
+
+  /** « Salle partenaire » n'est proposé à la réservation que si le Tuteur a accepté au moins une salle réservable. */
+  private async assertAcceptedRoom(tutorProfileId: string) {
+    const accepted = await this.prisma.tutorRoom.count({
+      where: { tutorProfileId, isActive: true, room: bookableRoomWhere() },
+    });
+    if (!accepted) throw new UnprocessableEntityException('AVAILABILITY_NO_ACCEPTED_ROOM');
   }
 
   private async assertOffer(tutorProfileId: string, offerId?: string | null) {

@@ -1,0 +1,22 @@
+{
+  "callView": {
+    "hangUp": "Raccrocher",
+    "connecting": "Connexion…",
+    "callInProgress": "Appel en cours…",
+    "callEnded": "Appel terminé"
+  },
+  "incomingCallBanner": {
+    "yourContact": "Votre interlocuteur",
+    "incomingVideoCall": "Appel vidéo entrant…",
+    "incomingAudioCall": "Appel audio entrant…",
+    "ignore": "Ignorer",
+    "answer": "Répondre"
+  },
+  "lessonAlarmBanner": {
+    "yourLessonStarts": "Votre cours commence {{when}}",
+    "getReadyTheLessonAlarm": "Préparez-vous : alarme de cours activée dans vos paramètres.",
+    "inMin": "dans {{minutes}} min",
+    "stop": "Arrêter",
+    "viewTheLesson": "Voir le cours"
+  }
+}

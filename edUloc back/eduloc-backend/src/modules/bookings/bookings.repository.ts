@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { BusyInterval, locationKeyOf } from './domain/margin-policy';
 
 export type Tx = Prisma.TransactionClient;
 
@@ -34,6 +35,32 @@ export class BookingsRepository {
         endAt: { gt: startAt },
       },
     });
+  }
+
+  /**
+   * Séances CONFIRMED / IN_PROGRESS du Tuteur dans [startAt - windowMinutes, endAt + windowMinutes] avec leur lieu,
+   * pour appliquer les marges (MarginPolicy). Les PENDING ne comptent pas : aucun blocage temporaire.
+   */
+  async tutorNeighbours(
+    tx: Tx, tutorProfileId: string, startAt: Date, endAt: Date, windowMinutes: number, excludeId?: string,
+  ): Promise<BusyInterval[]> {
+    const rows = await tx.booking.findMany({
+      where: {
+        tutorProfileId,
+        id: excludeId ? { not: excludeId } : undefined,
+        status: { in: ['CONFIRMED', 'IN_PROGRESS'] },
+        startAt: { lt: new Date(endAt.getTime() + windowMinutes * 60_000) },
+        endAt: { gt: new Date(startAt.getTime() - windowMinutes * 60_000) },
+      },
+      select: { startAt: true, endAt: true, teachingMode: true, roomId: true, placeId: true, locationAddress: true },
+    });
+    return rows.map((r) => ({
+      startAt: r.startAt,
+      endAt: r.endAt,
+      locationKey: locationKeyOf({
+        teachingMode: r.teachingMode, roomId: r.roomId, placeId: r.placeId, address: r.locationAddress,
+      }),
+    }));
   }
 
   /** Auto-refus SYSTEM des PENDING chevauchantes (décision attachment n°1). */

@@ -1,0 +1,48 @@
+{
+  "level": {
+    "whatIsTheStudyLevel": "Quel est le niveau d'études ?",
+    "chooseALevelThenSpecify": "Choisissez un niveau, puis précisez-le",
+    "collapseBlock": "{{label}}, replier",
+    "expandBlock": "{{label}}, déplier"
+  },
+  "need": {
+    "noSubjectsAvailableForThis": "Aucune matière disponible pour ce niveau pour le moment.",
+    "noSubjectMatches": "Aucune matière ne correspond à « {{trim}} ».",
+    "chooseASubjectOrType": " — choisissez une matière ou saisissez votre cours",
+    "searchOrTypeACourse": "Rechercher ou saisir un cours (ex. Analyse 2)",
+    "searchForASubject": "Rechercher une matière",
+    "searchFor": "Chercher « {{typed}} »",
+    "mySubjectIsNotIn": "Ma matière n'est pas dans la liste : je la saisis moi-même",
+    "searchForTheTypedSubject": "Chercher la matière saisie : {{typed}}",
+    "tryLoadingTheSubjectsAgain": "Réessayer de charger les matières"
+  },
+  "summary": {
+    "summaryOfYourSearch": "Récapitulatif de votre recherche",
+    "checkYourCriteriaBeforeDiscovering": "Vérifiez vos critères avant de découvrir les tuteurs disponibles. Vous préciserez pour qui, l’objectif et votre besoin au moment de réserver.",
+    "yourSelectedCriteria": "Vos critères sélectionnés",
+    "editAll": "Modifier tout",
+    "editASpecificCriterion": "Modifier un critère spécifique",
+    "startTheSearchOver": "Recommencer la recherche à zéro",
+    "editACriterion": "Modifier un critère",
+    "chooseTheItemToAdjust": "Choisissez l'élément à ajuster sans perdre vos autres critères",
+    "notSpecified": "Non renseigné",
+    "notSpecified2": "Non renseignée",
+    "studyLevel": "Niveau d’études",
+    "degreeProgramme": "Mention",
+    "subjectSearched": "Matière recherchée",
+    "openTheEditMenu": "Ouvrir le menu de modification",
+    "startTheSearch": "Lancer la recherche",
+    "resetAllCriteria": "Réinitialiser tous les critères",
+    "closeTheWindow": "Fermer la fenêtre"
+  },
+  "track": {
+    "noTracksAvailableAtThe": "Aucune filière disponible pour le moment.",
+    "noDegreeProgrammeMatches": "Aucune mention ne correspond à « {{trim}} ».",
+    "whatIsYourTrack": "Quelle est votre série ?",
+    "whatIsYourDegreeProgramme": "Quelle est votre mention ?",
+    "searchForADegreeProgramme": "Rechercher une mention",
+    "tryLoadingTheTracksAgain": "Réessayer de charger les filières",
+    "newProgramme": "Nouveau programme",
+    "oldProgramme": "Ancien programme"
+  }
+}

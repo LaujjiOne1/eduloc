@@ -1,0 +1,46 @@
+{
+  "bookingDetail": {
+    "requestPendingMustAcceptIt": "Request pending. {{value}} must accept it to confirm the appointment.",
+    "communication": "Communication",
+    "youCanCommunicateWithThe": "You can communicate with the tutor by voice message. Calling will be available after confirmation.",
+    "toBeGivenToThe": "To be given to the tutor at the start of the session",
+    "cancelTheRequest": "Cancel the request",
+    "cancelTheAppointment": "Cancel the appointment",
+    "sendAVoiceNote": "Send a voice note",
+    "viewTheSessionCode": "View the session code",
+    "thisRequestWasDeclinedBy": "This request was declined by the tutor."
+  },
+  "conversation": {
+    "awaitingConfirmation": "Awaiting confirmation"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Exchange voice messages and documents with your tutors",
+    "noActiveConversations": "No active conversations",
+    "bookATutorOrSend": "Book a tutor or send a request to exchange voice notes and documents."
+  },
+  "dashboard": {
+    "whatWouldYouLikeTo": "What would you like to do?",
+    "myActivities": "My activities",
+    "switchModeLearner": "Switch mode: Learner",
+    "beneficiaries": "Beneficiaries"
+  },
+  "reviewTutor": {
+    "howDidTheSessionGo": "How did the session go?",
+    "yourComment": "Your comment",
+    "youWillBeAbleTo": "You will be able to review the tutor once the session is over.",
+    "shareYourExperience": "Share your experience…",
+    "starCount_one": "{{count}} star",
+    "starCount_other": "{{count}} stars"
+  },
+  "sessionInProgress": {
+    "waitingForToEndThe": "Waiting for {{value}} to end the session."
+  },
+  "sessionOtp": {
+    "giveThisCodeToWhen": "Give this code to {{value}} when the {{subjectLabel}} session starts.",
+    "onlineLessonYouCanSend": "Online lesson: you can send this code to the tutor in the conversation, or read it out by call or voice message.",
+    "codeSentToTheTutor": "Code sent to the tutor in the conversation.",
+    "thisScreenUpdatesByItself": "This screen updates by itself as soon as the tutor starts the session.",
+    "theSessionCodeIsOnly": "The session code is only available for a confirmed appointment.",
+    "sendTheCodeToThe": "Send the code to the tutor"
+  }
+}

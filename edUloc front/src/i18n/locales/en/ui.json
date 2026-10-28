@@ -1,0 +1,163 @@
+{
+  "birthDateField": {
+    "chooseADate": "Choose a date",
+    "labelValue": "{{label}}: {{value}}",
+    "notSpecified": "not specified"
+  },
+  "birthDateSelectModal": {
+    "closeWithoutSaving": "Close without saving",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "youMustBeAtLeast": "You must be at least {{minAge}} years old."
+  },
+  "cancelBookingModal": {
+    "cancellationIsNotPossibleLess": "Cancellation is not possible less than {{MIN_NOTICE_HOURS}} h before the start. Contact the tutor with a voice message.",
+    "theAppointmentIsInLess": "The appointment is in less than {{FREE_NOTICE_HOURS}} h: please give the reason for the cancellation.",
+    "thisActionIsFinalYou": "This action is final. You can give a reason (optional).",
+    "reasonForCancellationRequired": "Reason for cancellation (required)",
+    "reasonForCancellation": "Reason for cancellation"
+  },
+  "dayAgenda": {
+    "slot": "Slot",
+    "noSlotsOnThisDay": "No slots on this day",
+    "youHaveNoAvailabilityOr": "You have no availability or lesson scheduled for this date.",
+    "availableSlot": "Available slot",
+    "edit": "Edit →",
+    "nothingPlanned": "Nothing planned",
+    "addASlotOn": "Add a slot on {{dateLabel}}",
+    "addASlotOnThis": "Add a slot on this day",
+    "editTheAvailabilityFrom": "Edit the availability from {{startTime}}",
+    "everyWeek": "Every week",
+    "oneTimeOnly": "One time only",
+    "available": "Available",
+    "slotOrLessonCount_one": "{{count}} slot",
+    "slotOrLessonCount_other": "{{count}} slots / lessons"
+  },
+  "fieldCombobox": {
+    "useAsAField": "Use \"{{text}}\" as a field",
+    "chooseYourStudyLevelFirst": "Choose your study level first",
+    "tryLoadingTheListAgain": "Try loading the list again",
+    "choose": "Choose {{suggestion}}",
+    "typeYourField": "Type your field…"
+  },
+  "habitCalendar": {
+    "backToToday": "Back to today",
+    "collapseToWeek": "Collapse to week",
+    "showTheMonth": "Show the month",
+    "collapseTheCalendar": "Collapse the calendar",
+    "expandTheCalendar": "Expand the calendar",
+    "addASlot": "Add a slot"
+  },
+  "lessonAlarmCard": {
+    "lessonAlarm": "Lesson alarm",
+    "aReminderRingsBeforeEach": "A reminder rings before each of your confirmed lessons.",
+    "remindMe": "Remind me",
+    "before": "{{leadLabel}} before",
+    "unableToSaveThisSetting": "Unable to save this setting. Please try again.",
+    "turnOnTheLessonAlarm": "Turn on the lesson alarm",
+    "remindMeBeforeTheLesson": "Remind me {{leadLabel}} before the lesson"
+  },
+  "phoneInputField": {
+    "validNumber": "Valid number",
+    "chooseACountryDialingCode": "Choose a country dialing code",
+    "selectTheCountryOfYour": "Select the country of your phone line",
+    "example": "Example: {{placeholder}}",
+    "selectedCountryDialingCode": "Selected country: {{name}}, dialing code {{dialCode}}",
+    "clearTheNumber": "Clear the number",
+    "internationalFormat": "International format: {{dialCode}} {{nationalNumber}}",
+    "eGWithoutTheLeading": "E.g. {{placeholder}} (without the leading 0)",
+    "searchForACountryOr": "Search for a country or a dialing code...",
+    "dialingCode": "{{name}}, dialing code {{dialCode}}",
+    "madagascar": "Madagascar",
+    "france": "France",
+    "reunion": "Réunion",
+    "comoros": "Comoros",
+    "mauritius": "Mauritius",
+    "mayotte": "Mayotte",
+    "canada": "Canada",
+    "belgium": "Belgium",
+    "switzerland": "Switzerland",
+    "senegal": "Senegal",
+    "coteDIvoire": "Côte d'Ivoire",
+    "morocco": "Morocco",
+    "algeria": "Algeria",
+    "tunisia": "Tunisia",
+    "germany": "Germany",
+    "spain": "Spain",
+    "italy": "Italy",
+    "phone": "Phone",
+    "unitedStates": "United States",
+    "unitedKingdom": "United Kingdom"
+  },
+  "placeSearchField": {
+    "noAddressFoundTryA": "No address found. Try a neighbourhood or a city (e.g. \"Ankorondrano\").",
+    "searchIsUnavailableAtThe": "Search is unavailable at the moment.",
+    "searchForAnAddressA": "Search for an address, a neighbourhood...",
+    "searchForAnAddress": "Search for an address",
+    "choose": "Choose {{label}}"
+  },
+  "resultsLoginGate": {
+    "signInToSeeThe": "Sign in to see the results: profiles, rates and slots.",
+    "tutorsAvailableNearYou_one": "tutor available near you",
+    "tutorsAvailableNearYou_other": "tutors available near you"
+  },
+  "skillCombobox": {
+    "searching": "Searching…",
+    "suggestionsForYourLevel": "Suggestions for your level",
+    "mySkill": "My skill",
+    "atLeastCharacters": "At least {{MIN_NAME_LENGTH}} characters.",
+    "charactersMaximum": "{{MAX_NAME_LENGTH}} characters maximum.",
+    "charactersNotAllowed": "Characters not allowed.",
+    "unableToAddThisSkill": "Unable to add this skill.",
+    "typeASubjectOrA": "Type a subject or a skill…",
+    "searchForOrAddA": "Search for or add a skill",
+    "tryTheSearchAgain": "Try the search again",
+    "thisSkillIsAlreadyIn": "This skill is already in your list.",
+    "addAsANewSkill": "Add \"{{name}}\" as a new skill",
+    "adding": "Adding…"
+  },
+  "timeRangeWheelPicker": {
+    "start": "Start",
+    "end": "End",
+    "startHour": "Start hour",
+    "startMinute": "Start minute",
+    "endHour": "End hour",
+    "endMinute": "End minute"
+  },
+  "weekStrip": {
+    "thisWeek": " · this week",
+    "backToThisWeek": "Back to this week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "weekOf": "Week of {{range}}"
+  },
+  "statusBadge": {
+    "confirmed": "CONFIRMED",
+    "cancelled": "CANCELLED",
+    "inProgress": "IN PROGRESS",
+    "completed": "COMPLETED"
+  },
+  "tutorBottomNav": {
+    "messages": "Messages"
+  },
+  "notificationBell": {
+    "unreadCount_one": "Notifications, {{count}} unread",
+    "unreadCount_other": "Notifications, {{count}} unread"
+  },
+  "stepProgress": {
+    "stepOf": "Step {{step}} of {{total}}"
+  },
+  "codeInput": {
+    "verificationCode": "Verification code"
+  },
+  "selectField": {
+    "select": "Select"
+  },
+  "languageSelector": {
+    "language": "Language",
+    "chooseTheAppLanguage": "Choose the language of the app",
+    "close": "Close",
+    "currentLanguage": "Language: {{language}} — change"
+  }
+}

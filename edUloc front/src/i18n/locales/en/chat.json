@@ -1,0 +1,39 @@
+{
+  "conversationView": {
+    "noMessagesYetSendA": "No messages yet. Send a voice note or a document to start the conversation.",
+    "recordAVoiceNote": "Record a voice note",
+    "thisConversationIsReadOnly": "This conversation is read-only: no session is in progress or upcoming with this contact.",
+    "noTextMessagesVoiceNotes": "No text messages — voice notes and documents only",
+    "recordAVoiceMessage": "Record a voice message"
+  },
+  "conversationsListView": {
+    "conversations": "Conversations",
+    "readOnly": "Read-only",
+    "noMessages": "No messages",
+    "conversationWith": "Conversation with {{name}}",
+    "conversationWithUnread_one": "Conversation with {{name}}, {{count}} unread",
+    "conversationWithUnread_other": "Conversation with {{name}}, {{count}} unread"
+  },
+  "documentExchangeView": {
+    "sharedDocuments": "Shared documents",
+    "noSharedDocumentsYet": "No shared documents yet.",
+    "thisConversationIsReadOnly": "This conversation is read-only.",
+    "pdfJpegPngOrWebp": "PDF, JPEG, PNG or WebP — 20 MB maximum"
+  },
+  "voiceMessagePlayer": {
+    "playbackFailedTapToTry": "Playback failed. Tap to try again.",
+    "new": "New",
+    "pauseTheVoiceMessage": "Pause the voice message",
+    "playTheVoiceMessage": "Play the voice message"
+  },
+  "voiceRecordingView": {
+    "maximumDurationMin": "Maximum duration: {{round}} min",
+    "tapSendToFinish": "Tap \"Send\" to finish",
+    "messageTooShortHoldThe": "Message too short: hold the recording a little longer.",
+    "microphoneAccessDenied": "Microphone access denied",
+    "recordingUnavailable": "Recording unavailable",
+    "allowTheMicrophoneInYour": "Allow the microphone in your device (or browser) settings to send a voice message.",
+    "preparingTheMicrophone": "Preparing the microphone...",
+    "recordingInProgress": "Recording in progress"
+  }
+}

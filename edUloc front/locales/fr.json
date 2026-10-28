@@ -1,0 +1,6 @@
+{
+  "NSCameraUsageDescription": "EduLoc utilise la caméra pour les appels vidéo avec votre tuteur ou votre élève.",
+  "NSMicrophoneUsageDescription": "EduLoc utilise le micro pour enregistrer vos messages vocaux et passer des appels.",
+  "NSPhotoLibraryUsageDescription": "EduLoc accède à votre photothèque pour sélectionner votre vidéo de présentation.",
+  "NSLocationWhenInUseUsageDescription": "EduLoc utilise votre position pour trouver des tuteurs près de chez vous."
+}

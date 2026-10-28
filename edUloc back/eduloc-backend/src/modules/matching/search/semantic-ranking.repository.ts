@@ -19,8 +19,10 @@ export interface BestSimilarityRow {
 export class SemanticRankingRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Meilleure similarité cosinus (1 − distance) de chaque candidat pour chaque type de source. */
-  async bestSimilarities(queryVector: number[], candidateIds: string[], embeddingModel: string): Promise<BestSimilarityRow[]> {
+  /** Meilleure similarité cosinus (1 − distance) de chaque candidat pour chaque type de source, plancher absolu `minSimilarity` appliqué. */
+  async bestSimilarities(
+    queryVector: number[], candidateIds: string[], embeddingModel: string, minSimilarity = 0,
+  ): Promise<BestSimilarityRow[]> {
     if (!candidateIds.length) return [];
     const rows = await this.prisma.$queryRaw<(Omit<BestSimilarityRow, 'sim'> & { sim: number | string })[]>(Prisma.sql`
       WITH scored AS (
@@ -31,9 +33,13 @@ export class SemanticRankingRepository {
           AND c."embeddingModel" = ${embeddingModel}
           AND c.embedding IS NOT NULL
       )
-      SELECT DISTINCT ON ("tutorProfileId", "sourceType") "tutorProfileId", "sourceType", label, sim
-      FROM scored
-      ORDER BY "tutorProfileId", "sourceType", sim DESC`);
+      , kept AS (
+        -- Plancher absolu : un tuteur dont la MEILLEURE source reste sous le seuil est écarté en entier.
+        SELECT "tutorProfileId" FROM scored GROUP BY "tutorProfileId" HAVING MAX(sim) >= ${minSimilarity}
+      )
+      SELECT DISTINCT ON (s."tutorProfileId", s."sourceType") s."tutorProfileId", s."sourceType", s.label, s.sim
+      FROM scored s JOIN kept k ON k."tutorProfileId" = s."tutorProfileId"
+      ORDER BY s."tutorProfileId", s."sourceType", s.sim DESC`);
     return rows.map((r) => ({ ...r, sim: Number(r.sim) }));
   }
 

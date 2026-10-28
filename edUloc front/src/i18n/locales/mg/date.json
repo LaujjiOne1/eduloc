@@ -1,0 +1,46 @@
+{
+  "days": [
+    "Alahady",
+    "Alatsinainy",
+    "Talata",
+    "Alarobia",
+    "Alakamisy",
+    "Zoma",
+    "Asabotsy"
+  ],
+  "months": [
+    "Janoary",
+    "Febroary",
+    "Martsa",
+    "Aprily",
+    "May",
+    "Jona",
+    "Jolay",
+    "Aogositra",
+    "Septambra",
+    "Oktobra",
+    "Novambra",
+    "Desambra"
+  ],
+  "monthsShort": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jon",
+    "Jol",
+    "Aog",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des"
+  ],
+  "hours_one": "ora {{count}}",
+  "hours_other": "ora {{count}}",
+  "minutes_one": "minitra {{count}}",
+  "minutes_other": "minitra {{count}}",
+  "byteUnit": "o",
+  "kilobyteUnit": "Ko",
+  "megabyteUnit": "Mo"
+}

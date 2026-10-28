@@ -1,0 +1,80 @@
+{
+  "account": {
+    "mode": "Mode {{value}}",
+    "switchTo": "Passer en {{value}}",
+    "reminders": "Rappels",
+    "personalInformationComingSoon": "Informations personnelles (bientôt disponible)",
+    "myStudyVenuesPartner": "Mes lieux d'étude (partenaire)",
+    "manageMyPartnerStudyVenues": "Gérer mes lieux d'étude partenaires",
+    "switchModeLabel": "Mode {{value}} — changer de mode"
+  },
+  "forgotPassword": {
+    "enterYourAccountEmailWe": "Indiquez l'e-mail de votre compte : nous vous envoyons un code à 6 chiffres.",
+    "newPassword": "Nouveau mot de passe",
+    "useAnotherAddress": "Utiliser une autre adresse",
+    "passwordChanged": "Mot de passe modifié",
+    "yourDevicesWereSignedOut": "Vos appareils ont été déconnectés par sécurité. Connectez-vous avec votre nouveau mot de passe.",
+    "sendTheCode": "Envoyer le code",
+    "n8CharactersMinimum": "8 caractères minimum",
+    "changeThePassword": "Changer le mot de passe",
+    "useAnotherEmailAddress": "Utiliser une autre adresse e-mail",
+    "ifAccountExistsFor": "Si un compte existe pour",
+    "codeJustSent": ", un code vient d'être envoyé. Saisissez-le puis choisissez un nouveau mot de passe."
+  },
+  "home": {
+    "findSupportThatFitsYour": "Trouvez un accompagnement adapté à vos besoins",
+    "location": "Localisation",
+    "popularSearches": "Recherches populaires",
+    "doYouTeach": "Vous enseignez ?",
+    "becomeAVerifiedTutorOn": "Devenez tuteur validé sur EduLoc",
+    "noPopularSearchesAtThe": "Aucune recherche populaire pour le moment.",
+    "search": "Rechercher",
+    "doYouTeachBecomeA": "Vous enseignez ? Devenez tuteur validé sur EduLoc",
+    "mySpace": "Mon espace · {{firstName}}",
+    "tryLoadingThePopularSearches": "Réessayer de charger les recherches populaires"
+  },
+  "login": {
+    "signInToContinue": "Connectez-vous pour continuer",
+    "yourSlotIsHeldFor": "Votre créneau est réservé quelques minutes",
+    "or": "ou",
+    "forgotYourPassword": "Mot de passe oublié ?",
+    "donTHaveAnAccount": "Pas encore de compte ?",
+    "iManageAStudyVenue": "Je gère un lieu d'étude",
+    "signInOrCreateAn": "Connectez-vous ou créez un compte : vous arriverez directement sur l'espace Lieux partenaires.",
+    "continueWithGoogle": "Continuer avec Google",
+    "signingIn": "Connexion...",
+    "continueWithApple": "Continuer avec Apple"
+  },
+  "modeChoice": {
+    "howWouldYouLikeTo": "Comment souhaitez-vous utiliser EduLoc ?",
+    "learnerMode": "Mode Apprenti",
+    "offerMyLessons": "Proposer mes cours",
+    "partnerVenue": "Lieu partenaire",
+    "offerMyStudyRooms": "Proposer mes salles d'étude",
+    "learnerModeFindATutor": "Mode Apprenti — Chercher un tuteur",
+    "tutorModeOfferMyLessons": "Mode Tuteur — Proposer mes cours",
+    "partnerVenueOfferMyRooms": "Lieu partenaire — Proposer mes salles"
+  },
+  "modeSwitch": {
+    "currentMode": "Mode actuel",
+    "manageYourLessonsAndRequests": "Gérer vos cours et demandes",
+    "settingsComingSoon": "Paramètres (bientôt disponible)",
+    "switchToMode": "Passer en mode {{title}}"
+  },
+  "notifications": {
+    "markAllAsRead": "Tout marquer comme lu",
+    "noNotificationsAtTheMoment": "Aucune notification pour le moment.",
+    "unreadTitle": "Non lue : {{title}}"
+  },
+  "signup": {
+    "createYourAccount": "Créer votre compte",
+    "justTheEssentials30Seconds": "Seulement l'essentiel — 30 secondes",
+    "youremailGmailCom": "votreEmail@gmail.com",
+    "createMyAccount": "Créer mon compte",
+    "creating": "Création..."
+  },
+  "splash": {
+    "theRightSupportInThe": "Le bon accompagnement, au bon endroit.",
+    "continueToTheEdulocHome": "Continuer vers l'accueil edUloc"
+  }
+}

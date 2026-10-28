@@ -196,20 +196,20 @@ describe('lot 1 — fondations du matching (base réelle)', { skip }, () => {
 
     it('expert professionnel : Doctorat sans doctorat exige un motif, jamais validé automatiquement', async () => {
       const { tutor } = await makeTutor({ highestDegree: 'MASTER' });
-      const doctorat = await levelId('Université', 'Doctorat');
+      const doctorat = await levelId('Université', 'Doctorat 1');
       await rejects(academicLevels.set(adminUser.id, tutor.id, doctorat), 'ACADEMIC_LEVEL_NOTE_REQUIRED');
       await rejects(academicLevels.set(adminUser.id, tutor.id, doctorat, '   '), 'ACADEMIC_LEVEL_NOTE_REQUIRED');
       assert.equal((await prisma.tutorProfile.findUniqueOrThrow({ where: { id: tutor.id } })).academicLevelId, null);
 
       const done = await academicLevels.set(adminUser.id, tutor.id, doctorat, '15 ans de cryptographie en entreprise');
-      assert.equal(done.academicLevel?.name, 'Doctorat');
+      assert.equal(done.academicLevel?.name, 'Doctorat 1');
       assert.equal(done.academicLevelNote, '15 ans de cryptographie en entreprise');
     });
 
     it('un docteur n’a pas besoin de motif', async () => {
       const { tutor } = await makeTutor({ highestDegree: 'DOCTORAT' });
-      const done = await academicLevels.set(adminUser.id, tutor.id, await levelId('Université', 'Doctorat'));
-      assert.equal(done.academicLevel?.name, 'Doctorat');
+      const done = await academicLevels.set(adminUser.id, tutor.id, await levelId('Université', 'Doctorat 1'));
+      assert.equal(done.academicLevel?.name, 'Doctorat 1');
       assert.equal(done.academicLevelNote, null);
     });
 
@@ -244,7 +244,7 @@ describe('lot 1 — fondations du matching (base réelle)', { skip }, () => {
     it('une décision invalide annule toute l’approbation (même transaction)', async () => {
       const { application, tutor } = await makeTutor({ highestDegree: 'MASTER' });
       await rejects(
-        admin.approveApplication(adminUser.id, application.id, { academicLevelId: await levelId('Université', 'Doctorat') }),
+        admin.approveApplication(adminUser.id, application.id, { academicLevelId: await levelId('Université', 'Doctorat 1') }),
         'ACADEMIC_LEVEL_NOTE_REQUIRED',
       );
       const after = await prisma.tutorProfile.findUniqueOrThrow({ where: { id: tutor.id } });

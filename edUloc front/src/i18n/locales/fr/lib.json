@@ -1,0 +1,63 @@
+{
+  "attachments": {
+    "chooseAPdfOrAn": "Choisissez un PDF ou une image (JPEG, PNG, WebP).",
+    "theDocumentMustBe20": "Le document doit faire au maximum 20 Mo."
+  },
+  "experienceWarnings": {
+    "missingPeriodSayWhenOr": "Période manquante : précisez quand, ou pendant combien de temps.",
+    "missingInstitutionCompanyOrOrganisation": "Établissement, entreprise ou structure manquant(e).",
+    "audienceNotSpecifiedPrimaryMiddle": "Public encadré non précisé : primaire, collège, lycée ou université ?",
+    "subjectsTaughtNotSpecifiedThey": "Matières enseignées non précisées : elles aident les élèves à vous trouver."
+  },
+  "offerLabels": {
+    "lessonsForTheLevel": "Cours de {{label}} pour le niveau {{offerLevelLabel}}."
+  },
+  "push": {
+    "incomingCalls": "Appels entrants"
+  },
+  "experienceTypes": {
+    "teachingTutoring": "Enseignement / Soutien scolaire",
+    "academicSupervision": "Encadrement académique",
+    "professional": "Professionnelle",
+    "academicProject": "Projet académique",
+    "volunteering": "Bénévolat",
+    "university": "Université"
+  },
+  "partnerLabels": {
+    "trainingCentre": "Centre de formation",
+    "schoolEducationalInstitution": "École / établissement scolaire",
+    "libraryMediaLibrary": "Bibliothèque / médiathèque",
+    "coworkingSpace": "Espace de coworking",
+    "companyRoomSuitedToLearning": "Entreprise (salle adaptée à l'apprentissage)",
+    "association": "Association",
+    "communityCentre": "Centre communautaire",
+    "proofOfTheRightTo": "Preuve du droit de gérer le lieu",
+    "managerSIdDocument": "Pièce d'identité du gestionnaire",
+    "insurance": "Assurance",
+    "otherSupportingDocument": "Autre justificatif",
+    "draft": "Brouillon",
+    "pendingVerification": "En attente de vérification",
+    "underVerification": "En cours de vérification",
+    "correctionsRequested": "Corrections demandées",
+    "suspended": "Suspendu",
+    "rejected": "Refusé",
+    "disabled": "Désactivé",
+    "notPublished": "Non publiée",
+    "published": "Publiée",
+    "unpublishedByEduloc": "Dépubliée par EduLoc",
+    "awaitingActivation": "En attente d'activation",
+    "expired": "Expirée",
+    "cancelled": "Annulée",
+    "exactAddress": "Adresse exacte",
+    "positionLatitudeAndLongitude": "Position (latitude et longitude)",
+    "capacity": "Capacité",
+    "hourlyRate": "Tarif horaire"
+  },
+  "teachingMode": {
+    "atHome": "À domicile"
+  },
+  "call": {
+    "requiresDevBuild": "Les appels nécessitent l'application EduLoc compilée (build de développement), pas Expo Go.",
+    "requiresNativeOrWeb": "Les appels nécessitent l'application EduLoc native compilée (dev build) ou la version web."
+  }
+}

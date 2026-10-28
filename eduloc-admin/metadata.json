@@ -1,0 +1,5 @@
+{
+  "name": "EduLoc Admin",
+  "description": "Back-office d'administration EduLoc : dossiers tuteurs, modération, conflits et lieux partenaires.",
+  "requestFramePermissions": []
+}

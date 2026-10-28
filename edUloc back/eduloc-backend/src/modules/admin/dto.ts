@@ -8,6 +8,17 @@ export class UsersQueryDto {
   @IsOptional() @Type(() => Number) @IsInt() page = 1;
 }
 
+export class AdminBookingsQueryDto {
+  @IsOptional() @IsIn(['PENDING', 'CONFIRMED', 'REFUSED', 'CANCELLED', 'IN_PROGRESS', 'COMPLETED']) status?: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) page = 1;
+}
+
+export class AdminOffersQueryDto {
+  @IsOptional() @IsString() @MaxLength(200) search?: string;
+  @IsOptional() @IsIn(['ACTIVE', 'INACTIVE', 'DISABLED_BY_ADMIN']) state?: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) page = 1;
+}
+
 export class SetUserStatusDto {
   @IsIn(['ACTIVE', 'SUSPENDED']) status!: 'ACTIVE' | 'SUSPENDED';
 }

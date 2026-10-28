@@ -1,0 +1,6 @@
+{
+  "NSCameraUsageDescription": "Ampiasain'ny EduLoc ny fakan-tsary amin'ny antso video miaraka amin'ny mpampianatra na mpianatrao.",
+  "NSMicrophoneUsageDescription": "Ampiasain'ny EduLoc ny mikrô hamoronana ny hafatra an-peo sy hanaovana antso.",
+  "NSPhotoLibraryUsageDescription": "Miditra amin'ny galeria sarinao ny EduLoc mba hahafahanao mifidy ny video fampisehoana anao.",
+  "NSLocationWhenInUseUsageDescription": "Ampiasain'ny EduLoc ny toeranao hitadiavana mpampianatra akaikinao."
+}

@@ -1,0 +1,48 @@
+{
+  "level": {
+    "whatIsTheStudyLevel": "What is the study level?",
+    "chooseALevelThenSpecify": "Choose a level, then specify it",
+    "collapseBlock": "{{label}}, collapse",
+    "expandBlock": "{{label}}, expand"
+  },
+  "need": {
+    "noSubjectsAvailableForThis": "No subjects available for this level at the moment.",
+    "noSubjectMatches": "No subject matches \"{{trim}}\".",
+    "chooseASubjectOrType": " — choose a subject or type your course",
+    "searchOrTypeACourse": "Search or type a course (e.g. Analysis 2)",
+    "searchForASubject": "Search for a subject",
+    "searchFor": "Search for \"{{typed}}\"",
+    "mySubjectIsNotIn": "My subject is not in the list: I will type it myself",
+    "searchForTheTypedSubject": "Search for the typed subject: {{typed}}",
+    "tryLoadingTheSubjectsAgain": "Try loading the subjects again"
+  },
+  "summary": {
+    "summaryOfYourSearch": "Summary of your search",
+    "checkYourCriteriaBeforeDiscovering": "Check your criteria before discovering the available tutors. You will specify who it is for, the goal and your need when booking.",
+    "yourSelectedCriteria": "Your selected criteria",
+    "editAll": "Edit all",
+    "editASpecificCriterion": "Edit a specific criterion",
+    "startTheSearchOver": "Start the search over",
+    "editACriterion": "Edit a criterion",
+    "chooseTheItemToAdjust": "Choose the item to adjust without losing your other criteria",
+    "notSpecified": "Not specified",
+    "notSpecified2": "Not specified",
+    "studyLevel": "Study level",
+    "degreeProgramme": "Degree programme",
+    "subjectSearched": "Subject searched",
+    "openTheEditMenu": "Open the edit menu",
+    "startTheSearch": "Start the search",
+    "resetAllCriteria": "Reset all criteria",
+    "closeTheWindow": "Close the window"
+  },
+  "track": {
+    "noTracksAvailableAtThe": "No tracks available at the moment.",
+    "noDegreeProgrammeMatches": "No degree programme matches \"{{trim}}\".",
+    "whatIsYourTrack": "What is your track?",
+    "whatIsYourDegreeProgramme": "What is your degree programme?",
+    "searchForADegreeProgramme": "Search for a degree programme",
+    "tryLoadingTheTracksAgain": "Try loading the tracks again",
+    "newProgramme": "New programme",
+    "oldProgramme": "Old programme"
+  }
+}

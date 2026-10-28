@@ -1,0 +1,20 @@
+{
+  "recurringDayCard": {
+    "unavailable": "Unavailable",
+    "noTimeRangeSetFor": "No time range set for this day. Tap \"Add\" to set your hours.",
+    "turnOnOrOff": "Turn {{dayLabel}} on or off",
+    "addATimeRangeFor": "Add a time range for {{dayLabel}}"
+  },
+  "slotModal": {
+    "addASlot": "Add a slot",
+    "teachingFormat": "Teaching format",
+    "confirmTimeRange": "Confirm time range",
+    "inPersonOnline": "In person & Online",
+    "inPersonOnly": "In person only",
+    "onlineOnly": "Online only"
+  },
+  "slotPill": {
+    "deleteThisSlot": "Delete this slot",
+    "videoCall": "Video call"
+  }
+}

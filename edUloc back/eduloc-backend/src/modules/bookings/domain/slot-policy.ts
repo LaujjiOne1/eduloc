@@ -13,16 +13,17 @@ export interface AvailabilityRule {
   placeType: string | null; // PlaceType
 }
 
-export type TeachingMode = 'ONLINE' | 'AT_HOME_BENEFICIARY' | 'AT_HOME_TUTOR' | 'PUBLIC_PLACE';
+export type TeachingMode = 'ONLINE' | 'AT_HOME_BENEFICIARY' | 'AT_HOME_TUTOR' | 'PUBLIC_PLACE' | 'PARTNER_ROOM';
 
 const MODE_TO_PLACE: Record<TeachingMode, string> = {
   ONLINE: 'ONLINE',
   AT_HOME_BENEFICIARY: 'BENEFICIARY_HOME',
   AT_HOME_TUTOR: 'TUTOR_HOME',
   PUBLIC_PLACE: 'PUBLIC_PLACE',
+  PARTNER_ROOM: 'PARTNER_ROOM',
 };
 
-interface TzParts {
+export interface TzParts {
   day: number;
   minutes: number;
   /** Date LOCALE (fuseau de la règle) au format AAAA-MM-JJ. */
@@ -32,7 +33,7 @@ interface TzParts {
 // Un Intl.DateTimeFormat coûte cher à construire et computeSlots l'appelle des milliers de fois.
 const formatters = new Map<string, Intl.DateTimeFormat>();
 
-function tzParts(date: Date, timeZone: string): TzParts {
+export function tzParts(date: Date, timeZone: string): TzParts {
   let fmt = formatters.get(timeZone);
   if (!fmt) {
     fmt = new Intl.DateTimeFormat('en-US', {
@@ -59,6 +60,12 @@ const toMin = (hhmm: string): number => {
 };
 
 export class SlotPolicy {
+  /** Le Tuteur déclare-t-il au moins une plage active compatible avec ce mode (plage sans lieu = tous les modes) ? */
+  static supportsMode(rules: AvailabilityRule[], mode: TeachingMode, offerId: string): boolean {
+    return rules.some((r) =>
+      r.isActive && (!r.offerId || r.offerId === offerId) && (!r.placeType || r.placeType === MODE_TO_PLACE[mode]));
+  }
+
   /** Le créneau [startAt, endAt) doit être couvert ENTIÈREMENT par une règle active. */
   static matchRule(
     rules: AvailabilityRule[],
@@ -85,7 +92,7 @@ export class SlotPolicy {
       if (s.minutes < rs || e.minutes >= re) continue;
       if (rule.placeId && placeId && rule.placeId !== placeId) continue;
       if (rule.placeType && rule.placeType !== MODE_TO_PLACE[teachingMode]) continue;
-      if (placeId && !rule.placeId && rule.placeType !== MODE_TO_PLACE[teachingMode]) continue;
+      // Une plage sans lieu précis couvre tous les modes ET tous les lieux : le lieu choisi n'a pas à y figurer.
       return rule;
     }
     return null;

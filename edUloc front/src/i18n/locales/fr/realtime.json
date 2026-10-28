@@ -1,0 +1,22 @@
+{
+  "realtimeEffects": {
+    "newRequest": "Nouvelle demande",
+    "aRequesterWantsToBook": "Un demandeur souhaite réserver un cours avec vous.",
+    "yourAppointmentIsConfirmed": "Votre rendez-vous est confirmé.",
+    "requestDeclined": "Demande refusée",
+    "theTutorCouldNotAccept": "Le tuteur n'a pas pu accepter votre demande.",
+    "appointmentCancelled": "Rendez-vous annulé",
+    "anAppointmentHasBeenCancelled": "Un rendez-vous a été annulé.",
+    "slotUnavailable": "Créneau indisponible",
+    "theRequestedSlotIsNo": "Le créneau demandé n'est plus disponible. Choisissez un autre créneau ou une autre salle.",
+    "yourLessonIsComingUp": "Votre cours approche",
+    "aLessonStartsSoon": "Un cours commence bientôt.",
+    "sessionStarted": "Séance démarrée",
+    "yourSessionHasJustStarted": "Votre séance vient de commencer.",
+    "giveYourFeedbackOnThe": "Donnez votre avis sur la séance.",
+    "newVoiceMessage": "Nouveau message vocal",
+    "youHaveReceivedAVoice": "Vous avez reçu un message vocal.",
+    "newDocument": "Nouveau document",
+    "aDocumentWasSharedIn": "Un document a été partagé dans votre conversation."
+  }
+}

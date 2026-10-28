@@ -54,6 +54,13 @@ const NOTIFICATION_TYPES: Record<string, string> = {
   'call.incoming': 'INCOMING_CALL',
   'call.missed': 'MISSED_CALL',
   'review.created': 'SYSTEM',
+  'booking.conflict': 'SYSTEM',
+  'message.system.created': 'SYSTEM',
+  'partner.venue.submitted': 'SYSTEM',
+  'partner.venue.reviewed': 'SYSTEM',
+  'partner.room.submitted': 'SYSTEM',
+  'partner.room.reviewed': 'SYSTEM',
+  'partner.subscription.updated': 'SYSTEM',
 };
 
 /** Événements dont le payload contient un secret (code e-mail) : jamais diffusé ni conservé. */

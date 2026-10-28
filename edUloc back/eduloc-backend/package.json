@@ -21,7 +21,8 @@
     "matching:eval": "tsx eval/run.ts",
     "matching:reindex-all": "node dist/modules/matching/cli/reindex-all.command.js",
     "db:deploy": "prisma migrate deploy",
-    "e2e": "node scripts/e2e.mjs"
+    "e2e": "node scripts/e2e.mjs",
+    "e2e:admin": "tsx scripts/admin-e2e.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",

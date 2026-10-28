@@ -1,0 +1,80 @@
+{
+  "account": {
+    "mode": "{{value}} mode",
+    "switchTo": "Switch to {{value}}",
+    "reminders": "Reminders",
+    "personalInformationComingSoon": "Personal information (coming soon)",
+    "myStudyVenuesPartner": "My study venues (partner)",
+    "manageMyPartnerStudyVenues": "Manage my partner study venues",
+    "switchModeLabel": "{{value}} mode — switch mode"
+  },
+  "forgotPassword": {
+    "enterYourAccountEmailWe": "Enter your account email: we will send you a 6-digit code.",
+    "newPassword": "New password",
+    "useAnotherAddress": "Use another address",
+    "passwordChanged": "Password changed",
+    "yourDevicesWereSignedOut": "Your devices were signed out for security. Sign in with your new password.",
+    "sendTheCode": "Send the code",
+    "n8CharactersMinimum": "8 characters minimum",
+    "changeThePassword": "Change the password",
+    "useAnotherEmailAddress": "Use another email address",
+    "ifAccountExistsFor": "If an account exists for",
+    "codeJustSent": ", a code has just been sent. Enter it, then choose a new password."
+  },
+  "home": {
+    "findSupportThatFitsYour": "Find support that fits your needs",
+    "location": "Location",
+    "popularSearches": "Popular searches",
+    "doYouTeach": "Do you teach?",
+    "becomeAVerifiedTutorOn": "Become a verified tutor on EduLoc",
+    "noPopularSearchesAtThe": "No popular searches at the moment.",
+    "search": "Search",
+    "doYouTeachBecomeA": "Do you teach? Become a verified tutor on EduLoc",
+    "mySpace": "My space · {{firstName}}",
+    "tryLoadingThePopularSearches": "Try loading the popular searches again"
+  },
+  "login": {
+    "signInToContinue": "Sign in to continue",
+    "yourSlotIsHeldFor": "Your slot is held for a few minutes",
+    "or": "or",
+    "forgotYourPassword": "Forgot your password?",
+    "donTHaveAnAccount": "Don't have an account yet?",
+    "iManageAStudyVenue": "I manage a study venue",
+    "signInOrCreateAn": "Sign in or create an account: you will go straight to the Partner venues area.",
+    "continueWithGoogle": "Continue with Google",
+    "signingIn": "Signing in...",
+    "continueWithApple": "Continue with Apple"
+  },
+  "modeChoice": {
+    "howWouldYouLikeTo": "How would you like to use EduLoc?",
+    "learnerMode": "Learner mode",
+    "offerMyLessons": "Offer my lessons",
+    "partnerVenue": "Partner venue",
+    "offerMyStudyRooms": "Offer my study rooms",
+    "learnerModeFindATutor": "Learner mode — Find a tutor",
+    "tutorModeOfferMyLessons": "Tutor mode — Offer my lessons",
+    "partnerVenueOfferMyRooms": "Partner venue — Offer my rooms"
+  },
+  "modeSwitch": {
+    "currentMode": "Current mode",
+    "manageYourLessonsAndRequests": "Manage your lessons and requests",
+    "settingsComingSoon": "Settings (coming soon)",
+    "switchToMode": "Switch to {{title}} mode"
+  },
+  "notifications": {
+    "markAllAsRead": "Mark all as read",
+    "noNotificationsAtTheMoment": "No notifications at the moment.",
+    "unreadTitle": "Unread: {{title}}"
+  },
+  "signup": {
+    "createYourAccount": "Create your account",
+    "justTheEssentials30Seconds": "Just the essentials — 30 seconds",
+    "youremailGmailCom": "yourEmail@gmail.com",
+    "createMyAccount": "Create my account",
+    "creating": "Creating..."
+  },
+  "splash": {
+    "theRightSupportInThe": "The right support, in the right place.",
+    "continueToTheEdulocHome": "Continue to the edUloc home"
+  }
+}

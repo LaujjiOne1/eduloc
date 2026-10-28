@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsIn, IsInt, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
 
@@ -23,6 +23,13 @@ export class MatchingSearchDto {
   @IsOptional() @IsIn(['REMEDIAL', 'ONGOING', 'EXCELLENCE']) objective?: 'REMEDIAL' | 'ONGOING' | 'EXCELLENCE';
   /** Défaut : Beneficiary.preferredFormat. */
   @IsOptional() @IsIn(['ONLINE', 'IN_PERSON', 'BOTH']) format?: 'ONLINE' | 'IN_PERSON' | 'BOTH';
+  /**
+   * Position approximative du demandeur et rayon de recherche (en mètres) : servent UNIQUEMENT au classement final
+   * (proximité), jamais au modèle sémantique ni à l'éligibilité. Sans position, la proximité n'est pas évaluée.
+   */
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(-90) @Max(90) latitude?: number;
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(-180) @Max(180) longitude?: number;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(500) @Max(50_000) radiusM?: number;
   /** Défaut 10, max 20. */
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(20) limit?: number;
 }
@@ -37,6 +44,8 @@ export interface MatchingResult {
   matchReasons: string[];
   offers: { id: string; title: string; price: string; currency: string; format: 'ONLINE' | 'IN_PERSON' | 'BOTH' }[];
   nextSlots: { startAt: string; endAt: string }[];
+  /** Distance estimée jusqu'au lieu de présentiel le plus proche, arrondie au 500 m supérieur (null sans position). */
+  distanceMeters?: number | null;
   /** false : aucun créneau libre dans les 14 jours, le tuteur reste contactable. */
   hasNearSlot: boolean;
 }

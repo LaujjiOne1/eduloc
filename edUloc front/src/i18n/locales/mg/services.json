@@ -1,0 +1,61 @@
+{
+  "authservice": {
+    "incorrectEmailOrPassword": "Diso ny mailaka na ny teny miafina.",
+    "thisSignInMethodIs": "Tsy mbola azo ampiasaina io fomba fidirana io."
+  },
+  "availabilityservice": {
+    "invalidDate": "Daty tsy mety.",
+    "availabilityNotFound": "Tsy hita ny fotoana malalaka."
+  },
+  "beneficiaryservice": {
+    "theBeneficiarySStudyLevel": "Tsy ao amin'ny katalaogy ny ambaratonga ara-pianaran'ny mpandray soa.",
+    "theChosenGoalIsNot": "Tsy zakan'ny serveur ny tanjona nofidina."
+  },
+  "bookingservice": {
+    "theStartCodeIsRequired": "Takian'ny serveur ny kaody fanombohana."
+  },
+  "conversationservice": {
+    "noConversationHasBeenOpened": "Mbola tsy misy resaka nosokafana ho an'ity famandrihana ity.",
+    "thisAudioFormatIsNot": "Tsy zaka io endrika feo io.",
+    "theVoiceMessageIsToo": "Fohy loatra ny hafatra an-peo.",
+    "theVoiceMessageExceeds5": "Mihoatra ny 5 minitra ny hafatra an-peo.",
+    "onlyPdfsAndImagesJpeg": "PDF sy sary (JPEG, PNG, WebP) ihany no ekena.",
+    "theFileExceeds20Mb": "Mihoatra ny 20 Mo ny rakitra."
+  },
+  "cvImportservice": {
+    "theAnalysisIsTakingToo": "Maharitra loatra ny famakafakana amin'izao fotoana izao.",
+    "weCouldNotReadThis": "Tsy afaka namaky io rakitra io izahay (pejy foana, sary manjavozavo na rakitra voaaro).",
+    "automaticAnalysisIsTemporarilyUnavailabl": "Tsy azo ampiasaina vetivety ny famakafakana mandeha ho azy.",
+    "theAnalysisOfYourCv": "Tsy nahomby ny famakafakana ny CV-nao."
+  },
+  "locationservice": {
+    "locationIsNotAvailableOn": "Tsy misy ny fitadiavana toerana amin'ity fitaovana ity.",
+    "allowLocationAccessToUse": "Avelao ny fidirana amin'ny toerana hampiasana ny toeranao.",
+    "unableToRetrieveYourPosition": "Tsy afaka mahazo ny toeranao. Andramo indray na ampidiro ny adiresy.",
+    "myPosition": "Ny toerako"
+  },
+  "offerservice": {
+    "theSearchPeriodMustBe": "Tsy maintsy eo anelanelan'ny 1 sy 31 andro ny vanim-potoana fikarohana."
+  },
+  "reviewservice": {
+    "pleaseChooseARating": "Fidio isa azafady.",
+    "theApiResponseDoesNot": "Tsy misy ny anaran'ny mpanoratra ny hevitra ao amin'ny valin'ny API."
+  },
+  "tutorApplicationservice": {
+    "chooseAtLeastOneSkill": "Fidio fahaiza-manao iray farafahakeliny.",
+    "theFileMustBeSelected": "Tsy maintsy fidiana indray ny rakitra \"{{kind}}\".",
+    "addAPresentationVideoBefore": "Ampio video fampisehoana alohan'ny handefasana ny rakitrao."
+  },
+  "tutorservice": {
+    "signInToSearchFor": "Midira hikaroka taranja nosoratana malalaka, na mifidiana amin'ny lisitra.",
+    "enterAPlaceToFind": "Ampidiro ny toerana hitadiavana mpampianatra akaikinao."
+  },
+  "searchservice": {
+    "forMe": "Ho ahy",
+    "oneOff": "Indray mandeha",
+    "occasional": "Indraindray",
+    "regular": "Tsy tapaka",
+    "intensive": "Mafy",
+    "atTheBeneficiarySHome": "Any an-tranon'ny mpandray soa"
+  }
+}

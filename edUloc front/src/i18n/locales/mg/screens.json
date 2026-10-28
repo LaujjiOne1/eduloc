@@ -1,0 +1,80 @@
+{
+  "account": {
+    "mode": "Fomba {{value}}",
+    "switchTo": "Mivadika ho {{value}}",
+    "reminders": "Fampahatsiahivana",
+    "personalInformationComingSoon": "Fampahalalana manokana (tsy ho ela)",
+    "myStudyVenuesPartner": "Ny toeran'ny fianarako (mpiara-miasa)",
+    "manageMyPartnerStudyVenues": "Tantano ny toerana fianarana mpiara-miasa",
+    "switchModeLabel": "Fomba {{value}} — ovay ny fomba"
+  },
+  "forgotPassword": {
+    "enterYourAccountEmailWe": "Ampidiro ny mailaky ny kaontinao: handefa kaody 6 isa aminao izahay.",
+    "newPassword": "Teny miafina vaovao",
+    "useAnotherAddress": "Mampiasà adiresy hafa",
+    "passwordChanged": "Voaova ny teny miafina",
+    "yourDevicesWereSignedOut": "Nofoanana ny fitaovanao rehetra noho ny fiarovana. Midira amin'ny teny miafina vaovao.",
+    "sendTheCode": "Alefaso ny kaody",
+    "n8CharactersMinimum": "8 litera farafahakeliny",
+    "changeThePassword": "Ovay ny teny miafina",
+    "useAnotherEmailAddress": "Mampiasà adiresy mailaka hafa",
+    "ifAccountExistsFor": "Raha misy kaonty ho an'ny",
+    "codeJustSent": ", dia vao avy nalefa kaody. Ampidiro izany, avy eo fidio ny teny miafina vaovao."
+  },
+  "home": {
+    "findSupportThatFitsYour": "Mahita fanampiana mifanaraka amin'ny filanao",
+    "location": "Toerana",
+    "popularSearches": "Fikarohana malaza",
+    "doYouTeach": "Mpampianatra ve ianao?",
+    "becomeAVerifiedTutorOn": "Lasa mpampianatra voamarina ao amin'ny EduLoc",
+    "noPopularSearchesAtThe": "Tsy misy fikarohana malaza amin'izao fotoana izao.",
+    "search": "Karohy",
+    "doYouTeachBecomeA": "Mpampianatra ve ianao? Lasa mpampianatra voamarina ao amin'ny EduLoc",
+    "mySpace": "Ny toerako · {{firstName}}",
+    "tryLoadingThePopularSearches": "Andramo indray ny fandraisana ireo fikarohana malaza"
+  },
+  "login": {
+    "signInToContinue": "Midira hanohy",
+    "yourSlotIsHeldFor": "Voatokana vetivety ny fotoanao",
+    "or": "na",
+    "forgotYourPassword": "Hadinonao ve ny teny miafina?",
+    "donTHaveAnAccount": "Mbola tsy manana kaonty ve ianao?",
+    "iManageAStudyVenue": "Mitantana toerana fianarana aho",
+    "signInOrCreateAn": "Midira na mamorona kaonty: ho eo amin'ny faritra Toerana mpiara-miasa avy hatrany ianao.",
+    "continueWithGoogle": "Tohizo amin'ny Google",
+    "signingIn": "Miditra...",
+    "continueWithApple": "Tohizo amin'ny Apple"
+  },
+  "modeChoice": {
+    "howWouldYouLikeTo": "Ahoana no tianao hampiasana ny EduLoc?",
+    "learnerMode": "Fomba mpianatra",
+    "offerMyLessons": "Atolory ny lesoko",
+    "partnerVenue": "Toerana mpiara-miasa",
+    "offerMyStudyRooms": "Atolory ny efitrano fianarako",
+    "learnerModeFindATutor": "Fomba mpianatra — Mitady mpampianatra",
+    "tutorModeOfferMyLessons": "Fomba mpampianatra — Atolory ny lesoko",
+    "partnerVenueOfferMyRooms": "Toerana mpiara-miasa — Atolory ny efitranoko"
+  },
+  "modeSwitch": {
+    "currentMode": "Fomba ankehitriny",
+    "manageYourLessonsAndRequests": "Tantano ny lesonao sy ny fangatahana",
+    "settingsComingSoon": "Paramétra (tsy ho ela)",
+    "switchToMode": "Mivadika amin'ny fomba {{title}}"
+  },
+  "notifications": {
+    "markAllAsRead": "Atao hoe voavaky daholo",
+    "noNotificationsAtTheMoment": "Tsy misy fampandrenesana amin'izao fotoana izao.",
+    "unreadTitle": "Tsy mbola novakiana: {{title}}"
+  },
+  "signup": {
+    "createYourAccount": "Forony ny kaontinao",
+    "justTheEssentials30Seconds": "Ny ilaina ihany — 30 segondra",
+    "youremailGmailCom": "mailakaranao@gmail.com",
+    "createMyAccount": "Forony ny kaontiko",
+    "creating": "Eo am-pamoronana..."
+  },
+  "splash": {
+    "theRightSupportInThe": "Ny fanampiana mety, amin'ny toerana mety.",
+    "continueToTheEdulocHome": "Tohizo mankany amin'ny fandraisana edUloc"
+  }
+}

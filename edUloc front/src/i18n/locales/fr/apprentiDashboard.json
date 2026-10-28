@@ -1,0 +1,46 @@
+{
+  "bookingDetail": {
+    "requestPendingMustAcceptIt": "Demande en attente. {{value}} doit l'accepter pour confirmer le rendez-vous.",
+    "communication": "Communication",
+    "youCanCommunicateWithThe": "Vous pouvez communiquer avec le tuteur par message vocal. L'appel sera disponible après confirmation.",
+    "toBeGivenToThe": "À communiquer au tuteur au début de la séance",
+    "cancelTheRequest": "Annuler la demande",
+    "cancelTheAppointment": "Annuler le rendez-vous",
+    "sendAVoiceNote": "Envoyer un vocal",
+    "viewTheSessionCode": "Voir le code de séance",
+    "thisRequestWasDeclinedBy": "Cette demande a été refusée par le tuteur."
+  },
+  "conversation": {
+    "awaitingConfirmation": "En attente de confirmation"
+  },
+  "conversationsList": {
+    "exchangeVoiceMessagesAndDocuments": "Échangez des messages vocaux et des documents avec vos tuteurs",
+    "noActiveConversations": "Aucune conversation active",
+    "bookATutorOrSend": "Réservez un tuteur ou envoyez une demande pour échanger des vocaux et des documents."
+  },
+  "dashboard": {
+    "whatWouldYouLikeTo": "Que souhaitez-vous faire ?",
+    "myActivities": "Mes activités",
+    "switchModeLearner": "Changer de mode : Apprenti",
+    "beneficiaries": "Bénéficiaires"
+  },
+  "reviewTutor": {
+    "howDidTheSessionGo": "Comment s'est passée la séance ?",
+    "yourComment": "Votre commentaire",
+    "youWillBeAbleTo": "Vous pourrez évaluer le tuteur une fois la séance terminée.",
+    "shareYourExperience": "Partagez votre expérience…",
+    "starCount_one": "{{count}} étoile",
+    "starCount_other": "{{count}} étoiles"
+  },
+  "sessionInProgress": {
+    "waitingForToEndThe": "En attente que {{value}} termine la séance."
+  },
+  "sessionOtp": {
+    "giveThisCodeToWhen": "Communiquez ce code à {{value}} au moment de démarrer la séance de {{subjectLabel}}.",
+    "onlineLessonYouCanSend": "Cours en ligne : vous pouvez envoyer ce code au tuteur dans la conversation, ou le lui lire par appel ou message vocal.",
+    "codeSentToTheTutor": "Code envoyé au tuteur dans la conversation.",
+    "thisScreenUpdatesByItself": "Cet écran se met à jour tout seul dès que le tuteur démarre la séance.",
+    "theSessionCodeIsOnly": "Le code de séance n'est disponible que pour un rendez-vous confirmé.",
+    "sendTheCodeToThe": "Envoyer le code au tuteur"
+  }
+}

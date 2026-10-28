@@ -2,10 +2,12 @@ import { PartialType } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString,
-  IsIn, IsUUID, Matches, Max, MaxLength, Min,
+  IsIn, IsUUID, Matches, Max, MaxLength, Min, ArrayMaxSize, IsArray, ArrayUnique,
 } from 'class-validator';
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+/** Durées de séance possibles : multiples de 15 min jusqu'à 8 h (contrainte SQL offers_duration_options_valid). */
+export const DURATION_CHOICES = Array.from({ length: 32 }, (_, i) => (i + 1) * 15);
 
 export class ProfileDto {
   @IsOptional() @IsString() @MaxLength(120) displayName?: string;
@@ -20,6 +22,8 @@ export class ProfileDto {
   @IsOptional() @IsString() @MaxLength(500) specialization?: string;
   @IsOptional() @IsString() @MaxLength(200) degreeInstitution?: string;
   @IsOptional() @IsString() @MaxLength(100) degreeCountry?: string;
+  /** Rayon (mètres) autour de sa position de référence dans lequel il accepte d'intervenir en salle partenaire. */
+  @IsOptional() @Type(() => Number) @IsInt() @Min(500) @Max(50_000) partnerRoomRadiusM?: number;
 }
 
 export class SubjectDto {
@@ -37,6 +41,8 @@ export class OfferDto {
   @IsString() @MaxLength(5000) description!: string;
   @IsOptional() @IsEnum(['ONLINE', 'IN_PERSON', 'BOTH']) format?: string;
   @IsOptional() @Type(() => Number) @IsInt() @Min(15) @Max(480) durationMinutes?: number;
+  /** Autres durées proposées au Demandeur (ex. [120] pour 2 h) en plus de durationMinutes ; prix proportionnel. */
+  @IsOptional() @IsArray() @ArrayMaxSize(8) @ArrayUnique() @IsIn(DURATION_CHOICES, { each: true }) durationOptions?: number[];
   @Type(() => Number) @IsNumber() @Min(0) price!: number;
   @IsOptional() @IsString() @MaxLength(8) currency?: string;
 }
@@ -71,6 +77,8 @@ export class AvailabilityDto {
   @IsOptional() @IsUUID() placeId?: string | null;
   /** true : cours à distance. Le serveur rattache la plage au lieu « En ligne » du tuteur (créé au besoin). */
   @IsOptional() @IsBoolean() online?: boolean;
+  /** true : plage réservée aux séances en salle partenaire (lieu symbolique « Salles partenaires »). */
+  @IsOptional() @IsBoolean() partnerRoom?: boolean;
   @IsOptional() @IsUUID() offerId?: string | null;
   @IsOptional() @IsDateString() validFrom?: string | null;
   @IsOptional() @IsDateString() validUntil?: string | null;

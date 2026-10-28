@@ -3,10 +3,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
 import { AcademicLevelService } from './academic-level.service';
+import { AdminDirectoryService } from './admin-directory.service';
 import { AdminService } from './admin.service';
 import { DegreeEquivalencesService } from './degree-equivalences.service';
 import {
-  ApplyDegreeEquivalenceDto, ApproveApplicationDto, CreateDegreeEquivalenceDto, DegreeDecisionDto,
+  AdminBookingsQueryDto, AdminOffersQueryDto, ApplyDegreeEquivalenceDto, ApproveApplicationDto, CreateDegreeEquivalenceDto, DegreeDecisionDto,
   DegreeEquivalencesQueryDto, DegreeLookupQueryDto, ModerateOfferDto, RejectApplicationDto,
   ResolveConflictDto, ReviewDocumentDto, SetAcademicLevelDto, SetUserStatusDto, SuspendTutorDto, UsersQueryDto,
 } from './dto';
@@ -18,6 +19,7 @@ import {
 export class AdminController {
   constructor(
     private readonly service: AdminService,
+    private readonly directory: AdminDirectoryService,
     private readonly equivalences: DegreeEquivalencesService,
     private readonly academicLevels: AcademicLevelService,
   ) {}
@@ -62,6 +64,12 @@ export class AdminController {
   @Post('tutor-documents/:id/review')
   reviewDocument(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ReviewDocumentDto) {
     return this.service.reviewDocument(id, dto);
+  }
+
+  /** Lien de lecture (10 min) d'un justificatif : l'admin l'ouvre avant d'attester de son authenticité. */
+  @Get('tutor-documents/:id/url')
+  documentUrl(@Param('id', ParseUUIDPipe) id: string) {
+    return this.directory.documentUrl(id);
   }
 
   /** Applique au dossier une équivalence de diplôme VALIDATED (diplôme OTHER) ; elle alimente le niveau académique. */
@@ -124,14 +132,25 @@ export class AdminController {
     return this.service.suspendTutor(u.userId, id, dto.reason);
   }
 
+  /** Lève la suspension d'un tuteur (le dossier doit être approuvé). */
+  @Post('tutors/:id/reinstate')
+  reinstate(@CurrentUser() u: AuthUser, @Param('id', ParseUUIDPipe) id: string, @Body() dto: SuspendTutorDto) {
+    return this.service.reinstateTutor(u.userId, id, dto.reason);
+  }
+
   @Post('offers/:id/moderation')
   moderate(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ModerateOfferDto) {
     return this.service.moderateOffer(id, dto.action);
   }
 
   @Get('bookings')
-  bookings(@Query('status') status?: string, @Query('page') page = '1') {
-    return this.service.bookings(status, parseInt(page, 10) || 1);
+  bookings(@Query() q: AdminBookingsQueryDto) {
+    return this.directory.bookings(q);
+  }
+
+  @Get('offers')
+  offers(@Query() q: AdminOffersQueryDto) {
+    return this.directory.offers(q);
   }
 
   @Get('conflicts')

@@ -1,0 +1,61 @@
+{
+  "authservice": {
+    "incorrectEmailOrPassword": "Incorrect email or password.",
+    "thisSignInMethodIs": "This sign-in method is not available yet."
+  },
+  "availabilityservice": {
+    "invalidDate": "Invalid date.",
+    "availabilityNotFound": "Availability not found."
+  },
+  "beneficiaryservice": {
+    "theBeneficiarySStudyLevel": "The beneficiary's study level does not exist in the catalogue.",
+    "theChosenGoalIsNot": "The chosen goal is not supported by the server."
+  },
+  "bookingservice": {
+    "theStartCodeIsRequired": "The start code is required by the server."
+  },
+  "conversationservice": {
+    "noConversationHasBeenOpened": "No conversation has been opened for this booking yet.",
+    "thisAudioFormatIsNot": "This audio format is not supported.",
+    "theVoiceMessageIsToo": "The voice message is too short.",
+    "theVoiceMessageExceeds5": "The voice message exceeds 5 minutes.",
+    "onlyPdfsAndImagesJpeg": "Only PDFs and images (JPEG, PNG, WebP) are accepted.",
+    "theFileExceeds20Mb": "The file exceeds 20 MB."
+  },
+  "cvImportservice": {
+    "theAnalysisIsTakingToo": "The analysis is taking too long at the moment.",
+    "weCouldNotReadThis": "We could not read this file (empty page, blurry photo or protected file).",
+    "automaticAnalysisIsTemporarilyUnavailabl": "Automatic analysis is temporarily unavailable.",
+    "theAnalysisOfYourCv": "The analysis of your CV did not succeed."
+  },
+  "locationservice": {
+    "locationIsNotAvailableOn": "Location is not available on this device.",
+    "allowLocationAccessToUse": "Allow location access to use your position.",
+    "unableToRetrieveYourPosition": "Unable to retrieve your position. Try again or enter an address.",
+    "myPosition": "My position"
+  },
+  "offerservice": {
+    "theSearchPeriodMustBe": "The search period must be between 1 and 31 days."
+  },
+  "reviewservice": {
+    "pleaseChooseARating": "Please choose a rating.",
+    "theApiResponseDoesNot": "The API response does not contain the first name of the review author."
+  },
+  "tutorApplicationservice": {
+    "chooseAtLeastOneSkill": "Choose at least one skill.",
+    "theFileMustBeSelected": "The \"{{kind}}\" file must be selected again.",
+    "addAPresentationVideoBefore": "Add a presentation video before sending your file."
+  },
+  "tutorservice": {
+    "signInToSearchFor": "Sign in to search for a freely typed subject, or choose one from the list.",
+    "enterAPlaceToFind": "Enter a place to find tutors near you."
+  },
+  "searchservice": {
+    "forMe": "For me",
+    "oneOff": "One-off",
+    "occasional": "Occasional",
+    "regular": "Regular",
+    "intensive": "Intensive",
+    "atTheBeneficiarySHome": "At the beneficiary's home"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "recurringDayCard": {
+    "unavailable": "Tsy misy",
+    "noTimeRangeSetFor": "Tsy mbola voafaritra ny ora amin'ity andro ity. Tsindrio ny \"Ampio\" hamaritana ny oranao.",
+    "turnOnOrOff": "Alefaso na vonoy ny {{dayLabel}}",
+    "addATimeRangeFor": "Ampio ora ho an'ny {{dayLabel}}"
+  },
+  "slotModal": {
+    "addASlot": "Ampio fotoana",
+    "teachingFormat": "Fomba fampianarana",
+    "confirmTimeRange": "Hamafiso ny ora",
+    "inPersonOnline": "An-toerana sy an-tserasera",
+    "inPersonOnly": "An-toerana ihany",
+    "onlineOnly": "An-tserasera ihany"
+  },
+  "slotPill": {
+    "deleteThisSlot": "Fafao ity fotoana ity",
+    "videoCall": "Antso video"
+  }
+}

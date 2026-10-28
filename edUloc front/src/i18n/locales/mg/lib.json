@@ -1,0 +1,63 @@
+{
+  "attachments": {
+    "chooseAPdfOrAn": "Fidio PDF na sary (JPEG, PNG, WebP).",
+    "theDocumentMustBe20": "20 Mo farafahabetsany ny antontan-taratasy."
+  },
+  "experienceWarnings": {
+    "missingPeriodSayWhenOr": "Tsy misy ny fe-potoana: lazao hoe oviana, na mandritra ny fotoana ohatrinona.",
+    "missingInstitutionCompanyOrOrganisation": "Tsy misy ny sekoly, orinasa na fikambanana.",
+    "audienceNotSpecifiedPrimaryMiddle": "Tsy voafaritra ny mpianatra: sekoly fototra, ambaratonga faharoa, lisea na oniversite?",
+    "subjectsTaughtNotSpecifiedThey": "Tsy voafaritra ny taranja nampianarina: manampy ny mpianatra hahita anao izany."
+  },
+  "offerLabels": {
+    "lessonsForTheLevel": "Lesona {{label}} ho an'ny ambaratonga {{offerLevelLabel}}."
+  },
+  "push": {
+    "incomingCalls": "Antso miditra"
+  },
+  "experienceTypes": {
+    "teachingTutoring": "Fampianarana / Fanampiana ara-pianarana",
+    "academicSupervision": "Fanaraha-maso ara-pianarana",
+    "professional": "Ara-dalàna",
+    "academicProject": "Tetikasa ara-pianarana",
+    "volunteering": "Asa an-tsitrapo",
+    "university": "Oniversite"
+  },
+  "partnerLabels": {
+    "trainingCentre": "Foibe fanofanana",
+    "schoolEducationalInstitution": "Sekoly / ivontoerana fampianarana",
+    "libraryMediaLibrary": "Tranomboky / mediateka",
+    "coworkingSpace": "Toerana miara-miasa",
+    "companyRoomSuitedToLearning": "Orinasa (efitrano mifanaraka amin'ny fianarana)",
+    "association": "Fikambanana",
+    "communityCentre": "Foibe ho an'ny vondrom-piarahamonina",
+    "proofOfTheRightTo": "Porofon'ny zo hitantana ny toerana",
+    "managerSIdDocument": "Taratasy fanamarinan-toetra ny mpitantana",
+    "insurance": "Fiantohana",
+    "otherSupportingDocument": "Antontan-taratasy fanamarinana hafa",
+    "draft": "Volavolan-dahatsoratra",
+    "pendingVerification": "Miandry fanamarinana",
+    "underVerification": "Eo am-pamarinana",
+    "correctionsRequested": "Nangatahina ny fanitsiana",
+    "suspended": "Natsahatra",
+    "rejected": "Nolavina",
+    "disabled": "Tsy miasa",
+    "notPublished": "Tsy navoaka",
+    "published": "Navoaka",
+    "unpublishedByEduloc": "Nesorin'ny EduLoc tsy ho publika",
+    "awaitingActivation": "Miandry ny fampandehanana",
+    "expired": "Lany daty",
+    "cancelled": "Nafoana",
+    "exactAddress": "Adiresy marina",
+    "positionLatitudeAndLongitude": "Toerana (latitiotra sy longitiotra)",
+    "capacity": "Fahafahana (isan'ny toerana)",
+    "hourlyRate": "Tarifa isan'ora"
+  },
+  "teachingMode": {
+    "atHome": "Any an-tranony"
+  },
+  "call": {
+    "requiresDevBuild": "Ny antso dia mitaky ny rindranasa EduLoc voaforona (build fampandrosoana), fa tsy Expo Go.",
+    "requiresNativeOrWeb": "Ny antso dia mitaky ny rindranasa EduLoc natif voaforona (dev build) na ny dikan-tserasera."
+  }
+}

@@ -4,6 +4,7 @@ import { AppConfig } from '../../core/config/app.config';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { CacheKeys, CacheService } from '../../infrastructure/cache/cache.service';
 import { SlotPolicy, AvailabilityRule, TeachingMode } from '../bookings/domain/slot-policy';
+import { publicDistance, toPublicPlace } from './domain/public-location';
 
 type SearchFormat = 'ONLINE' | 'IN_PERSON' | 'BOTH';
 
@@ -87,7 +88,7 @@ export class SearchService {
           AND (${params.trackId ?? null}::text IS NULL OR o."trackId" IS NULL OR o."trackId" = ${params.trackId ?? null})
           AND (
             (${wantOnline}::boolean AND p.type = 'ONLINE' AND o.format IN ('ONLINE', 'BOTH'))
-            OR (${wantInPerson}::boolean AND p.type <> 'ONLINE' AND o.format IN ('IN_PERSON', 'BOTH')
+            OR (${wantInPerson}::boolean AND p.type NOT IN ('ONLINE', 'PARTNER_ROOM') AND o.format IN ('IN_PERSON', 'BOTH')
                 AND ST_DWithin(p.location, ST_MakePoint(${lng}::float8, ${lat}::float8)::geography,
                                GREATEST(${params.radiusM}::float8, COALESCE(p.radius, 0)::float8)))
           )
@@ -159,17 +160,8 @@ export class SearchService {
             price: { amount: offer.price.toString(), currency: offer.currency },
             isActive: offer.isActive,
           })),
-          nearestPlace: nearestPlace
-            ? {
-                id: nearestPlace.id,
-                label: nearestPlace.label,
-                type: nearestPlace.type,
-                latitude: nearestPlace.latitude,
-                longitude: nearestPlace.longitude,
-                radiusMeters: nearestPlace.radius,
-              }
-            : null,
-          distanceMeters: nearestRow.distanceM,
+          nearestPlace: nearestPlace ? toPublicPlace(nearestPlace) : null,
+          distanceMeters: publicDistance(nearestRow.distanceM, nearestPlace?.type ?? null),
           nextSlotAt,
           bioExcerpt: profile.bio?.slice(0, 180) ?? null,
         }];
@@ -284,14 +276,7 @@ export class SearchService {
           },
           competenceDescription: item.competenceDescription,
         })),
-        places: profile.places.map((place) => ({
-          id: place.id,
-          label: place.label,
-          type: place.type,
-          latitude: place.latitude,
-          longitude: place.longitude,
-          radiusMeters: place.radius,
-        })),
+        places: profile.places.map(toPublicPlace),
         offers: profile.offers.map((offer) => ({
           id: offer.id,
           title: offer.title,
@@ -374,14 +359,7 @@ export class SearchService {
         reviewsCount: offer.tutorProfile.reviewsCount,
         isVerified: offer.tutorProfile.isVisible,
       },
-      places: offer.tutorProfile.places.map((place) => ({
-        id: place.id,
-        label: place.label,
-        type: place.type,
-        latitude: place.latitude,
-        longitude: place.longitude,
-        radiusMeters: place.radius,
-      })),
+      places: offer.tutorProfile.places.map(toPublicPlace),
       disabledByAdmin: Boolean(offer.disabledByAdminAt),
       createdAt: offer.createdAt,
     };

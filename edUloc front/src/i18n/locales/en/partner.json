@@ -1,0 +1,43 @@
+{
+  "roomBlocksEditor": {
+    "noUpcomingClosures": "No upcoming closures.",
+    "closeTheRoom": "Close the room",
+    "theDateMustUseThe": "The date must use the YYYY-MM-DD format (e.g. 2026-11-03).",
+    "timesMustUseTheHh": "Times must use the HH:mm format.",
+    "unableToAddThisClosure": "Unable to add this closure.",
+    "unableToDeleteThisClosure": "Unable to delete this closure.",
+    "deleteThisClosure": "Delete this closure",
+    "from": "From",
+    "addTheClosure": "Add the closure",
+    "to": "To"
+  },
+  "roomOpeningsEditor": {
+    "noOpeningHoursTheRoom": "No opening hours: the room is not open for any booking.",
+    "addATimeRange": "Add a time range",
+    "chooseAtLeastOneDay": "Choose at least one day.",
+    "timesMustUseTheHh": "Times must use the HH:mm format (e.g. 09:00).",
+    "theClosingTimeMustBe": "The closing time must be after the opening time.",
+    "thisRangeOverlapsAnExisting": "{{value}}: this range overlaps an existing range.",
+    "unableToSaveTheOpening": "Unable to save the opening hours.",
+    "confirmedSessionSFallOutside": "{{uncoveredConfirmedBookings}} confirmed session(s) fall outside these hours: they are not cancelled and must be honoured.",
+    "openingHoursSaved": "Opening hours saved.",
+    "delete": "Delete {{value}} {{startTime}}",
+    "opening": "Opening",
+    "closing": "Closing",
+    "saveOpeningHours": "Save opening hours"
+  },
+  "roomPhotosEditor": {
+    "noPhotosYet": "No photos yet.",
+    "accessToYourPhotoLibrary": "Access to your photo library is required to choose a photo.",
+    "chooseAJpgPngOr": "Choose a JPG, PNG or WebP photo.",
+    "eachPhotoMustBe8": "Each photo must be 8 MB at most.",
+    "thePhotoUploadFailed": "The photo upload failed.",
+    "unableToChooseThePhoto": "Unable to choose the photo: {{message}}",
+    "unableToChooseThePhoto2": "Unable to choose the photo.",
+    "unableToDeleteThisPhoto": "Unable to delete this photo.",
+    "roomPhoto": "Room photo",
+    "deleteThisPhoto": "Delete this photo",
+    "maximumNumberOfPhotosReached": "Maximum number of photos reached",
+    "addAPhoto": "Add a photo"
+  }
+}

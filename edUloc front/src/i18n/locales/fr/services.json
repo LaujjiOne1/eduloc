@@ -1,0 +1,61 @@
+{
+  "authservice": {
+    "incorrectEmailOrPassword": "Email ou mot de passe incorrect.",
+    "thisSignInMethodIs": "Cette connexion n'est pas encore disponible."
+  },
+  "availabilityservice": {
+    "invalidDate": "Date invalide.",
+    "availabilityNotFound": "Disponibilité introuvable."
+  },
+  "beneficiaryservice": {
+    "theBeneficiarySStudyLevel": "Le niveau d’étude du bénéficiaire n’existe pas dans le catalogue.",
+    "theChosenGoalIsNot": "L’objectif choisi n’est pas pris en charge par le serveur."
+  },
+  "bookingservice": {
+    "theStartCodeIsRequired": "Le code de démarrage est requis par le serveur."
+  },
+  "conversationservice": {
+    "noConversationHasBeenOpened": "Aucune conversation n'est encore ouverte pour cette réservation.",
+    "thisAudioFormatIsNot": "Ce format audio n'est pas pris en charge.",
+    "theVoiceMessageIsToo": "Le message vocal est trop court.",
+    "theVoiceMessageExceeds5": "Le message vocal dépasse 5 minutes.",
+    "onlyPdfsAndImagesJpeg": "Seuls les PDF et les images (JPEG, PNG, WebP) sont acceptés.",
+    "theFileExceeds20Mb": "Le fichier dépasse 20 Mo."
+  },
+  "cvImportservice": {
+    "theAnalysisIsTakingToo": "L'analyse est trop longue pour le moment.",
+    "weCouldNotReadThis": "Nous n'avons pas réussi à lire ce fichier (page vide, photo floue ou fichier protégé).",
+    "automaticAnalysisIsTemporarilyUnavailabl": "L'analyse automatique est momentanément indisponible.",
+    "theAnalysisOfYourCv": "L'analyse de votre CV n'a pas abouti."
+  },
+  "locationservice": {
+    "locationIsNotAvailableOn": "La localisation n'est pas disponible sur cet appareil.",
+    "allowLocationAccessToUse": "Autorisez la localisation pour utiliser votre position.",
+    "unableToRetrieveYourPosition": "Impossible de récupérer votre position. Réessayez ou saisissez une adresse.",
+    "myPosition": "Ma position"
+  },
+  "offerservice": {
+    "theSearchPeriodMustBe": "La période de recherche doit être comprise entre 1 et 31 jours."
+  },
+  "reviewservice": {
+    "pleaseChooseARating": "Merci de choisir une note.",
+    "theApiResponseDoesNot": "La réponse de l’API ne contient pas le prénom de l’auteur de l’avis."
+  },
+  "tutorApplicationservice": {
+    "chooseAtLeastOneSkill": "Choisissez au moins une compétence.",
+    "theFileMustBeSelected": "Le fichier « {{kind}} » doit être sélectionné à nouveau.",
+    "addAPresentationVideoBefore": "Ajoutez une vidéo de présentation avant d'envoyer votre dossier."
+  },
+  "tutorservice": {
+    "signInToSearchFor": "Connectez-vous pour rechercher une matière saisie librement, ou choisissez-en une dans la liste.",
+    "enterAPlaceToFind": "Indiquez un lieu pour trouver des tuteurs près de chez vous."
+  },
+  "searchservice": {
+    "forMe": "Pour moi",
+    "oneOff": "Ponctuel",
+    "occasional": "Occasionnel",
+    "regular": "Régulier",
+    "intensive": "Intensif",
+    "atTheBeneficiarySHome": "Au domicile du bénéficiaire"
+  }
+}

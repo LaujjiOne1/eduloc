@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── ENUMS ─────────────────────────────────────────────────────
+
+enum UserRole {
+  APPRENTI
+  TUTEUR
+}
+
+enum ActiveRole {
+  NONE
+  APPRENTI
+  TUTEUR
+}
+
+enum BookingType {
+  SPOT
+  PACK
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TeachingMode {
+  AT_HOME_APPRENTICE // Le tuteur se déplace chez l'élève
+  AT_HOME_TUTOR      // L'élève se déplace chez le tuteur
+  PUBLIC_PLACE       // Lieu public / Safe Zone (ex: Bibliothèque Ankatso, Café)
+  ONLINE             // Cours en ligne / Visio
+}
+
+enum TutorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── MODELS ────────────────────────────────────────────────────
+
+model User {
+  id                  String         @id @default(uuid())
+  name                String
+  email               String         @unique
+  password            String
+  role                UserRole
+  activeRole          ActiveRole     @default(NONE)
+  language            String         @default("fr") // "fr" | "en" | "mg"
+  avatar              String?
+  phone               String?
+  studyLevel          String?
+  defaultSearchRadius Int?           @default(5)
+  latitude            Float?
+  longitude           Float?
+
+  // Back-office admin access. Never settable via a public endpoint (RegisterDto
+  // has no such field) — only granted directly in the database.
+  isAdmin             Boolean        @default(false)
+
+  emailVerified              Boolean   @default(false)
+  emailVerificationToken     String?   @unique
+  emailVerificationExpiresAt DateTime?
+
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  // Relations
+  tutorProfile        TutorProfile?
+  apprenticeBookings  Booking[]      @relation("ApprenticeBookings")
+  sentMessages        Message[]      @relation("SentMessages")
+  conversationsApprentice Conversation[] @relation("ConversationApprentice")
+  conversationsTutor  Conversation[] @relation("ConversationTutor")
+  reviews             Review[]       @relation("ApprenticeReviews")
+  refreshTokens       RefreshToken[]
+  notifications       Notification[]
+  slotAlerts          SlotAlert[]    @relation("ApprenticeSlotAlerts")
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model TutorProfile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects       String[]
+  rate           Decimal   @db.Decimal(10, 2)
+  bio            String    @db.Text
+  rating         Float     @default(0)
+  reviewsCount   Int       @default(0)
+  latitude       Float
+  longitude      Float
+  locationLabel  String
+  availability   String[]
+  isOnline       Boolean   @default(true)
+
+  // Admin validation workflow — a tutor stays PENDING (and hidden from public
+  // search) until an admin reviews the profile via the back-office.
+  status          TutorStatus @default(PENDING)
+  rejectionReason String?
+  submittedAt     DateTime    @default(now())
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  bookings       Booking[]   @relation("TutorBookings")
+  reviews        Review[]    @relation("TutorReviews")
+  offers         Offer[]     @relation("TutorOffers")
+  slotAlerts     SlotAlert[] @relation("TutorSlotAlerts")
+
+  @@map("tutor_profiles")
+}
+
+model Offer {
+  id             String       @id @default(uuid())
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation("TutorOffers", fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  title          String
+  subject        String
+  rate           Decimal      @db.Decimal(10, 2)
+  isActive       Boolean      @default(true)
+  description    String       @db.Text
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("offers")
+}
+
+model Booking {
+  id                 String        @id @default(uuid())
+  apprenticeId       String
+  apprentice         User          @relation("ApprenticeBookings", fields: [apprenticeId], references: [id])
+  tutorId            String
+  tutorProfile       TutorProfile  @relation("TutorBookings", fields: [tutorId], references: [id])
+  subject            String
+  date               DateTime
+  durationMinutes    Int           @default(60)
+  endDate            DateTime
+  type               BookingType   @default(SPOT)
+  price              Decimal       @db.Decimal(10, 2)
+  status             BookingStatus @default(PENDING)
+  locationLabel      String
+  teachingMode       TeachingMode  @default(PUBLIC_PLACE)
+  locationAddress    String?
+  meetingUrl         String?
+  startOtp           String?
+  startedAt          DateTime?
+  cancellationPolicy String?
+  notes              String?       @db.Text
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+model Conversation {
+  id            String    @id @default(uuid())
+  apprenticeId  String
+  apprentice    User      @relation("ConversationApprentice", fields: [apprenticeId], references: [id])
+  tutorId       String
+  tutor         User      @relation("ConversationTutor", fields: [tutorId], references: [id])
+  lastMessage   String?
+  lastSenderId  String?
+  unreadCount   Int       @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  messages      Message[]
+
+  @@unique([apprenticeId, tutorId])
+  @@map("conversations")
+}
+
+model Message {
+  id                  String       @id @default(uuid())
+  conversationId      String
+  conversation        Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId            String
+  sender              User         @relation("SentMessages", fields: [senderId], references: [id])
+  content             String       @db.Text
+  attachmentUrl       String?
+  isJoinSessionButton Boolean      @default(false)
+
+  createdAt           DateTime     @default(now())
+
+  @@map("messages")
+}
+
+model Review {
+  id               String       @id @default(uuid())
+  tutorId          String
+  tutorProfile     TutorProfile @relation("TutorReviews", fields: [tutorId], references: [id])
+  apprenticeId     String
+  apprentice       User         @relation("ApprenticeReviews", fields: [apprenticeId], references: [id])
+  rating           Int
+  text             String       @db.Text
+  officialReply    String?      @db.Text
+
+  createdAt        DateTime     @default(now())
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  type      String
+  isRead    Boolean  @default(false)
+  linkUrl   String?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model SlotAlert {
+  id           String       @id @default(uuid())
+  apprenticeId String
+  apprentice   User         @relation("ApprenticeSlotAlerts", fields: [apprenticeId], references: [id], onDelete: Cascade)
+  tutorId      String
+  tutorProfile TutorProfile @relation("TutorSlotAlerts", fields: [tutorId], references: [id], onDelete: Cascade)
+  date         DateTime
+
+  createdAt    DateTime     @default(now())
+
+  @@unique([apprenticeId, tutorId, date])
+  @@map("slot_alerts")
+}

@@ -1,0 +1,166 @@
+{
+  "useAvailabilityActions": {
+    "unableToSaveThisAvailability": "Unable to save this availability.",
+    "unableToDeleteThisAvailability": "Unable to delete this availability.",
+    "unableToSaveTheseAvailabilities": "Unable to save these availabilities."
+  },
+  "useAvailabilityDetail": {
+    "thisAvailabilityCouldNotBe": "This availability could not be found.",
+    "unableToLoadThisAvailability": "Unable to load this availability."
+  },
+  "useBookingCancelAction": {
+    "unableToCancelThisAppointment": "Unable to cancel this appointment."
+  },
+  "useBookingOptions": {
+    "unableToLoadTheBooking": "Unable to load the booking options."
+  },
+  "useBookingQuote": {
+    "unableToCalculateThePrice": "Unable to calculate the price. Please try again."
+  },
+  "useBookingRequestAction": {
+    "unableToAcceptThisRequest": "Unable to accept this request.",
+    "unableToDeclineThisRequest": "Unable to decline this request."
+  },
+  "useCall": {
+    "unableToStartTheCall": "Unable to start the call."
+  },
+  "useConversationMessages": {
+    "thisConversationCouldNotBe": "This conversation could not be found.",
+    "unableToLoadTheConversation": "Unable to load the conversation."
+  },
+  "useConversations": {
+    "unableToLoadYourConversations": "Unable to load your conversations."
+  },
+  "useCreateBeneficiary": {
+    "unableToAddThisBeneficiary": "Unable to add this beneficiary."
+  },
+  "useCreateBooking": {
+    "unableToSendTheRequest": "Unable to send the request. Please try again."
+  },
+  "useCvImport": {
+    "theCvImportFailed": "The CV import failed."
+  },
+  "useDevicePosition": {
+    "positionUnavailable": "Position unavailable."
+  },
+  "useForgotPassword": {
+    "enterThe6DigitCode": "Enter the 6-digit code received by email."
+  },
+  "useLevels": {
+    "unableToLoadTheLevels": "Unable to load the levels."
+  },
+  "useMyBeneficiaries": {
+    "unableToLoadYourBeneficiaries": "Unable to load your beneficiaries."
+  },
+  "useMyBooking": {
+    "unableToLoadThisAppointment": "Unable to load this appointment."
+  },
+  "useMyBookings": {
+    "unableToLoadYourAppointments": "Unable to load your appointments."
+  },
+  "useMyNotifications": {
+    "unableToLoadYourNotifications": "Unable to load your notifications."
+  },
+  "useObjectives": {
+    "unableToLoadTheObjectives": "Unable to load the objectives."
+  },
+  "useOfferActions": {
+    "unableToSaveThisOffer": "Unable to save this offer.",
+    "unableToUpdateThisOffer": "Unable to update this offer."
+  },
+  "useOffer": {
+    "thisOfferCouldNotBe": "This offer could not be found.",
+    "unableToLoadThisOffer": "Unable to load this offer."
+  },
+  "usePartnerReservations": {
+    "unableToLoadTheReservations": "Unable to load the reservations."
+  },
+  "usePartnerRoom": {
+    "unableToLoadThisRoom": "Unable to load this room."
+  },
+  "usePartnerSubscription": {
+    "unableToLoadTheCommercial": "Unable to load the commercial offer."
+  },
+  "usePartnerVenue": {
+    "unableToLoadYourVenue": "Unable to load your venue."
+  },
+  "usePopularCategories": {
+    "unableToLoadPopularSearches": "Unable to load popular searches."
+  },
+  "useSelfBeneficiary": {
+    "unableToPrepareYourRequest": "Unable to prepare your request."
+  },
+  "useSendMessage": {
+    "unableToSendTheVoice": "Unable to send the voice message. Please try again.",
+    "unableToSendTheDocument": "Unable to send the document. Please try again."
+  },
+  "useSessionCode": {
+    "unableToLoadTheSession": "Unable to load the session code."
+  },
+  "useShareSessionCode": {
+    "unableToSendTheCode": "Unable to send the code. Please try again."
+  },
+  "useSignupForm": {
+    "lastNameIsRequired": "Last name is required.",
+    "phoneNumberIsRequired": "Phone number is required."
+  },
+  "useSkillSuggestions": {
+    "unableToLoadTheSuggestions": "Unable to load the suggestions."
+  },
+  "useSubjects": {
+    "unableToLoadTheSubjects": "Unable to load the subjects."
+  },
+  "useSubmitReview": {
+    "unableToSendYourReview": "Unable to send your review. Please try again."
+  },
+  "useSubmitTutorApplication": {
+    "unableToSendYourApplication": "Unable to send your application. Please try again."
+  },
+  "useTracks": {
+    "unableToLoadTheTracks": "Unable to load the tracks."
+  },
+  "useTutorAvailability": {
+    "unableToLoadYourCalendar": "Unable to load your calendar."
+  },
+  "useTutorBooking": {
+    "thisRequestCouldNotBe": "This request could not be found.",
+    "unableToLoadThisRequest": "Unable to load this request."
+  },
+  "useTutorBookings": {
+    "unableToLoadYourRequests": "Unable to load your requests."
+  },
+  "useTutorOffers": {
+    "unableToLoadYourOffers": "Unable to load your offers."
+  },
+  "useTutorProfile": {
+    "unableToLoadYourProfile": "Unable to load your profile."
+  },
+  "useTutorRooms": {
+    "unableToLoadThePartner": "Unable to load the partner rooms.",
+    "actionUnavailablePleaseTryAgain": "Action unavailable. Please try again."
+  },
+  "useTutorSearch": {
+    "unableToLoadTheTutors": "Unable to load the tutors.",
+    "onlyOnlineLessonsShown": "{{reason}} Only online lessons are shown.",
+    "positionUnavailable": "Your position is unavailable."
+  },
+  "useTutorSessionAction": {
+    "unableToStartTheSession": "Unable to start the session.",
+    "unableToEndTheSession": "Unable to end the session."
+  },
+  "useTutor": {
+    "thisTutorCouldNotBe": "This tutor could not be found.",
+    "unableToLoadThisTutor": "Unable to load this tutor."
+  },
+  "useVerifyForm": {
+    "aNewCodeHasJust": "A new code has just been sent to you.",
+    "unableToResendTheCode": "Unable to resend the code. Please try again."
+  },
+  "useVoiceRecorder": {
+    "unableToStart": "Unable to start recording on this device.",
+    "unableToFinish": "The recording could not be finalised. Please try again."
+  },
+  "usePartnerAction": {
+    "actionUnavailable": "Action unavailable. Please try again."
+  }
+}

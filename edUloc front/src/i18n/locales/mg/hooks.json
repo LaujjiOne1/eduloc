@@ -1,0 +1,166 @@
+{
+  "useAvailabilityActions": {
+    "unableToSaveThisAvailability": "Tsy afaka mitahiry ity fotoana malalaka ity.",
+    "unableToDeleteThisAvailability": "Tsy afaka mamafa ity fotoana malalaka ity.",
+    "unableToSaveTheseAvailabilities": "Tsy afaka mitahiry ireo fotoana malalaka ireo."
+  },
+  "useAvailabilityDetail": {
+    "thisAvailabilityCouldNotBe": "Tsy hita ity fotoana malalaka ity.",
+    "unableToLoadThisAvailability": "Tsy afaka mitondra ity fotoana malalaka ity."
+  },
+  "useBookingCancelAction": {
+    "unableToCancelThisAppointment": "Tsy afaka manafoana ity fihaonana ity."
+  },
+  "useBookingOptions": {
+    "unableToLoadTheBooking": "Tsy afaka mitondra ireo safidy famandrihana."
+  },
+  "useBookingQuote": {
+    "unableToCalculateThePrice": "Tsy afaka mikajy ny vidiny. Andramo indray azafady."
+  },
+  "useBookingRequestAction": {
+    "unableToAcceptThisRequest": "Tsy afaka manaiky ity fangatahana ity.",
+    "unableToDeclineThisRequest": "Tsy afaka mandà ity fangatahana ity."
+  },
+  "useCall": {
+    "unableToStartTheCall": "Tsy afaka manomboka ny antso."
+  },
+  "useConversationMessages": {
+    "thisConversationCouldNotBe": "Tsy hita ity resaka ity.",
+    "unableToLoadTheConversation": "Tsy afaka mitondra ny resaka."
+  },
+  "useConversations": {
+    "unableToLoadYourConversations": "Tsy afaka mitondra ny resakao."
+  },
+  "useCreateBeneficiary": {
+    "unableToAddThisBeneficiary": "Tsy afaka manampy ity mpandray soa ity."
+  },
+  "useCreateBooking": {
+    "unableToSendTheRequest": "Tsy afaka mandefa ny fangatahana. Andramo indray azafady."
+  },
+  "useCvImport": {
+    "theCvImportFailed": "Tsy nahomby ny fampidirana ny CV."
+  },
+  "useDevicePosition": {
+    "positionUnavailable": "Tsy misy ny toerana."
+  },
+  "useForgotPassword": {
+    "enterThe6DigitCode": "Ampidiro ny isa 6 amin'ny kaody voaray tamin'ny mailaka."
+  },
+  "useLevels": {
+    "unableToLoadTheLevels": "Tsy afaka mitondra ireo ambaratonga."
+  },
+  "useMyBeneficiaries": {
+    "unableToLoadYourBeneficiaries": "Tsy afaka mitondra ireo mpandray soanao."
+  },
+  "useMyBooking": {
+    "unableToLoadThisAppointment": "Tsy afaka mitondra ity fihaonana ity."
+  },
+  "useMyBookings": {
+    "unableToLoadYourAppointments": "Tsy afaka mitondra ny fihaonanao."
+  },
+  "useMyNotifications": {
+    "unableToLoadYourNotifications": "Tsy afaka mitondra ny fampandrenesanao."
+  },
+  "useObjectives": {
+    "unableToLoadTheObjectives": "Tsy afaka mitondra ireo tanjona."
+  },
+  "useOfferActions": {
+    "unableToSaveThisOffer": "Tsy afaka mitahiry ity tolotra ity.",
+    "unableToUpdateThisOffer": "Tsy afaka manavao ity tolotra ity."
+  },
+  "useOffer": {
+    "thisOfferCouldNotBe": "Tsy hita ity tolotra ity.",
+    "unableToLoadThisOffer": "Tsy afaka mitondra ity tolotra ity."
+  },
+  "usePartnerReservations": {
+    "unableToLoadTheReservations": "Tsy afaka mitondra ireo famandrihana."
+  },
+  "usePartnerRoom": {
+    "unableToLoadThisRoom": "Tsy afaka mitondra ity efitrano ity."
+  },
+  "usePartnerSubscription": {
+    "unableToLoadTheCommercial": "Tsy afaka mitondra ny tolotra ara-barotra."
+  },
+  "usePartnerVenue": {
+    "unableToLoadYourVenue": "Tsy afaka mitondra ny toeranao."
+  },
+  "usePopularCategories": {
+    "unableToLoadPopularSearches": "Tsy afaka mitondra ireo fikarohana malaza."
+  },
+  "useSelfBeneficiary": {
+    "unableToPrepareYourRequest": "Tsy afaka manomana ny fangatahanao."
+  },
+  "useSendMessage": {
+    "unableToSendTheVoice": "Tsy afaka mandefa ny hafatra an-peo. Andramo indray azafady.",
+    "unableToSendTheDocument": "Tsy afaka mandefa ny antontan-taratasy. Andramo indray azafady."
+  },
+  "useSessionCode": {
+    "unableToLoadTheSession": "Tsy afaka mitondra ny kaody session."
+  },
+  "useShareSessionCode": {
+    "unableToSendTheCode": "Tsy afaka mandefa ny kaody. Andramo indray azafady."
+  },
+  "useSignupForm": {
+    "lastNameIsRequired": "Takiana ny fanampin'anarana.",
+    "phoneNumberIsRequired": "Takiana ny laharana finday."
+  },
+  "useSkillSuggestions": {
+    "unableToLoadTheSuggestions": "Tsy afaka mitondra ireo soso-kevitra."
+  },
+  "useSubjects": {
+    "unableToLoadTheSubjects": "Tsy afaka mitondra ireo taranja."
+  },
+  "useSubmitReview": {
+    "unableToSendYourReview": "Tsy afaka mandefa ny hevitrao. Andramo indray azafady."
+  },
+  "useSubmitTutorApplication": {
+    "unableToSendYourApplication": "Tsy afaka mandefa ny fangatahanao. Andramo indray azafady."
+  },
+  "useTracks": {
+    "unableToLoadTheTracks": "Tsy afaka mitondra ireo sampana."
+  },
+  "useTutorAvailability": {
+    "unableToLoadYourCalendar": "Tsy afaka mitondra ny kalandrierinao."
+  },
+  "useTutorBooking": {
+    "thisRequestCouldNotBe": "Tsy hita ity fangatahana ity.",
+    "unableToLoadThisRequest": "Tsy afaka mitondra ity fangatahana ity."
+  },
+  "useTutorBookings": {
+    "unableToLoadYourRequests": "Tsy afaka mitondra ireo fangatahanao."
+  },
+  "useTutorOffers": {
+    "unableToLoadYourOffers": "Tsy afaka mitondra ireo tolotrao."
+  },
+  "useTutorProfile": {
+    "unableToLoadYourProfile": "Tsy afaka mitondra ny mombamombanao."
+  },
+  "useTutorRooms": {
+    "unableToLoadThePartner": "Tsy afaka mitondra ireo efitrano mpiara-miasa.",
+    "actionUnavailablePleaseTryAgain": "Tsy azo atao izany. Andramo indray azafady."
+  },
+  "useTutorSearch": {
+    "unableToLoadTheTutors": "Tsy afaka mitondra ireo mpampianatra.",
+    "onlyOnlineLessonsShown": "{{reason}} Lesona an-tserasera ihany no aseho.",
+    "positionUnavailable": "Tsy misy ny toeranao."
+  },
+  "useTutorSessionAction": {
+    "unableToStartTheSession": "Tsy afaka manomboka ny session.",
+    "unableToEndTheSession": "Tsy afaka mamarana ny session."
+  },
+  "useTutor": {
+    "thisTutorCouldNotBe": "Tsy hita ity mpampianatra ity.",
+    "unableToLoadThisTutor": "Tsy afaka mitondra ity mpampianatra ity."
+  },
+  "useVerifyForm": {
+    "aNewCodeHasJust": "Vao avy nalefa taminao kaody vaovao.",
+    "unableToResendTheCode": "Tsy afaka mandefa indray ny kaody. Andramo indray azafady."
+  },
+  "useVoiceRecorder": {
+    "unableToStart": "Tsy afaka manomboka ny firaketana amin'ity fitaovana ity.",
+    "unableToFinish": "Tsy voafarana ny firaketana. Andramo indray azafady."
+  },
+  "usePartnerAction": {
+    "actionUnavailable": "Tsy azo atao izany. Andramo indray azafady."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "callView": {
+    "hangUp": "Hamarino ny antso",
+    "connecting": "Mifandray…",
+    "callInProgress": "Mandeha ny antso…",
+    "callEnded": "Vita ny antso"
+  },
+  "incomingCallBanner": {
+    "yourContact": "Ny mpifandray aminao",
+    "incomingVideoCall": "Antso video miditra…",
+    "incomingAudioCall": "Antso feo miditra…",
+    "ignore": "Aza ekena",
+    "answer": "Valio"
+  },
+  "lessonAlarmBanner": {
+    "yourLessonStarts": "Manomboka {{when}} ny lesonao",
+    "getReadyTheLessonAlarm": "Miomàna: alefa ao amin'ny paramétranao ny fiambenana lesona.",
+    "inMin": "afaka {{minutes}} min",
+    "stop": "Ajanony",
+    "viewTheLesson": "Jereo ny lesona"
+  }
+}

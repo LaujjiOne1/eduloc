@@ -1,0 +1,18 @@
+{
+  "maplibreResultsMap": {
+    "tutorsMap": "Sari-tanin'ny mpampianatra"
+  },
+  "webviewResultsMap": {
+    "unableToLoadTheMap": "Tsy afaka mitondra ny sari-tany. Hamarino ny fifandraisanao.",
+    "tryLoadingTheMapAgain": "Andramo indray ny fandraisana ny sari-tany"
+  },
+  "resultsMapHtml": {
+    "loadingTheMap": "Mitondra ny sari-tany…",
+    "toggle3d": "Mifidiana eo amin'ny fijery 3D sy ny fijery fisaka",
+    "fitMap": "Atakalo eo afovoan'ny sari-tany ianao sy ireo mpampianatra",
+    "mapUnavailable": "Tsy misy ny sari-tany (mila fifandraisana).",
+    "you": "Ianao",
+    "yourPosition": "Ny toeranao",
+    "unableToLoad": "Tsy afaka mitondra ny sari-tany. Hamarino ny fifandraisanao."
+  }
+}

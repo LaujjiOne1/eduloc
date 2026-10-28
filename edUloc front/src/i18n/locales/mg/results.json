@@ -1,0 +1,23 @@
+{
+  "offerDetail": {
+    "chooseASlot": "Fidio fotoana"
+  },
+  "results": {
+    "verified": "Voamarina",
+    "noTutorMatchesYourSearch": "Tsy misy mpampianatra mifanaraka amin'ny fikarohanao amin'izao fotoana izao.",
+    "retryWithMyPosition": "Andramo indray miaraka amin'ny toerako",
+    "list": "Lisitra",
+    "map": "Sari-tany",
+    "noTutorToShowOn": "Tsy misy mpampianatra aseho eo amin'ny sari-tany.",
+    "km": "{{label}}, {{distanceKm}} km",
+    "tryLoadingTheTutorsAgain": "Andramo indray ny fandraisana ireo mpampianatra"
+  },
+  "tutorProfile": {
+    "verifiedTutor": "Mpampianatra voamarina",
+    "subjects": "Taranja",
+    "levels": "Ambaratonga",
+    "formats": "Endrika",
+    "offers": "Tolotra",
+    "viewTheOffer": "Jereo ny tolotra"
+  }
+}

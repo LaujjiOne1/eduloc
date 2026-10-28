@@ -28,6 +28,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { GeoModule } from './modules/geo/geo.module';
 import { MatchingModule } from './modules/matching/matching.module';
 import { CvImportModule } from './modules/cv-import/cv-import.module';
+import { PartnersModule } from './modules/partners/partners.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { CvImportModule } from './modules/cv-import/cv-import.module';
     GeoModule,
     MatchingModule,
     CvImportModule,
+    PartnersModule,
+    RoomsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

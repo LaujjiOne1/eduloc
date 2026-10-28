@@ -1,0 +1,22 @@
+{
+  "realtimeEffects": {
+    "newRequest": "Fangatahana vaovao",
+    "aRequesterWantsToBook": "Misy mpangataka te-handrisika lesona aminao.",
+    "yourAppointmentIsConfirmed": "Voamafy ny fihaonanao.",
+    "requestDeclined": "Nolavina ny fangatahana",
+    "theTutorCouldNotAccept": "Tsy afaka manaiky ny fangatahanao ny mpampianatra.",
+    "appointmentCancelled": "Nafoana ny fihaonana",
+    "anAppointmentHasBeenCancelled": "Nisy fihaonana nafoana.",
+    "slotUnavailable": "Tsy misy intsony ny fotoana",
+    "theRequestedSlotIsNo": "Tsy misy intsony ny fotoana nangatahina. Fidio fotoana hafa na efitrano hafa.",
+    "yourLessonIsComingUp": "Antomotra ny lesonao",
+    "aLessonStartsSoon": "Manomboka tsy ho ela ny lesona iray.",
+    "sessionStarted": "Nanomboka ny session",
+    "yourSessionHasJustStarted": "Vao nanomboka ny sessionao.",
+    "giveYourFeedbackOnThe": "Omeo ny hevitrao momba ny session.",
+    "newVoiceMessage": "Hafatra an-peo vaovao",
+    "youHaveReceivedAVoice": "Nahazo hafatra an-peo ianao.",
+    "newDocument": "Antontan-taratasy vaovao",
+    "aDocumentWasSharedIn": "Nisy antontan-taratasy nozarana tao amin'ny resakao."
+  }
+}

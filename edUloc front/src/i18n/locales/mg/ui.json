@@ -1,0 +1,163 @@
+{
+  "birthDateField": {
+    "chooseADate": "Fidio daty",
+    "labelValue": "{{label}}: {{value}}",
+    "notSpecified": "tsy voafaritra"
+  },
+  "birthDateSelectModal": {
+    "closeWithoutSaving": "Akatony tsy mitahiry",
+    "day": "Andro",
+    "month": "Volana",
+    "year": "Taona",
+    "youMustBeAtLeast": "Tsy maintsy manana {{minAge}} taona farafahakeliny ianao."
+  },
+  "cancelBookingModal": {
+    "cancellationIsNotPossibleLess": "Tsy azo atao ny manafoana raha latsaky ny {{MIN_NOTICE_HOURS}} ora alohan'ny fanombohana. Mifandraisa amin'ny mpampianatra amin'ny hafatra an-peo.",
+    "theAppointmentIsInLess": "Latsaky ny {{FREE_NOTICE_HOURS}} ora ny fihaonana: ampio ny antony nanafoanana azafady.",
+    "thisActionIsFinalYou": "Tsy azo averina ity hetsika ity. Azonao atao ny manome antony (tsy voatery).",
+    "reasonForCancellationRequired": "Antony nanafoanana (takiana)",
+    "reasonForCancellation": "Antony nanafoanana"
+  },
+  "dayAgenda": {
+    "slot": "Fotoana",
+    "noSlotsOnThisDay": "Tsy misy fotoana amin'ity andro ity",
+    "youHaveNoAvailabilityOr": "Tsy misy fotoana malalaka na lesona voalahatra amin'ity daty ity.",
+    "availableSlot": "Fotoana malalaka",
+    "edit": "Ovay →",
+    "nothingPlanned": "Tsy misy voalahatra",
+    "addASlotOn": "Ampio fotoana amin'ny {{dateLabel}}",
+    "addASlotOnThis": "Ampio fotoana amin'ity andro ity",
+    "editTheAvailabilityFrom": "Ovay ny fotoana malalaka manomboka amin'ny {{startTime}}",
+    "everyWeek": "Isaky ny herinandro",
+    "oneTimeOnly": "Indray mandeha ihany",
+    "available": "Malalaka",
+    "slotOrLessonCount_one": "fotoana {{count}}",
+    "slotOrLessonCount_other": "fotoana / lesona {{count}}"
+  },
+  "fieldCombobox": {
+    "useAsAField": "Ampiasao ny \"{{text}}\" ho sehatra",
+    "chooseYourStudyLevelFirst": "Fidio aloha ny ambaratonga ara-pianaranao",
+    "tryLoadingTheListAgain": "Andramo indray ny fandraisana ny lisitra",
+    "choose": "Fidio ny {{suggestion}}",
+    "typeYourField": "Soraty ny sehatrao…"
+  },
+  "habitCalendar": {
+    "backToToday": "Hiverina amin'androany",
+    "collapseToWeek": "Atifitra amin'ny herinandro",
+    "showTheMonth": "Asehoy ny volana",
+    "collapseTheCalendar": "Atifitra ny kalandrie",
+    "expandTheCalendar": "Alavao ny kalandrie",
+    "addASlot": "Ampio fotoana"
+  },
+  "lessonAlarmCard": {
+    "lessonAlarm": "Fiambenana lesona",
+    "aReminderRingsBeforeEach": "Misy fampahatsiahivana maneno alohan'ny lesona voamafy rehetra.",
+    "remindMe": "Ampahatsiahivo aho",
+    "before": "{{leadLabel}} aloha",
+    "unableToSaveThisSetting": "Tsy afaka mitahiry io paramétra io. Andramo indray azafady.",
+    "turnOnTheLessonAlarm": "Alefaso ny fiambenana lesona",
+    "remindMeBeforeTheLesson": "Ampahatsiahivo aho {{leadLabel}} alohan'ny lesona"
+  },
+  "phoneInputField": {
+    "validNumber": "Laharana mety",
+    "chooseACountryDialingCode": "Fidio ny kaody finday ny firenena",
+    "selectTheCountryOfYour": "Fidio ny firenen'ny laharana findainao",
+    "example": "Ohatra: {{placeholder}}",
+    "selectedCountryDialingCode": "Firenena voafidy: {{name}}, kaody {{dialCode}}",
+    "clearTheNumber": "Fafao ny laharana",
+    "internationalFormat": "Endrika iraisam-pirenena: {{dialCode}} {{nationalNumber}}",
+    "eGWithoutTheLeading": "Ohatra: {{placeholder}} (tsy misy ny 0 eo am-piandohana)",
+    "searchForACountryOr": "Karohy firenena na kaody finday...",
+    "dialingCode": "{{name}}, kaody {{dialCode}}",
+    "madagascar": "Madagasikara",
+    "france": "Frantsa",
+    "reunion": "Réunion",
+    "comoros": "Komoro",
+    "mauritius": "Maorisy",
+    "mayotte": "Mayotte",
+    "canada": "Kanada",
+    "belgium": "Belzika",
+    "switzerland": "Soisa",
+    "senegal": "Senegal",
+    "coteDIvoire": "Côte d'Ivoire",
+    "morocco": "Marôka",
+    "algeria": "Alzeria",
+    "tunisia": "Tonizia",
+    "germany": "Alemaina",
+    "spain": "Espaina",
+    "italy": "Italia",
+    "phone": "Finday",
+    "unitedStates": "Etazonia",
+    "unitedKingdom": "Fanjakana Mitambatra"
+  },
+  "placeSearchField": {
+    "noAddressFoundTryA": "Tsy hita ny adiresy. Andramo manodidina na tanàna (ohatra \"Ankorondrano\").",
+    "searchIsUnavailableAtThe": "Tsy azo ampiasaina amin'izao fotoana izao ny fikarohana.",
+    "searchForAnAddressA": "Karohy adiresy, manodidina...",
+    "searchForAnAddress": "Karohy adiresy",
+    "choose": "Fidio ny {{label}}"
+  },
+  "resultsLoginGate": {
+    "signInToSeeThe": "Midira hijery ny valiny: mombamomba, tarifa ary fotoana.",
+    "tutorsAvailableNearYou_one": "mpampianatra misy akaikinao",
+    "tutorsAvailableNearYou_other": "mpampianatra misy akaikinao"
+  },
+  "skillCombobox": {
+    "searching": "Mikaroka…",
+    "suggestionsForYourLevel": "Soso-kevitra ho an'ny ambaratonganao",
+    "mySkill": "Ny fahaizako",
+    "atLeastCharacters": "Farafahakeliny {{MIN_NAME_LENGTH}} ny isan'ny litera.",
+    "charactersMaximum": "{{MAX_NAME_LENGTH}} litera farafahabetsany.",
+    "charactersNotAllowed": "Litera tsy navela.",
+    "unableToAddThisSkill": "Tsy afaka manampy io fahaizana io.",
+    "typeASubjectOrA": "Soraty ny taranja na fahaizana…",
+    "searchForOrAddA": "Karohy na ampio fahaizana",
+    "tryTheSearchAgain": "Andramo indray ny fikarohana",
+    "thisSkillIsAlreadyIn": "Efa ao amin'ny lisitrao io fahaizana io.",
+    "addAsANewSkill": "Ampio ny \"{{name}}\" ho fahaizana vaovao",
+    "adding": "Eo am-pampidirana…"
+  },
+  "timeRangeWheelPicker": {
+    "start": "Fiandohana",
+    "end": "Famaranana",
+    "startHour": "Ora fanombohana",
+    "startMinute": "Minitra fanombohana",
+    "endHour": "Ora famaranana",
+    "endMinute": "Minitra famaranana"
+  },
+  "weekStrip": {
+    "thisWeek": " · amin'ity herinandro ity",
+    "backToThisWeek": "Hiverina amin'ity herinandro ity",
+    "previousWeek": "Herinandro teo aloha",
+    "nextWeek": "Herinandro manaraka",
+    "weekOf": "Herinandro manomboka ny {{range}}"
+  },
+  "statusBadge": {
+    "confirmed": "VOAMAFY",
+    "cancelled": "NAFOANA",
+    "inProgress": "MANDEHA",
+    "completed": "VITA"
+  },
+  "tutorBottomNav": {
+    "messages": "Hafatra"
+  },
+  "notificationBell": {
+    "unreadCount_one": "Fampandrenesana, {{count}} tsy mbola novakiana",
+    "unreadCount_other": "Fampandrenesana, {{count}} tsy mbola novakiana"
+  },
+  "stepProgress": {
+    "stepOf": "Dingana {{step}} amin'ny {{total}}"
+  },
+  "codeInput": {
+    "verificationCode": "Kaody fanamarinana"
+  },
+  "selectField": {
+    "select": "Fidio"
+  },
+  "languageSelector": {
+    "language": "Fiteny",
+    "chooseTheAppLanguage": "Fidio ny fiteny ampiasain'ny rindranasa",
+    "close": "Akatony",
+    "currentLanguage": "Fiteny: {{language}} — ovay"
+  }
+}

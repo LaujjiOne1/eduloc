@@ -1,0 +1,39 @@
+{
+  "conversationView": {
+    "noMessagesYetSendA": "Mbola tsy misy hafatra. Alefaso hafatra an-peo na antontan-taratasy hanombohana ny resaka.",
+    "recordAVoiceNote": "Alefaso hafatra an-peo",
+    "thisConversationIsReadOnly": "Fijerena fotsiny ity resaka ity: tsy misy session mandeha na ho avy miaraka amin'ity mpifandray ity.",
+    "noTextMessagesVoiceNotes": "Tsy misy hafatra soratra — hafatra an-peo sy antontan-taratasy ihany",
+    "recordAVoiceMessage": "Ataovy ny hafatra an-peo"
+  },
+  "conversationsListView": {
+    "conversations": "Resaka",
+    "readOnly": "Fijerena fotsiny",
+    "noMessages": "Tsy misy hafatra",
+    "conversationWith": "Resaka miaraka amin'i {{name}}",
+    "conversationWithUnread_one": "Resaka miaraka amin'i {{name}}, {{count}} tsy mbola novakiana",
+    "conversationWithUnread_other": "Resaka miaraka amin'i {{name}}, {{count}} tsy mbola novakiana"
+  },
+  "documentExchangeView": {
+    "sharedDocuments": "Antontan-taratasy zaraina",
+    "noSharedDocumentsYet": "Mbola tsy misy antontan-taratasy zaraina.",
+    "thisConversationIsReadOnly": "Fijerena fotsiny ity resaka ity.",
+    "pdfJpegPngOrWebp": "PDF, JPEG, PNG na WebP — 20 Mo farafahabetsany"
+  },
+  "voiceMessagePlayer": {
+    "playbackFailedTapToTry": "Tsy nahomby ny fandrenesana. Tsindrio hanandrana indray.",
+    "new": "Vaovao",
+    "pauseTheVoiceMessage": "Ajanony ny hafatra an-peo",
+    "playTheVoiceMessage": "Henoy ny hafatra an-peo"
+  },
+  "voiceRecordingView": {
+    "maximumDurationMin": "Faharetana ambony indrindra: {{round}} min",
+    "tapSendToFinish": "Tsindrio ny \"Alefaso\" hamaranana",
+    "messageTooShortHoldThe": "Fohy loatra ny hafatra: tazony kely ny firaketana.",
+    "microphoneAccessDenied": "Voasakana ny fidirana amin'ny mikrô",
+    "recordingUnavailable": "Tsy azo atao ny mandray feo",
+    "allowTheMicrophoneInYour": "Avelao ny mikrô ao amin'ny paramétran'ny fitaovanao (na ny navigateur) mba handefasana hafatra an-peo.",
+    "preparingTheMicrophone": "Manomana ny mikrô...",
+    "recordingInProgress": "Eo am-pandraisana feo"
+  }
+}

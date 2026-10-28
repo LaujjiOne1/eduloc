@@ -1,0 +1,43 @@
+{
+  "roomBlocksEditor": {
+    "noUpcomingClosures": "Aucune fermeture à venir.",
+    "closeTheRoom": "Fermer la salle",
+    "theDateMustUseThe": "La date doit être au format AAAA-MM-JJ (ex. 2026-11-03).",
+    "timesMustUseTheHh": "Les heures doivent être au format HH:mm.",
+    "unableToAddThisClosure": "Impossible d'ajouter cette fermeture.",
+    "unableToDeleteThisClosure": "Impossible de supprimer cette fermeture.",
+    "deleteThisClosure": "Supprimer cette fermeture",
+    "from": "De",
+    "addTheClosure": "Ajouter la fermeture",
+    "to": "À"
+  },
+  "roomOpeningsEditor": {
+    "noOpeningHoursTheRoom": "Aucun horaire : la salle n'est ouverte à aucune réservation.",
+    "addATimeRange": "Ajouter une plage",
+    "chooseAtLeastOneDay": "Choisissez au moins un jour.",
+    "timesMustUseTheHh": "Les heures doivent être au format HH:mm (ex. 09:00).",
+    "theClosingTimeMustBe": "L'heure de fermeture doit suivre l'heure d'ouverture.",
+    "thisRangeOverlapsAnExisting": "{{value}} : cette plage chevauche une plage existante.",
+    "unableToSaveTheOpening": "Impossible d'enregistrer les horaires.",
+    "confirmedSessionSFallOutside": "{{uncoveredConfirmedBookings}} séance(s) déjà confirmée(s) se trouvent hors de ces horaires : elles ne sont pas annulées et doivent être honorées.",
+    "openingHoursSaved": "Horaires enregistrés.",
+    "delete": "Supprimer {{value}} {{startTime}}",
+    "opening": "Ouverture",
+    "closing": "Fermeture",
+    "saveOpeningHours": "Enregistrer les horaires"
+  },
+  "roomPhotosEditor": {
+    "noPhotosYet": "Aucune photo pour le moment.",
+    "accessToYourPhotoLibrary": "L'accès à votre photothèque est nécessaire pour choisir une photo.",
+    "chooseAJpgPngOr": "Choisissez une photo JPG, PNG ou WebP.",
+    "eachPhotoMustBe8": "Chaque photo doit faire au maximum 8 Mo.",
+    "thePhotoUploadFailed": "L'envoi de la photo a échoué.",
+    "unableToChooseThePhoto": "Impossible de choisir la photo : {{message}}",
+    "unableToChooseThePhoto2": "Impossible de choisir la photo.",
+    "unableToDeleteThisPhoto": "Impossible de supprimer cette photo.",
+    "roomPhoto": "Photo de la salle",
+    "deleteThisPhoto": "Supprimer cette photo",
+    "maximumNumberOfPhotosReached": "Nombre maximal de photos atteint",
+    "addAPhoto": "Ajouter une photo"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "roomBlocksEditor": {
+    "noUpcomingClosures": "Tsy misy fanakatonana ho avy.",
+    "closeTheRoom": "Akatony ny efitrano",
+    "theDateMustUseThe": "Tsy maintsy amin'ny endrika AAAA-MM-JJ ny daty (ohatra 2026-11-03).",
+    "timesMustUseTheHh": "Tsy maintsy amin'ny endrika HH:mm ny ora.",
+    "unableToAddThisClosure": "Tsy afaka manampy ity fanakatonana ity.",
+    "unableToDeleteThisClosure": "Tsy afaka mamafa ity fanakatonana ity.",
+    "deleteThisClosure": "Fafao ity fanakatonana ity",
+    "from": "Manomboka amin'ny",
+    "addTheClosure": "Ampio ny fanakatonana",
+    "to": "Hatramin'ny"
+  },
+  "roomOpeningsEditor": {
+    "noOpeningHoursTheRoom": "Tsy misy ora fisokafana: tsy misokatra ho an'ny famandrihana ny efitrano.",
+    "addATimeRange": "Ampio fe-potoana",
+    "chooseAtLeastOneDay": "Fidio andro iray farafahakeliny.",
+    "timesMustUseTheHh": "Tsy maintsy amin'ny endrika HH:mm ny ora (ohatra 09:00).",
+    "theClosingTimeMustBe": "Tsy maintsy aorian'ny ora fisokafana ny ora fanakatonana.",
+    "thisRangeOverlapsAnExisting": "{{value}}: mifanindry amin'ny fe-potoana efa misy io fe-potoana io.",
+    "unableToSaveTheOpening": "Tsy afaka mitahiry ireo ora fisokafana.",
+    "confirmedSessionSFallOutside": "Session voamafy {{uncoveredConfirmedBookings}} no ivelan'ireo ora ireo: tsy mafoana izy ireo ary tsy maintsy atao.",
+    "openingHoursSaved": "Voatahiry ny ora fisokafana.",
+    "delete": "Fafao ny {{value}} {{startTime}}",
+    "opening": "Fisokafana",
+    "closing": "Fanakatonana",
+    "saveOpeningHours": "Tehirizo ny ora fisokafana"
+  },
+  "roomPhotosEditor": {
+    "noPhotosYet": "Mbola tsy misy sary.",
+    "accessToYourPhotoLibrary": "Ilaina ny fidirana amin'ny galeria sary mba hifidianana sary.",
+    "chooseAJpgPngOr": "Fidio sary JPG, PNG na WebP.",
+    "eachPhotoMustBe8": "8 Mo farafahabetsany ny sary tsirairay.",
+    "thePhotoUploadFailed": "Tsy nahomby ny fandefasana ny sary.",
+    "unableToChooseThePhoto": "Tsy afaka mifidy ny sary: {{message}}",
+    "unableToChooseThePhoto2": "Tsy afaka mifidy ny sary.",
+    "unableToDeleteThisPhoto": "Tsy afaka mamafa ity sary ity.",
+    "roomPhoto": "Sarin'ny efitrano",
+    "deleteThisPhoto": "Fafao ity sary ity",
+    "maximumNumberOfPhotosReached": "Tonga amin'ny isa ambony indrindra ny sary",
+    "addAPhoto": "Ampio sary"
+  }
+}
