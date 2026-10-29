@@ -7,6 +7,8 @@ export interface Category {
   freeText?: boolean;
   /** Catégories de niveaux où la matière s'enseigne (« Primaire », « Lycée »…) ; vide = tous. */
   levelCategories?: string[];
-  /** Séries du lycée concernées (codes) ; vide = toutes. */
+  /** Filières concernées (codes : séries du lycée ou mentions universitaires) ; vide = toutes. */
   trackCodes?: string[];
+  /** Niveaux précis (« 11ème »…) où la matière n'est pas proposée malgré sa catégorie ; vide = aucun. */
+  excludedLevels?: string[];
 }

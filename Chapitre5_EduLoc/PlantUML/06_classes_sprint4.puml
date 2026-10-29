@@ -1,0 +1,244 @@
+@startuml 06_classes_sprint4
+title Sprint 4 - Réservation et déroulement de la séance
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 14
+skinparam ranksep 22
+hide empty methods
+
+' Mise en page : une seule figure pensée pour une page A4 en portrait avec 2 cm de marge (17 cm utiles).
+' De haut en bas : énumérations, acteurs liés à la réservation, Booking et ses voisins, service et règles du domaine.
+' Le sens de chaque association suit la grille ; les liens invisibles ([hidden]) maintiennent l'alignement.
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REFUSED
+  CANCELLED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum BookingActor {
+  REQUESTER
+  TUTOR
+  SYSTEM
+  ADMIN
+}
+
+enum TeachingMode {
+  ONLINE
+  AT_HOME_BENEFICIARY
+  AT_HOME_TUTOR
+  PUBLIC_PLACE
+  PARTNER_ROOM
+}
+
+enum HoldStatus {
+  ACTIVE
+  CONSUMED
+  RELEASED
+  EXPIRED
+}
+
+enum ConflictType {
+  OVERLAPPING_BOOKINGS
+  TUTOR_UNAVAILABLE
+  AVAILABILITY_REMOVED
+  OFFER_INACTIVE
+  TUTOR_SUSPENDED
+  ROOM_UNAVAILABLE
+}
+
+enum ConflictStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+class User {
+  -id : String
+  -email : String
+}
+
+class Beneficiary {
+  -id : String
+  -firstName : String
+  -relationship : RelationshipType
+}
+
+class TutorProfile {
+  -id : String
+  -displayName : String
+}
+
+class Offer {
+  -id : String
+  -title : String
+  -price : Decimal
+  -durationOptions : Integer[]
+}
+
+class Availability {
+  -id : String
+  -dayOfWeek : Integer
+  -startTime : String
+  -endTime : String
+}
+
+class Booking {
+  -id : String
+  -startAt : DateTime
+  -endAt : DateTime
+  -status : BookingStatus
+  -teachingMode : TeachingMode
+  -offerTitle : String
+  -price : Decimal
+  -travelFee : Decimal
+  -roomFee : Decimal
+  -serviceFee : Decimal
+  -serviceFeeRate : Decimal
+  -totalAmount : Decimal
+  -participantsCount : Integer
+  -requesterNote : String
+  -startOtpCipher : String
+  -otpAttempts : Integer
+  -otpExpiresAt : DateTime
+  -startedAt : DateTime
+  -completedAt : DateTime
+  -cancelledBy : BookingActor
+  -cancellationReason : String
+  -refusalReason : String
+  +accept()
+  +refuse(reason)
+  +cancel(actor, reason)
+  +start(otp)
+  +complete()
+}
+
+class Place {
+  -id : String
+  -type : PlaceType
+  -location : Geography
+}
+
+class BookingEvent {
+  -id : String
+  -fromStatus : BookingStatus
+  -toStatus : BookingStatus
+  -actor : BookingActor
+  -reason : String
+  -createdAt : DateTime
+}
+
+class Conflict {
+  -id : String
+  -type : ConflictType
+  -status : ConflictStatus
+  -details : Json
+  -resolution : String
+  -resolvedAt : DateTime
+  +resolve(adminId, resolution)
+  +dismiss(adminId)
+}
+
+class BookingHold {
+  -id : String
+  -startAt : DateTime
+  -endAt : DateTime
+  -durationMinutes : Integer
+  -totalAmount : Decimal
+  -status : HoldStatus
+  -expiresAt : DateTime
+  +consume(bookingId)
+  +release()
+  +expire()
+}
+
+class Room {
+  -id : String
+  -name : String
+}
+
+class BookingsService <<service>> {
+  +quote(requesterId, dto)
+  +createBooking(requesterId, dto)
+  +acceptBooking(tutorUserId, bookingId)
+  +refuseBooking(tutorUserId, bookingId, dto)
+  +cancelBooking(userId, bookingId, dto)
+  +startSession(tutorUserId, bookingId, otp)
+  +completeSession(tutorUserId, bookingId)
+}
+
+class BookingStateMachine <<domaine>> {
+  +assertCanTransition(from, to, actor)
+  +canTransition(from, to, actor)
+}
+
+class BookingPolicy <<domaine>> {
+  +assertMinNotice(startAt, now, hours)
+  +assertCancellationAllowed(startAt, now, reason, hours)
+}
+
+class SessionPolicy <<domaine>> {
+  +assertWithinStartWindow(startAt, endAt, now)
+}
+
+class Pricing <<domaine>> {
+  +travelFeeForDistance(distanceM)
+  +computePriceBreakdown(input)
+}
+
+' --- Alignement (liens invisibles)
+Availability -[hidden]right- Booking
+Availability -[hidden]down- BookingEvent
+Beneficiary -[hidden]down- Booking
+Beneficiary -[hidden]right- TutorProfile
+Booking -[hidden]down- Conflict
+BookingActor -[hidden]down- Beneficiary
+BookingActor -[hidden]right- TeachingMode
+BookingEvent -[hidden]down- BookingStateMachine
+BookingEvent -[hidden]right- Conflict
+BookingHold -[hidden]down- BookingsService
+BookingHold -[hidden]right- Room
+BookingPolicy -[hidden]down- Pricing
+BookingStateMachine -[hidden]right- BookingPolicy
+BookingStateMachine -[hidden]down- SessionPolicy
+BookingStatus -[hidden]right- BookingActor
+BookingStatus -[hidden]down- User
+Conflict -[hidden]right- BookingHold
+Conflict -[hidden]down- BookingPolicy
+ConflictType -[hidden]right- ConflictStatus
+HoldStatus -[hidden]right- ConflictType
+HoldStatus -[hidden]down- Offer
+Offer -[hidden]down- Place
+Place -[hidden]down- Room
+SessionPolicy -[hidden]right- Pricing
+TeachingMode -[hidden]right- HoldStatus
+TeachingMode -[hidden]down- TutorProfile
+TutorProfile -[hidden]down- BookingHold
+TutorProfile -[hidden]right- Offer
+User -[hidden]down- Availability
+User -[hidden]right- Beneficiary
+
+' --- Associations et dépendances
+User "1" -down- "0..*" Booking : demande >
+Beneficiary "1" -down- "0..*" Booking : bénéficie >
+TutorProfile "1" -down- "0..*" Booking : assure >
+Offer "1" -down- "0..*" Booking : réservée par >
+Availability "0..1" -right- "0..*" Booking
+Place "0..1" -left- "0..*" Booking
+Room "0..1" -up- "0..*" Booking
+Booking "1" -down- "0..*" BookingEvent : journalise >
+Booking "1" -down- "0..*" Conflict : peut générer >
+Booking "0..1" -down- "0..1" BookingHold : consomme <
+User "1" -down- "0..*" BookingHold : bloque >
+TutorProfile "1" -down- "0..*" BookingHold
+Room "0..1" -left- "0..*" BookingHold
+BookingsService .up.> Booking
+BookingsService .down.> BookingStateMachine
+BookingsService .down.> BookingPolicy
+BookingsService .down.> SessionPolicy
+BookingsService .down.> Pricing
+BookingsService .up.> BookingHold
+@enduml

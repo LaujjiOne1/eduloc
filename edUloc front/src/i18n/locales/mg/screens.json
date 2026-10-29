@@ -31,7 +31,26 @@
     "search": "Karohy",
     "doYouTeachBecomeA": "Mpampianatra ve ianao? Lasa mpampianatra voamarina ao amin'ny EduLoc",
     "mySpace": "Ny toerako · {{firstName}}",
-    "tryLoadingThePopularSearches": "Andramo indray ny fandraisana ireo fikarohana malaza"
+    "tryLoadingThePopularSearches": "Andramo indray ny fandraisana ireo fikarohana malaza",
+    "chooseYourPath": "Fidio ny lalanao",
+    "chooseYourPathHint": "Fikarohana mifanaraka amin'ny ambaratongan'ny fianaranao.",
+    "school": "Sekoly",
+    "schoolLevels": "Ambaratonga voalohany • Kolejy • Lisea",
+    "schoolDescription": "Fanampiana manokana, famerenana lesona sy fiomanana amin'ny fanadinana miaraka amin'ny mpampianatra akaiky anao na an-tserasera.",
+    "searchSchool": "Mitady mpampianatra sekoly",
+    "university": "Fianarana ambony",
+    "universityLevels": "Licence • Master • Doctorat",
+    "universityDescription": "Ny sampana rehetra eny amin'ny oniversite, ary fikarohana malalaka lesona iray hitadiavana mpampianatra ambony ambaratonga.",
+    "searchUniversity": "Mitady mpampianatra oniversite",
+    "whatEdulocOffers": "Ny atolotry ny EduLoc",
+    "serviceFormatTitle": "An-tserasera na mivantana",
+    "serviceFormatDescription": "Lesona an-tserasera, na fihaonana akaiky anao araka ny toerana misy anao.",
+    "serviceChatTitle": "Hafatra sy antso",
+    "serviceChatDescription": "Miresaka amin'ny mpampianatra amin'ny hafatra, feo, taratasy ary antso video.",
+    "serviceRoomsTitle": "Toerana fianarana",
+    "serviceRoomsDescription": "Mampanao famandrihana efitrano mpiara-miasa ho an'ny lesona mivantana.",
+    "serviceVerifiedTitle": "Mpampianatra voamarina",
+    "serviceVerifiedDescription": "Ankatoavin'ny EduLoc ny mombamomba azy mialoha ny hiseho amin'ny valiny."
   },
   "login": {
     "signInToContinue": "Midira hanohy",
@@ -75,6 +94,7 @@
   },
   "splash": {
     "theRightSupportInThe": "Ny fanampiana mety, amin'ny toerana mety.",
-    "continueToTheEdulocHome": "Tohizo mankany amin'ny fandraisana edUloc"
+    "continueToTheEdulocHome": "Tohizo mankany amin'ny fandraisana edUloc",
+    "tapToContinue": "Tendreo mba hanohizana"
   }
 }

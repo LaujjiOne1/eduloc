@@ -167,6 +167,8 @@ export interface SubjectDto {
   levelCategories?: string[];
   /** Séries du lycée (codes) pour lesquelles la matière est proposée ; vide = toutes. */
   trackCodes?: string[];
+  /** Niveaux précis (noms) où la matière n'est pas proposée dans ses catégories ; vide = aucun. */
+  excludedLevels?: string[];
   /** false = compétence libre d'un tuteur, pas encore au catalogue. */
   isVerified?: boolean;
 }

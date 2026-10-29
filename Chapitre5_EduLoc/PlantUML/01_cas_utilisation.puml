@@ -1,0 +1,232 @@
+@startuml 01_cas_utilisation
+title Diagramme de cas d'utilisation global d'EduLoc
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam nodesep 14
+skinparam ranksep 20
+
+' Mise en page : une seule figure en portrait (page A4, 2 cm de marge). Acteurs répartis de part et d'autre : le demandeur
+' et le partenaire à gauche, le tuteur et l'administrateur à droite ; « S'authentifier » et « Changer de mode » sont au centre,
+' à égale distance des quatre acteurs. Le sens de chaque liaison suit la grille et les liens invisibles ([hidden])
+' maintiennent l'alignement. L'acteur « Services externes » est dessiné deux fois, près des cas qu'il sert.
+
+actor "Demandeur" as DEM
+actor "Tuteur" as TUT
+actor "Partenaire de lieu\n(Gestionnaire)" as PAR
+actor "Administrateur" as ADM
+actor "Services externes\n(Ollama, PaddleOCR)" as EXI <<système>>
+actor "Services externes\n(LiveKit, Centrifugo,\nPush, e-mail)" as EXC <<système>>
+
+rectangle "EduLoc" {
+
+  package "Recherche et mise en relation" {
+    usecase "Consulter les lieux\nd'étude à proximité" as UC13
+    usecase "Consulter le profil\net les offres d'un tuteur" as UC12
+    usecase "Rechercher un tuteur\n(niveau, filière, matière)" as UC10
+    usecase "Appliquer le matching\nsémantique hybride" as UC11
+  }
+
+  package "Réservation et séance" {
+    usecase "Soumettre une demande\nde réservation" as UC31
+    usecase "Obtenir un devis\n(blocage du créneau 15 min)" as UC30
+    usecase "Vérifier les conflits" as UC33
+    usecase "Accepter ou refuser\nune demande" as UC32
+    usecase "Suivre ses réservations" as UC37
+    usecase "Annuler une réservation" as UC34
+    usecase "Terminer la séance" as UC36
+    usecase "Démarrer la séance\n(code à usage unique)" as UC35
+  }
+
+  package "Profil et offres du tuteur" {
+    usecase "Gérer ses offres" as UC22
+    usecase "Gérer ses disponibilités\net ses lieux" as UC23
+    usecase "Importer son CV" as UC21
+    usecase "Accepter une salle partenaire" as UC24
+    usecase "Soumettre sa candidature\n(documents justificatifs)" as UC20
+  }
+
+  package "Communication et avis" {
+    usecase "Évaluer un tuteur" as UC53
+    usecase "Évaluer une salle" as UC54
+    usecase "Échanger des messages vocaux" as UC50
+    usecase "Répondre à un avis" as UC55
+    usecase "Passer un appel audio / vidéo" as UC51
+    usecase "Recevoir des notifications" as UC52
+  }
+
+  package "Comptes et bénéficiaires" {
+    usecase "Gérer ses bénéficiaires" as UC03
+    usecase "Changer de mode\n(demandeur / tuteur / partenaire)" as UC04
+    usecase "S'inscrire et vérifier\nson adresse e-mail" as UC01
+    usecase "S'authentifier" as UC02
+  }
+
+  package "Lieux partenaires" {
+    usecase "Gérer ses salles\n(horaires, fermetures, photos)" as UC41
+    usecase "Consulter les réservations\nde ses salles" as UC43
+    usecase "Choisir une offre commerciale" as UC42
+    usecase "Déclarer sa structure\net ses justificatifs" as UC40
+  }
+
+  package "Administration" {
+    usecase "Contrôler un justificatif\n(l'ouvrir, attester de son\nauthenticité)" as UC61
+    usecase "Traiter les conflits\nde réservation\n(résoudre / classer)" as UC66
+    usecase "Consulter le tableau de bord\n(ce qui attend une décision)" as UC60
+    usecase "Modérer les avis\nsur les salles" as UC72
+    usecase "Réindexer la recherche\nsémantique" as UC69
+    usecase "Consulter les réservations" as UC68
+    usecase "Gérer les offres commerciales\n(plans, abonnements)" as UC71
+    usecase "Suspendre ou rétablir\nun tuteur" as UC64
+    usecase "Valider ou refuser une\ncandidature de tuteur" as UC62
+    usecase "Gérer les comptes utilisateurs\n(suspendre / réactiver)" as UC67
+    usecase "Valider une structure\net ses salles" as UC70
+    usecase "Valider le niveau académique\net les équivalences de diplôme" as UC63
+    usecase "Modérer les offres de cours\n(retirer / rétablir)" as UC65
+  }
+
+}
+
+' --- Alignement (liens invisibles)
+DEM -[hidden]down- PAR
+DEM -[hidden]right- UC22
+EXC -[hidden]down- ADM
+EXI -[hidden]down- TUT
+TUT -[hidden]down- EXC
+UC01 -[hidden]right- UC02
+UC01 -[hidden]down- UC42
+UC02 -[hidden]down- UC40
+UC03 -[hidden]right- UC04
+UC03 -[hidden]down- UC41
+UC04 -[hidden]right- UC01
+UC04 -[hidden]down- UC43
+UC10 -[hidden]right- UC11
+UC10 -[hidden]down- UC33
+UC11 -[hidden]down- UC32
+UC12 -[hidden]right- UC10
+UC12 -[hidden]down- UC30
+UC13 -[hidden]right- UC12
+UC13 -[hidden]down- UC31
+UC20 -[hidden]right- TUT
+UC20 -[hidden]down- UC50
+UC21 -[hidden]down- UC20
+UC22 -[hidden]down- UC53
+UC23 -[hidden]right- UC21
+UC23 -[hidden]down- UC24
+UC24 -[hidden]right- UC20
+UC24 -[hidden]down- UC54
+UC30 -[hidden]right- UC33
+UC30 -[hidden]down- UC34
+UC31 -[hidden]right- UC30
+UC31 -[hidden]down- UC37
+UC32 -[hidden]down- UC35
+UC33 -[hidden]right- UC32
+UC33 -[hidden]down- UC36
+UC34 -[hidden]down- UC04
+UC34 -[hidden]right- UC36
+UC35 -[hidden]right- EXI
+UC35 -[hidden]down- UC21
+UC36 -[hidden]down- UC23
+UC36 -[hidden]right- UC35
+UC37 -[hidden]down- UC22
+UC37 -[hidden]right- UC34
+UC40 -[hidden]down- UC60
+UC41 -[hidden]right- UC43
+UC41 -[hidden]down- UC72
+UC42 -[hidden]right- UC40
+UC42 -[hidden]down- UC66
+UC43 -[hidden]right- UC42
+UC43 -[hidden]down- UC61
+UC50 -[hidden]down- UC52
+UC51 -[hidden]down- UC01
+UC51 -[hidden]right- UC52
+UC52 -[hidden]right- EXC
+UC52 -[hidden]down- UC02
+UC53 -[hidden]down- UC55
+UC54 -[hidden]right- UC50
+UC54 -[hidden]down- UC51
+UC55 -[hidden]down- UC03
+UC60 -[hidden]down- UC65
+UC61 -[hidden]right- UC66
+UC61 -[hidden]down- UC69
+UC62 -[hidden]down- UC63
+UC63 -[hidden]right- UC65
+UC64 -[hidden]right- UC62
+UC64 -[hidden]down- UC70
+UC66 -[hidden]right- UC60
+UC66 -[hidden]down- UC68
+UC67 -[hidden]right- UC70
+UC68 -[hidden]down- UC62
+UC69 -[hidden]down- UC64
+UC69 -[hidden]right- UC68
+UC70 -[hidden]right- UC63
+UC71 -[hidden]right- UC64
+UC71 -[hidden]down- UC67
+UC72 -[hidden]right- UC69
+UC72 -[hidden]down- UC71
+
+' --- Associations
+DEM -down-> UC01
+DEM -down-> UC02
+DEM -down-> UC03
+DEM -down-> UC04
+DEM -up-> UC10
+DEM -up-> UC12
+DEM -up-> UC13
+DEM -up-> UC31
+DEM -up-> UC34
+DEM -up-> UC37
+DEM -down-> UC50
+DEM -down-> UC51
+DEM -down-> UC53
+DEM -down-> UC54
+TUT -down-> UC02
+TUT -down-> UC04
+TUT -left-> UC20
+TUT -up-> UC21
+TUT -up-> UC22
+TUT -up-> UC23
+TUT -left-> UC24
+TUT -up-> UC32
+TUT -up-> UC34
+TUT -up-> UC35
+TUT -up-> UC36
+TUT -up-> UC37
+TUT -down-> UC50
+TUT -down-> UC51
+TUT -down-> UC54
+PAR -up-> UC02
+PAR -up-> UC04
+PAR -up-> UC40
+PAR -up-> UC41
+PAR -up-> UC42
+PAR -up-> UC43
+PAR -up-> UC55
+ADM -up-> UC60
+ADM -up-> UC61
+ADM -down-> UC62
+ADM -down-> UC63
+ADM -down-> UC64
+ADM -down-> UC65
+ADM -up-> UC66
+ADM -down-> UC67
+ADM -left-> UC68
+ADM -left-> UC69
+ADM -down-> UC70
+ADM -down-> UC71
+ADM -left-> UC72
+ADM -up-> UC02
+EXI -up-> UC11
+EXI -down-> UC21
+EXC -up-> UC50
+EXC -left-> UC51
+EXC -left-> UC52
+
+' --- Inclusions et extensions
+UC10 .right.> UC11 : <<include>>
+UC31 .right.> UC30 : <<include>>
+UC32 .left.> UC33 : <<include>>
+UC21 .down.> UC20 : <<extend>>
+UC13 .down.> UC31 : <<extend>>
+UC63 .up.> UC62 : <<extend>>
+@enduml

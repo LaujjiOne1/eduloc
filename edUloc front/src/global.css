@@ -10,12 +10,12 @@
   --color-ink-soft: #585b78;
   --color-ink-faint: #9799af;
 
-  --color-paper: #faf9f4;
+  --color-paper: #ffffff;
   --color-surface: #ffffff;
-  --color-paper-alt: #f1eee5;
+  --color-paper-alt: #f4f5f8;
 
-  --color-line: #e7e3d7;
-  --color-line-soft: #f0ede3;
+  --color-line: #e6e7ee;
+  --color-line-soft: #f0f1f5;
 
   --color-primary: #332e86;
   --color-primary-dark: #211c5e;
@@ -113,7 +113,7 @@
 .maplibregl-ctrl-group {
   border-radius: 12px !important;
   box-shadow: 0 4px 14px rgba(20, 22, 43, 0.12) !important;
-  border: 1px solid #e7e3d7 !important;
+  border: 1px solid #e6e7ee !important;
   overflow: hidden;
   background-color: #ffffff !important;
 }
@@ -122,7 +122,7 @@
   width: 36px !important;
   height: 36px !important;
   background-color: #ffffff !important;
-  border-bottom: 1px solid #f0ede3 !important;
+  border-bottom: 1px solid #f0f1f5 !important;
 }
 
 .maplibregl-ctrl-group button:last-child {
@@ -130,5 +130,5 @@
 }
 
 .maplibregl-ctrl-group button:hover {
-  background-color: #f1eee5 !important;
+  background-color: #f4f5f8 !important;
 }

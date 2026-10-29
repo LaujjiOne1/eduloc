@@ -5,9 +5,9 @@ const SEARCH_VERSION_KEY = 'search:version';
 
 export const CacheKeys = {
   // v2 : la forme change (trackCodes, trackKind) — une entrée v1 encore en cache ne doit pas être servie.
-  subjects: () => 'ref:v3:subjects',
+  subjects: () => 'ref:v6:subjects',
   levels: () => 'ref:v2:levels',
-  tracks: () => 'ref:v3:tracks',
+  tracks: () => 'ref:v4:tracks',
   tutorPublic: (tutorProfileId: string) => `tutor:public:v2:${tutorProfileId}`,
   search: (hash: string) => `search:v2:${hash}`,
   slots: (tutorProfileId: string, date: string, offerId: string, durationMinutes: number) =>

@@ -1,0 +1,195 @@
+@startuml 10_classes_globale
+title Diagramme de classes de conception globale d'EduLoc (1/2)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+skinparam nodesep 20
+skinparam ranksep 25
+hide empty members
+
+' Mise en page : 3 colonnes de classes, pour tenir en portrait sur une page A4 avec 2 cm de marge
+' (17 cm utiles) avec un texte lisible. Le diagramme global est coupé en deux figures (1/2 et 2/2) ;
+' les classes grisées sont celles de l'autre figure, rappelées seulement pour porter leurs associations.
+' Le sens de chaque association suit la grille (même rangée : horizontal ; sinon : vertical) et les liens
+' invisibles ([hidden]) maintiennent l'alignement.
+
+class Booking <<voir 2/2>> #EEEEEE
+
+package "Comptes et catalogue" {
+  class User {
+    -id : String
+    -firstName : String
+    -lastName : String
+    -email : String
+    -status : UserStatus
+    -isAdmin : Boolean
+  }
+  class RefreshToken {
+    -tokenHash : String
+    -expiresAt : DateTime
+  }
+  class DeviceToken {
+    -token : String
+    -platform : DevicePlatform
+  }
+  class Beneficiary {
+    -firstName : String
+    -relationship : RelationshipType
+    -objective : ObjectiveType
+    -preferredFormat : TeachingFormat
+  }
+  class EducationLevel {
+    -name : String
+    -category : String
+    -academicRank : Integer
+  }
+  class AcademicTrack {
+    -kind : TrackKind
+    -code : String
+    -name : String
+  }
+  class Subject {
+    -name : String
+    -category : String
+    -trackCodes : String[]
+  }
+}
+
+package "Tuteur" {
+  class TutorApplication {
+    -status : TutorApplicationStatus
+    -submittedAt : DateTime
+  }
+  class TutorProfile {
+    -displayName : String
+    -bio : String
+    -isVisible : Boolean
+    -rating : Float
+    -partnerRoomRadiusM : Integer
+  }
+  class TutorIntroVideo {
+    -storagePath : String
+  }
+  class TutorDocument {
+    -type : TutorDocumentType
+    -status : TutorDocumentStatus
+    -extractedText : String
+  }
+  class TutorSubject {
+    -competenceDescription : String
+  }
+  class TutorExperience {
+    -type : TutorExperienceType
+    -title : String
+    -organization : String
+  }
+  class DegreeEquivalence {
+    -degreeTitle : String
+    -country : String
+    -status : DegreeEquivalenceStatus
+  }
+  class Offer {
+    -title : String
+    -format : TeachingFormat
+    -durationMinutes : Integer
+    -price : Decimal
+    -isActive : Boolean
+  }
+  class CvImport {
+    -status : CvImportStatus
+    -result : Json
+  }
+  class Place {
+    -label : String
+    -type : PlaceType
+    -location : Geography
+  }
+  class Availability {
+    -dayOfWeek : Integer
+    -startTime : String
+    -endTime : String
+  }
+  class BlockedPeriod {
+    -startAt : DateTime
+    -endAt : DateTime
+  }
+}
+
+package "Matching sémantique" {
+  class TutorSearchChunk {
+    -sourceType : SearchChunkSource
+    -content : String
+    -embedding : Vector(768)
+  }
+  class MatchingSearch {
+    -needDescription : String
+    -results : Json
+  }
+}
+
+' --- Alignement (liens invisibles)
+AcademicTrack -[hidden]down- TutorIntroVideo
+Availability -[hidden]right- BlockedPeriod
+Availability -[hidden]down- MatchingSearch
+Beneficiary -[hidden]right- EducationLevel
+Beneficiary -[hidden]down- TutorApplication
+BlockedPeriod -[hidden]down- Booking
+CvImport -[hidden]down- BlockedPeriod
+DegreeEquivalence -[hidden]right- Offer
+DegreeEquivalence -[hidden]down- Place
+DeviceToken -[hidden]down- AcademicTrack
+EducationLevel -[hidden]right- AcademicTrack
+EducationLevel -[hidden]down- Subject
+MatchingSearch -[hidden]right- Booking
+Offer -[hidden]down- Availability
+Offer -[hidden]right- CvImport
+Place -[hidden]right- Availability
+Place -[hidden]down- TutorSearchChunk
+RefreshToken -[hidden]right- DeviceToken
+RefreshToken -[hidden]down- EducationLevel
+Subject -[hidden]down- TutorProfile
+TutorApplication -[hidden]down- TutorDocument
+TutorApplication -[hidden]right- TutorProfile
+TutorDocument -[hidden]down- DegreeEquivalence
+TutorDocument -[hidden]right- TutorSubject
+TutorExperience -[hidden]down- CvImport
+TutorIntroVideo -[hidden]down- TutorExperience
+TutorProfile -[hidden]right- TutorIntroVideo
+TutorProfile -[hidden]down- TutorSubject
+TutorSearchChunk -[hidden]right- MatchingSearch
+TutorSubject -[hidden]down- Offer
+TutorSubject -[hidden]right- TutorExperience
+User -[hidden]down- Beneficiary
+User -[hidden]right- RefreshToken
+
+' --- Associations
+User "1" -right- "0..*" RefreshToken
+User "1" -right- "0..*" DeviceToken
+User "1" -down- "0..*" Beneficiary
+Beneficiary "0..*" -right- "0..1" EducationLevel
+User "1" -down- "0..1" TutorProfile
+User "1" -down- "0..*" CvImport
+TutorProfile "1" -left- "0..*" TutorApplication
+TutorApplication "1" -down- "0..*" TutorDocument
+TutorProfile "1" -down- "0..*" TutorExperience
+TutorProfile "1" -right- "0..1" TutorIntroVideo
+TutorProfile "1" -down- "0..*" TutorSubject
+TutorSubject "0..*" -up- "1" Subject
+TutorSubject "0..*" -up- "1" EducationLevel
+TutorProfile "0..*" -down- "0..1" DegreeEquivalence
+DegreeEquivalence "0..*" -up- "0..1" EducationLevel
+TutorProfile "0..*" -up- "0..1" EducationLevel : niveau validé
+TutorProfile "1" -down- "0..*" Offer
+Offer "0..*" -up- "1" Subject
+Offer "0..*" -up- "0..1" EducationLevel
+Offer "0..*" -up- "0..1" AcademicTrack
+TutorProfile "1" -down- "0..*" Place
+TutorProfile "1" -down- "0..*" Availability
+TutorProfile "1" -down- "0..*" BlockedPeriod
+Availability "0..*" -left- "0..1" Place
+Availability "0..*" -up- "0..1" Offer
+TutorProfile "1" -down- "0..*" TutorSearchChunk
+User "1" -down- "0..*" MatchingSearch
+Beneficiary "0..1" -down- "0..*" MatchingSearch
+Booking "0..*" -left- "0..1" MatchingSearch
+@enduml

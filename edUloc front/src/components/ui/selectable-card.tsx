@@ -100,7 +100,7 @@ export function RadioCard({
         ) : (
           <View
             className="h-5 w-5 rounded-full"
-            style={{ borderWidth: selected ? 6 : 2, borderColor: selected ? "#332E86" : "#E7E3D7" }}
+            style={{ borderWidth: selected ? 6 : 2, borderColor: selected ? "#332E86" : "#e6e7ee" }}
           />
         )}
       </View>

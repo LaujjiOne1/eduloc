@@ -1,0 +1,255 @@
+@startuml 09_classes_sprint7
+title Sprint 7 - Communication, notifications et administration
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 14
+skinparam ranksep 22
+hide empty methods
+
+' Mise en page : une seule figure en grille de 3 colonnes, pour une page A4 en portrait avec 2 cm de marge (17 cm utiles).
+' Les éléments les plus liés sont voisins (les énumérations près des classes qui les emploient) ; le sens de chaque
+' liaison suit la grille et les liens invisibles ([hidden]) maintiennent l'alignement.
+
+enum NotificationType {
+  BOOKING_REQUEST
+  BOOKING_CONFIRMED
+  BOOKING_REFUSED
+  BOOKING_CANCELLED
+  SESSION_STARTED
+  SESSION_COMPLETED
+  REVIEW_REQUEST
+  TUTOR_APPLICATION_APPROVED
+  TUTOR_APPLICATION_REJECTED
+  TUTOR_SUSPENDED
+  VOICE_MESSAGE
+  INCOMING_CALL
+  MISSED_CALL
+  REMINDER
+  SYSTEM
+}
+
+class OutboxRelayService <<infrastructure>> {
+  +relay()
+}
+
+class Notification {
+  -id : String
+  -title : String
+  -message : String
+  -type : NotificationType
+  -isRead : Boolean
+  -linkUrl : String
+  -createdAt : DateTime
+  +markRead()
+}
+
+class NotificationsService <<service>> {
+  +list(userId, unreadOnly)
+  +unreadCount(userId)
+  +markRead(userId, id)
+  +registerDevice(userId, token, platform)
+}
+
+class OutboxEvent {
+  -id : String
+  -aggregateType : String
+  -aggregateId : String
+  -eventType : String
+  -recipientIds : String[]
+  -payload : Json
+  -pushTitle : String
+  -attempts : Integer
+  -processedAt : DateTime
+  -lastError : String
+}
+
+class DeviceToken {
+  -id : String
+  -token : String
+  -platform : DevicePlatform
+}
+
+class AdminService <<service>> {
+  +approveApplication(adminId, applicationId)
+  +rejectApplication(adminId, applicationId, reason)
+  +suspendTutor(adminId, tutorId, reason)
+  +moderateOffer(offerId, action)
+  +setUserStatus(userId, status)
+  +requestReindex(tutorId)
+  +conflicts(status)
+}
+
+class MessagesService <<service>> {
+  +requestUpload(userId, conversationId, dto)
+  +sendMessage(userId, conversationId, dto)
+  +markListened(userId, messageId)
+}
+
+class User {
+  -id : String
+  -isAdmin : Boolean
+  -lessonAlarmEnabled : Boolean
+  -lessonAlarmLeadMinutes : Integer
+}
+
+class TutorProfile {
+  -id : String
+  -suspendedAt : DateTime
+}
+
+class Message {
+  -id : String
+  -type : MessageType
+  -clientMessageId : String
+  -systemText : String
+  -listenedAt : DateTime
+  -deletedAt : DateTime
+  -createdAt : DateTime
+  +send()
+  +delete()
+}
+
+class CallSession {
+  -id : String
+  -roomName : String
+  -type : CallType
+  -status : CallStatus
+  -ringingUntil : DateTime
+  -startedAt : DateTime
+  -endedAt : DateTime
+  -durationSec : Integer
+  +accept()
+  +decline()
+  +end()
+}
+
+class Conversation {
+  -id : String
+  -status : ConversationStatus
+  -lastMessageType : MessageType
+  -lastMessagePreview : String
+  -lastMessageAt : DateTime
+  -requesterLastReadAt : DateTime
+  -tutorLastReadAt : DateTime
+  +open()
+  +markRead(userId)
+}
+
+class MessageAttachment {
+  -id : String
+  -kind : AttachmentKind
+  -storagePath : String
+  -mimeType : String
+  -sizeBytes : Integer
+  -durationMs : Integer
+  -waveform : Json
+  -transcriptStatus : TranscriptStatus
+  -transcript : String
+}
+
+class CallsService <<service>> {
+  +createCall(userId, dto)
+  +callToken(userId, callId)
+  +handleWebhook(rawBody, authHeader)
+}
+
+class Booking {
+  -id : String
+  -status : BookingStatus
+}
+
+enum AttachmentKind {
+  VOICE
+  DOCUMENT
+}
+
+enum CallType {
+  AUDIO
+  VIDEO
+}
+
+enum MessageType {
+  VOICE
+  DOCUMENT
+  SYSTEM
+  CALL_EVENT
+}
+
+enum TranscriptStatus {
+  NONE
+  PENDING
+  DONE
+  FAILED
+}
+
+enum CallStatus {
+  RINGING
+  ONGOING
+  ENDED
+  MISSED
+  DECLINED
+  CANCELLED
+}
+
+enum ConversationStatus {
+  OPEN
+  READ_ONLY
+  CLOSED
+}
+
+' --- Alignement (liens invisibles)
+AdminService -[hidden]down- TutorProfile
+AttachmentKind -[hidden]right- CallType
+AttachmentKind -[hidden]down- TranscriptStatus
+Booking -[hidden]down- MessageType
+CallSession -[hidden]down- CallsService
+CallSession -[hidden]right- Conversation
+CallStatus -[hidden]right- ConversationStatus
+CallType -[hidden]down- CallStatus
+CallType -[hidden]right- MessageType
+CallsService -[hidden]right- Booking
+CallsService -[hidden]down- CallType
+Conversation -[hidden]down- Booking
+DeviceToken -[hidden]right- AdminService
+DeviceToken -[hidden]down- User
+Message -[hidden]right- CallSession
+Message -[hidden]down- MessageAttachment
+MessageAttachment -[hidden]down- AttachmentKind
+MessageAttachment -[hidden]right- CallsService
+MessageType -[hidden]down- ConversationStatus
+MessagesService -[hidden]down- Message
+MessagesService -[hidden]right- User
+Notification -[hidden]down- DeviceToken
+Notification -[hidden]right- NotificationsService
+NotificationType -[hidden]down- Notification
+NotificationsService -[hidden]down- AdminService
+OutboxEvent -[hidden]right- DeviceToken
+OutboxEvent -[hidden]down- MessagesService
+OutboxRelayService -[hidden]right- Notification
+OutboxRelayService -[hidden]down- OutboxEvent
+TranscriptStatus -[hidden]right- CallStatus
+TutorProfile -[hidden]down- Conversation
+User -[hidden]down- CallSession
+User -[hidden]right- TutorProfile
+
+' --- Associations et dépendances
+User "1" -down- "0..*" Conversation : participe à >
+TutorProfile "1" -down- "0..*" Conversation : participe à >
+Conversation "0..*" -down- "0..1" Booking : concerne >
+Conversation "1" -left- "0..*" Message : contient >
+Message "1" -down- "0..1" MessageAttachment : porte >
+Conversation "1" -left- "0..*" CallSession : héberge >
+CallSession "0..1" -left- "0..1" Message : trace d'appel >
+User "1" -down- "0..*" CallSession : initie >
+User "1" -up- "0..*" Notification : reçoit >
+User "1" -up- "0..*" DeviceToken : enregistre >
+MessagesService .down.> Message
+MessagesService .up.> OutboxEvent : écrit
+CallsService .up.> CallSession
+NotificationsService .left.> Notification
+OutboxRelayService .down.> OutboxEvent : lit
+OutboxRelayService .right.> Notification : crée
+OutboxRelayService .down.> DeviceToken : push
+AdminService .down.> TutorProfile
+AdminService .left.> OutboxEvent : écrit
+@enduml

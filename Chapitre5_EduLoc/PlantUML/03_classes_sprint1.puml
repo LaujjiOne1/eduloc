@@ -1,0 +1,149 @@
+@startuml 03_classes_sprint1
+title Sprint 1 - Comptes, bénéficiaires et catalogue pédagogique
+skinparam classAttributeIconSize 0
+hide empty methods
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+}
+enum RelationshipType {
+  SELF
+  CHILD
+  SPOUSE
+  SIBLING
+  PARENT
+  RELATIVE
+  OTHER
+}
+enum ObjectiveType {
+  REMEDIAL
+  ONGOING
+  EXCELLENCE
+}
+enum DifficultyType {
+  THEORETICAL
+  PRACTICAL
+  METHODOLOGICAL
+  CONFIDENCE
+  OTHER
+}
+enum TeachingFormat {
+  ONLINE
+  IN_PERSON
+  BOTH
+}
+enum RhythmType {
+  ONE_TIME
+  OCCASIONAL
+  REGULAR
+  INTENSIVE
+}
+enum TrackKind {
+  SERIE
+  MENTION
+}
+
+class User {
+  -id : String
+  -firstName : String
+  -lastName : String
+  -email : String
+  -password : String
+  -phone : String
+  -language : String
+  -timezone : String
+  -status : UserStatus
+  -emailVerified : Boolean
+  -isAdmin : Boolean
+  -lastLoginAt : DateTime
+  +register()
+  +verifyEmail(token)
+  +login(email, password)
+  +refreshSession(refreshToken)
+  +resetPassword(token, newPassword)
+}
+
+class RefreshToken {
+  -id : String
+  -tokenHash : String
+  -familyId : String
+  -userAgent : String
+  -expiresAt : DateTime
+  -revokedAt : DateTime
+  +revoke()
+}
+
+class DeviceToken {
+  -id : String
+  -token : String
+  -platform : DevicePlatform
+  -lastSeenAt : DateTime
+}
+
+enum DevicePlatform {
+  ANDROID
+  IOS
+  WEB
+}
+
+class Beneficiary {
+  -id : String
+  -firstName : String
+  -lastName : String
+  -birthDate : Date
+  -relationship : RelationshipType
+  -objective : ObjectiveType
+  -difficultyType : DifficultyType
+  -preferredFormat : TeachingFormat
+  -preferredRhythm : RhythmType
+  -studyProgram : String
+  -institution : String
+  -areaLabel : String
+  -searchRadiusM : Integer
+  -maxBudget : Decimal
+  -archivedAt : DateTime
+  +create()
+  +update()
+  +archive()
+}
+
+class EducationLevel {
+  -id : String
+  -name : String
+  -category : String
+  -displayOrder : Integer
+  -academicRank : Integer
+  -requiredDegree : String
+  -isActive : Boolean
+}
+
+class AcademicTrack {
+  -id : String
+  -kind : TrackKind
+  -code : String
+  -name : String
+  -domain : String
+  -programme : String
+  -levelName : String
+  -isActive : Boolean
+}
+
+class Subject {
+  -id : String
+  -name : String
+  -category : String
+  -levelCategories : String[]
+  -trackCodes : String[]
+  -aliases : String[]
+  -isVerified : Boolean
+  -isActive : Boolean
+}
+
+User "1" -- "0..*" RefreshToken : possède >
+User "1" -- "0..*" DeviceToken : enregistre >
+User "1" -- "0..*" Beneficiary : gère >
+Beneficiary "0..*" -- "0..1" EducationLevel : suit >
+Subject "0..*" .. "0..*" AcademicTrack : filtrée par\ntrackCodes
+@enduml

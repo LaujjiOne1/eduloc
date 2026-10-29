@@ -44,5 +44,11 @@
     "tryLoadingTheTracksAgain": "Andramo indray ny fandraisana ireo sampana",
     "newProgramme": "Programa vaovao",
     "oldProgramme": "Programa taloha"
+  },
+  "sheet": {
+    "choose": "Fidio",
+    "subject": "Taranja",
+    "clearAll": "Fafao daholo",
+    "search": "Karohy"
   }
 }

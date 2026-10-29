@@ -20,7 +20,7 @@ type Palette = { bg: string; body: string; hair: string };
 const PALETTES: Record<TutorGender | "unknown", Palette> = {
   male: { bg: "#E6E3F7", body: "#332E86", hair: "#1F1B5C" },
   female: { bg: "#F1ECFC", body: "#8D7FE3", hair: "#5B4BC4" },
-  unknown: { bg: "#F0EDE3", body: "#B4B6C8", hair: "#9799AF" },
+  unknown: { bg: "#f0f1f5", body: "#B4B6C8", hair: "#9799AF" },
 };
 
 /**

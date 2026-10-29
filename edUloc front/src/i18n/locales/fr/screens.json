@@ -31,7 +31,26 @@
     "search": "Rechercher",
     "doYouTeachBecomeA": "Vous enseignez ? Devenez tuteur validé sur EduLoc",
     "mySpace": "Mon espace · {{firstName}}",
-    "tryLoadingThePopularSearches": "Réessayer de charger les recherches populaires"
+    "tryLoadingThePopularSearches": "Réessayer de charger les recherches populaires",
+    "chooseYourPath": "Choisissez votre parcours",
+    "chooseYourPathHint": "Une recherche adaptée à votre niveau d'études.",
+    "school": "Scolaire",
+    "schoolLevels": "Primaire • Collège • Lycée",
+    "schoolDescription": "Soutien personnalisé, révisions et préparation des examens avec un tuteur près de chez vous ou en ligne.",
+    "searchSchool": "Chercher un tuteur scolaire",
+    "university": "Études supérieures",
+    "universityLevels": "Licence • Master • Doctorat",
+    "universityDescription": "Toutes les mentions universitaires, et la recherche libre d'un cours pour trouver un tuteur de niveau supérieur.",
+    "searchUniversity": "Chercher un tuteur universitaire",
+    "whatEdulocOffers": "Ce que propose EduLoc",
+    "serviceFormatTitle": "En ligne ou en présentiel",
+    "serviceFormatDescription": "Cours en visio, ou rencontre près de chez vous selon votre position.",
+    "serviceChatTitle": "Messages et appels",
+    "serviceChatDescription": "Échangez avec votre tuteur par message, vocal, document et appel vidéo.",
+    "serviceRoomsTitle": "Lieux d'étude",
+    "serviceRoomsDescription": "Réservez une salle partenaire pour vos cours en présentiel.",
+    "serviceVerifiedTitle": "Tuteurs validés",
+    "serviceVerifiedDescription": "Les profils sont validés par EduLoc avant d'apparaître dans les résultats."
   },
   "login": {
     "signInToContinue": "Connectez-vous pour continuer",
@@ -75,6 +94,7 @@
   },
   "splash": {
     "theRightSupportInThe": "Le bon accompagnement, au bon endroit.",
-    "continueToTheEdulocHome": "Continuer vers l'accueil edUloc"
+    "continueToTheEdulocHome": "Continuer vers l'accueil edUloc",
+    "tapToContinue": "Touchez pour continuer"
   }
 }

@@ -21,7 +21,7 @@ type BirthDateSelectModalProps = {
 };
 
 /** Dégradés aux couleurs EduLoc : le fond glisse de l'un à l'autre quand on passe de la 1re à la 2e moitié de l'année. */
-const GRADIENT_FIRST_HALF = ["#FAF9F4", "#F3F0FC", "#ECEAF9"] as const;
+const GRADIENT_FIRST_HALF = ["#ffffff", "#F3F0FC", "#ECEAF9"] as const;
 const GRADIENT_SECOND_HALF = ["#F3F0FC", "#ECEAF9", "#E1F5EF"] as const;
 
 const DEFAULT_DATE = new Date(1997, 4, 12);

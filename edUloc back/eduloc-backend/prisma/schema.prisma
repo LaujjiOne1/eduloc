@@ -515,9 +515,12 @@ model Subject {
   levelCategories String[] @default([])
   /// Synonymes et intitulés alternatifs (ex. « Algèbre 1 », « Algèbre linéaire L1 »). Inclus dans le chunk SUBJECT.
   aliases         String[] @default([])
-  /// Codes des séries du lycée (AcademicTrack.code) pour lesquelles la matière est proposée en Première/Terminale.
-  /// Vide = toutes les séries. Sans effet hors du lycée.
+  /// Codes des filières (AcademicTrack.code) pour lesquelles la matière est proposée : séries du lycée (Première/Terminale)
+  /// ou mentions universitaires. Vide = toutes les filières. Sans effet au primaire et au collège.
   trackCodes      String[] @default([])
+  /// Niveaux précis (EducationLevel.name) où la matière N'est PAS proposée dans ses catégories : ex. l'anglais n'arrive
+  /// qu'en 8ème au primaire. Vide = proposée à tous les niveaux de ses catégories.
+  excludedLevels  String[] @default([])
   /// false = compétence ajoutée librement par un tuteur : visible de lui seul jusqu'à l'approbation de son dossier.
   isVerified      Boolean  @default(true)
   createdById     String?

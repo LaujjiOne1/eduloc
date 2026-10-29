@@ -248,7 +248,7 @@ async function main() {
   await AuthService.signup({ firstName: "Lova", lastName: "Front", email: tutorEmail, password: PASSWORD, phone: "+261 33 00 000 02" });
   await AuthService.verifyEmail(tutorEmail, await emailCode(tutorEmail));
   const skills = await TutorApplicationService.getSkillCatalog();
-  const physics = skills.find((s) => s.label === "Physique-Chimie")!;
+  const physics = skills.find((s) => s.label === "Sciences Physiques (SP)")!;
   // Autocomplétion filtrée par diplôme + création libre
   const algeBac = await TutorApplicationService.suggestSkills("alge", "bac");
   const algeLicence = await TutorApplicationService.suggestSkills("alge", "licence");
@@ -322,6 +322,8 @@ async function main() {
 
 main().catch(async (error) => {
   console.error("\nÉCHEC INATTENDU :", error);
+  // Même nettoyage qu'en fin de parcours : un échec en cours de route ne doit pas laisser la compétence de test au catalogue.
+  await db.query(`UPDATE subjects SET "isActive" = false WHERE name LIKE 'Algorithmique quantique %'`).catch(() => undefined);
   await db.end().catch(() => undefined);
   process.exit(2);
 });

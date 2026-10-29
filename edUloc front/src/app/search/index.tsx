@@ -1,5 +1,5 @@
-import { LevelScreen } from "@/screens/search/level-screen";
+import { SearchSheetScreen } from "@/screens/search/search-sheet-screen";
 
 export default function Search() {
-  return <LevelScreen />;
+  return <SearchSheetScreen />;
 }

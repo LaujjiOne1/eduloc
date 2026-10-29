@@ -1,0 +1,227 @@
+@startuml 07_classes_sprint5
+title Sprint 5 - Matching sémantique hybride et import de CV
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 14
+skinparam ranksep 22
+hide empty methods
+
+' Mise en page : une seule figure en grille de 3 colonnes, pour une page A4 en portrait avec 2 cm de marge (17 cm utiles).
+' Les éléments les plus liés sont voisins ; le sens de chaque liaison suit la grille et les liens invisibles
+' ([hidden]) maintiennent l'alignement.
+
+enum SearchChunkSource {
+  PROFILE
+  SUBJECT
+  EXPERIENCE
+  OFFER
+  DOCUMENT
+}
+
+enum CvImportStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+class PaddleOcrClient <<client>> {
+  +ocrImage(file, mimeType)
+  +ocrFile(file, mimeType)
+}
+
+class CvExtractorService <<service>> {
+  +extract(cvText)
+}
+
+class CvImportService <<service>> {
+  +requestUpload(userId, input)
+  +create(userId, uploadId)
+  +process(importId)
+  +get(userId, id)
+}
+
+class DocumentTextService <<service>> {
+  +extractTextDetailed(file, mimeType)
+}
+
+class OutboxEvent {
+  -id : String
+  -eventType : String
+  -payload : Json
+  -attempts : Integer
+  -processedAt : DateTime
+}
+
+class CvImport {
+  -id : String
+  -status : CvImportStatus
+  -fileHash : String
+  -stage : String
+  -extractedText : String
+  -result : Json
+  -durationMs : Integer
+}
+
+class TutorDocument {
+  -id : String
+  -extractedText : String
+  -extractionStatus : TranscriptStatus
+}
+
+class IndexingProcessor <<processeur>> {
+  +tick()
+  +processPending()
+}
+
+class SubjectMatcherService <<service>> {
+  +subjectsMentionedIn(text)
+  +matchSkills(skills)
+}
+
+class TutorProfile {
+  -id : String
+  -academicLevelId : String
+  -rating : Float
+  -reviewsCount : Integer
+  -searchIndexedAt : DateTime
+}
+
+class SearchIndexService <<service>> {
+  +loadSource(tutorProfileId)
+  +reindexTutor(tutorProfileId)
+}
+
+class OllamaEmbeddingService <<service>> {
+  +embedQuery(text)
+  +embedTexts(texts)
+}
+
+class TutorSearchChunk {
+  -id : String
+  -sourceType : SearchChunkSource
+  -sourceId : String
+  -chunkIndex : Integer
+  -label : String
+  -content : String
+  -contentHash : String
+  -embedding : Vector(768)
+  -embeddingModel : String
+  -embeddedAt : DateTime
+}
+
+class ChunkBuilderService <<service>> {
+  +build(source)
+}
+
+class MatchingSearch {
+  -id : String
+  -educationLevelId : String
+  -subjectId : String
+  -subjectText : String
+  -needDescription : String
+  -objective : ObjectiveType
+  -format : TeachingFormat
+  -candidateCount : Integer
+  -results : Json
+  -embeddingModel : String
+  -durationMs : Integer
+  -createdAt : DateTime
+}
+
+class EducationLevel {
+  -id : String
+  -academicRank : Integer
+}
+
+class SemanticRankingRepository <<repository>> {
+  +bestSimilarities(queryVector, tutorIds)
+  +tutorsDeclaringSubject(tutorIds, subjectId)
+}
+
+class MatchingSearchService <<service>> {
+  +search(requesterId, dto)
+}
+
+class PreselectionRepository <<repository>> {
+  +findCandidateIds(params)
+}
+
+class LevelEligibility <<domaine>> {
+  +minimumTutorRank(requestRank)
+  +isTutorEligible(requestRank, tutorLevel)
+}
+
+class FinalScore <<domaine>> {
+  +rankByFinalScore(inputs, options)
+  +proximityScore(distanceM, radiusM)
+}
+
+class Scoring <<domaine>> {
+  +scoreTutor(input)
+  +rankTutors(inputs, limit)
+}
+
+' --- Alignement (liens invisibles)
+ChunkBuilderService -[hidden]right- MatchingSearch
+ChunkBuilderService -[hidden]down- SemanticRankingRepository
+CvExtractorService -[hidden]right- CvImportService
+CvExtractorService -[hidden]down- OutboxEvent
+CvImport -[hidden]down- SubjectMatcherService
+CvImport -[hidden]right- TutorDocument
+CvImportService -[hidden]down- CvImport
+CvImportService -[hidden]right- DocumentTextService
+CvImportStatus -[hidden]down- CvImportService
+CvImportStatus -[hidden]right- PaddleOcrClient
+DocumentTextService -[hidden]down- TutorDocument
+EducationLevel -[hidden]down- PreselectionRepository
+FinalScore -[hidden]right- Scoring
+IndexingProcessor -[hidden]down- SearchIndexService
+IndexingProcessor -[hidden]right- SubjectMatcherService
+LevelEligibility -[hidden]right- FinalScore
+MatchingSearch -[hidden]right- EducationLevel
+MatchingSearch -[hidden]down- MatchingSearchService
+MatchingSearchService -[hidden]down- FinalScore
+MatchingSearchService -[hidden]right- PreselectionRepository
+OllamaEmbeddingService -[hidden]down- MatchingSearch
+OllamaEmbeddingService -[hidden]right- TutorSearchChunk
+OutboxEvent -[hidden]right- CvImport
+OutboxEvent -[hidden]down- IndexingProcessor
+PaddleOcrClient -[hidden]down- DocumentTextService
+PreselectionRepository -[hidden]down- Scoring
+SearchChunkSource -[hidden]down- CvExtractorService
+SearchChunkSource -[hidden]right- CvImportStatus
+SearchIndexService -[hidden]down- ChunkBuilderService
+SearchIndexService -[hidden]right- OllamaEmbeddingService
+SemanticRankingRepository -[hidden]down- LevelEligibility
+SemanticRankingRepository -[hidden]right- MatchingSearchService
+SubjectMatcherService -[hidden]down- OllamaEmbeddingService
+SubjectMatcherService -[hidden]right- TutorProfile
+TutorDocument -[hidden]down- TutorProfile
+TutorProfile -[hidden]down- TutorSearchChunk
+TutorSearchChunk -[hidden]down- EducationLevel
+
+' --- Associations et dépendances
+TutorProfile "1" -down- "0..*" TutorSearchChunk : est indexé par >
+MatchingSearch "0..*" -right- "1" EducationLevel
+MatchingSearchService .up.> MatchingSearch : enregistre
+MatchingSearchService .down.> LevelEligibility : 1. éligibilité
+MatchingSearchService .right.> PreselectionRepository : 2. présélection SQL
+MatchingSearchService .up.> OllamaEmbeddingService : 3. vecteur de la demande
+MatchingSearchService .left.> SemanticRankingRepository : 4. similarité pgvector
+MatchingSearchService .down.> Scoring : 5. score sémantique
+MatchingSearchService .down.> FinalScore : 6. classement final
+IndexingProcessor .up.> OutboxEvent : consomme
+IndexingProcessor .down.> SearchIndexService
+SearchIndexService .down.> ChunkBuilderService
+SearchIndexService .right.> OllamaEmbeddingService
+SearchIndexService .right.> TutorSearchChunk : écrit
+TutorProfile "1" -up- "0..*" TutorDocument : justificatifs
+TutorDocument .up.> DocumentTextService : texte extrait
+DocumentTextService .up.> PaddleOcrClient : OCR si scanné
+CvImportService .down.> CvImport
+CvImportService .right.> DocumentTextService
+CvImportService .left.> CvExtractorService
+CvImportService .down.> SubjectMatcherService
+SubjectMatcherService .down.> OllamaEmbeddingService
+@enduml

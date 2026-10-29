@@ -51,7 +51,7 @@ export function TimeRangeWheelPicker({ startTime, endTime, onChangeStart, onChan
 
   return (
     <View className="overflow-hidden rounded-2xl border border-line" accessibilityRole="none">
-      <LinearGradient colors={["#FAF9F4", "#F3F0FC", "#ECEAF9"]} style={{ position: "absolute", inset: 0 }} />
+      <LinearGradient colors={["#ffffff", "#F3F0FC", "#ECEAF9"]} style={{ position: "absolute", inset: 0 }} />
 
       <View className="px-3 pb-3 pt-3">
         {/* Titres des colonnes */}

@@ -1,0 +1,93 @@
+@startuml 13_deploiement
+title Diagramme de déploiement d'EduLoc
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 40
+top to bottom direction
+
+' Mise en page : pile verticale étroite (clients, serveur applicatif, données + IA, services externes)
+' pour tenir en portrait sur une page A4 avec 2 cm de marge (17 cm utiles) sans réduire le texte.
+
+node "Smartphone\n(Android / iOS)" as MOB {
+  artifact "Application EduLoc\n(Expo / React Native)" as APP
+}
+
+node "Navigateur web\n(poste de l'administrateur)" as WEB {
+  artifact "Back-office EduLoc\n(React / Vite / Tailwind)" as BO
+}
+
+node "Serveur applicatif\n(Docker Compose)" as SRV {
+  node "Conteneur centrifugo" as CEN {
+    component "Centrifugo v6\n(temps réel)" as CENT
+  }
+  node "Conteneur api" as API {
+    component "API REST\nNestJS / TypeScript\n(Node.js)" as NEST
+  }
+  node "Conteneur livekit" as LIV {
+    component "LiveKit\n(appels audio / vidéo)" as LK
+  }
+  node "Conteneur redis" as RED {
+    component "Redis 7\n(cache)" as REDIS
+  }
+}
+
+node "Serveur de données\n(Docker Compose)" as DBN {
+  node "Conteneur db" as DB {
+    database "PostgreSQL 16\n+ PostGIS 3.4\n+ pgvector 0.8" as PG
+  }
+  node "Conteneur pgadmin" as PGA {
+    component "pgAdmin 4\n(administration)" as PGADM
+  }
+}
+
+node "Serveur d'intelligence artificielle\n(Docker Compose)" as IAN {
+  node "Conteneur ollama" as OLL {
+    component "Ollama\nEmbeddingGemma (embeddings)\nQwen 2.5 (extraction de CV)" as OLLAMA
+  }
+  node "Conteneur paddleocr" as PAD {
+    component "PaddleOCR\n(lecture de documents)" as PADDLE
+  }
+}
+
+cloud "Services externes" as EXT {
+  component "Stockage de fichiers\n(Supabase Storage ou disque\nlocal en développement)" as STO
+  component "Expo Push / FCM\n(notifications push)" as PUSH
+  component "Resend\n(e-mails)" as MAIL
+  component "Nominatim (OpenStreetMap)\n(géocodage)" as GEO
+}
+
+' Rangée des clients : téléphone à gauche, back-office à droite
+MOB -[hidden]right- WEB
+
+' Serveur applicatif : Centrifugo | API | LiveKit sur une ligne, Redis sous l'API
+APP -down-> CENT : WebSocket
+APP -down-> NEST : HTTPS / REST (JSON)
+APP -down-> LK : WebRTC
+BO -down-> NEST : HTTPS / REST (JSON)\n(routes /admin)
+NEST -left-> CENT : HTTP (publication)
+NEST -right-> LK : HTTP (jetons d'appel)
+NEST -down-> REDIS : TCP 6379
+
+' Les blocs suivants restent sous le serveur applicatif (sinon ils se placent à côté et élargissent le schéma)
+REDIS -[hidden]down- PG
+REDIS -[hidden]down- OLLAMA
+DBN -[hidden]right- IAN
+DBN -[hidden]down- EXT
+
+' Données et intelligence artificielle sur une même ligne
+NEST -down-> PG : TCP 5432\n(Prisma, SQL)
+PGADM -left-> PG : TCP
+NEST -down-> OLLAMA : HTTP 11434\n(réseau privé)
+NEST -down-> PADDLE : HTTP\n(réseau privé)
+OLLAMA -[hidden]right- PADDLE
+
+' Services externes en grille 2 x 2
+STO -[hidden]right- PUSH
+MAIL -[hidden]right- GEO
+STO -[hidden]down- MAIL
+NEST -down-> STO : HTTPS (URL signées)
+NEST -down-> PUSH : HTTPS
+NEST -down-> MAIL : HTTPS
+NEST -down-> GEO : HTTPS
+@enduml

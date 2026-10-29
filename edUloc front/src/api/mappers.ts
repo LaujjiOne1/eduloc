@@ -79,6 +79,7 @@ export const toCategory = (s: D.SubjectDto): Category => ({
   group: s.category,
   levelCategories: s.levelCategories ?? [],
   trackCodes: s.trackCodes ?? [],
+  excludedLevels: s.excludedLevels ?? [],
 });
 export const toLevel = (l: D.EducationLevelDto): LevelRef => ({
   id: l.id,

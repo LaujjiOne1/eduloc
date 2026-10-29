@@ -1,0 +1,8 @@
+une site marketplace de vente de tshirt 
+qui posseder plusieurs service ( ex : service client , vente , revendre )
+
+fait la specialisation d'une site , ui ux conforme 
+
+et diviser chaque action d'utilisateur (acteurs) par service 
+implemente aussi chacun des specifications des services , 
+ jusqu'au backend 

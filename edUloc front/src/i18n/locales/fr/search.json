@@ -44,5 +44,11 @@
     "tryLoadingTheTracksAgain": "Réessayer de charger les filières",
     "newProgramme": "Nouveau programme",
     "oldProgramme": "Ancien programme"
+  },
+  "sheet": {
+    "choose": "Choisir",
+    "subject": "Matière",
+    "clearAll": "Tout effacer",
+    "search": "Rechercher"
   }
 }

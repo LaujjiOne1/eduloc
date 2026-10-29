@@ -1,0 +1,87 @@
+@startuml 14_architecture_applicative
+title Architecture applicative d'EduLoc (3 niveaux)
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 35
+top to bottom direction
+
+' Mise en page : schéma vertical d'environ 700 px de large (3 composants au plus par ligne)
+' pour tenir en portrait sur une page A4 avec 2 cm de marge (17 cm utiles) sans réduire le texte.
+
+rectangle "Niveau 1 - Présentation" as N1 {
+  rectangle "Application mobile\n(smartphone)" as MOB {
+    component "Expo Router\n(écrans = fichiers)" as ROUTER
+    component "Écrans et composants\n(React Native, NativeWind)" as SCREENS
+    component "Stores Zustand\n(auth, recherche, réservation,\ncandidature)" as STORES
+    component "Services par domaine\n+ client HTTP\n(jeton, renouvellement sur 401)" as SERV
+    component "Temps réel\n(Centrifuge) et appels\n(LiveKit client)" as RT
+  }
+  rectangle "Back-office web\n(navigateur de l'administrateur)" as BO {
+    component "Contexte d'authentification\n(session administrateur)" as BOAUTH
+    component "Écrans par domaine\n(dossiers, offres, utilisateurs,\nconflits, lieux partenaires)" as BOSCR
+    component "Appels de l'API /admin\n+ client HTTP\n(jeton, renouvellement sur 401)" as BOAPI
+  }
+}
+
+rectangle "Niveau 2 - Traitements applicatifs\n(API NestJS, monolithe modulaire)" as N2 {
+  component "Contrôleurs\n(routes REST, validation\ndes DTO, gardes)" as CTRL
+  component "Services métier\n(un module par domaine)" as SVC
+  component "Règles du domaine\n(fonctions pures : état d'une\nréservation, prix, éligibilité)" as DOM
+  component "Dépôts et accès aux données\n(Prisma, SQL brut\nPostGIS / pgvector)" as REPO
+  component "Outbox\n(événements écrits dans la\nmême transaction)" as OUTBOX
+  component "Ports et adaptateurs\n(stockage, push, temps réel,\nappels)" as PORTS
+}
+
+rectangle "Niveau 3 - Données" as N3 {
+  database "PostgreSQL 16\nPostGIS, pgvector" as PG
+  database "Redis" as RD
+  component "Stockage de fichiers" as FS
+}
+
+rectangle "Services d'appui" as EXT {
+  component "Ollama\nPaddleOCR" as IA
+  component "Centrifugo\nLiveKit" as RTS
+  component "Expo Push / FCM\nResend" as NOTIF
+}
+
+' ---- Niveau 1 : application mobile à gauche, back-office à droite
+MOB -[hidden]right- BO
+
+ROUTER -down-> SCREENS
+SCREENS -right-> STORES
+SCREENS -down-> SERV
+SERV -[hidden]right- RT
+
+BOAUTH -down-> BOSCR
+BOSCR -down-> BOAPI
+
+' ---- Niveau 2 : deux rangées de trois composants
+CTRL -right-> SVC
+SVC -right-> DOM
+CTRL -[hidden]down- REPO
+SVC -down-> OUTBOX
+DOM -[hidden]down- PORTS
+REPO -[hidden]right- OUTBOX
+OUTBOX -[hidden]right- PORTS
+SVC -down-> REPO
+SVC -down-> PORTS
+
+SERV -down-> CTRL : HTTPS / JSON
+BOAPI -down-> CTRL : HTTPS / JSON
+
+' ---- Niveaux 3 et services d'appui : une rangée de trois composants chacun
+PG -[hidden]right- RD
+RD -[hidden]right- FS
+IA -[hidden]right- RTS
+RTS -[hidden]right- NOTIF
+
+REPO -down-> PG
+OUTBOX -down-> PG
+SVC -down-> RD
+PORTS -down-> FS
+PORTS -down-> RTS
+PORTS -down-> NOTIF
+SVC -down-> IA
+RT -down-> RTS : WebSocket / WebRTC
+@enduml

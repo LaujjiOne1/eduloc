@@ -4,8 +4,8 @@ import type { AcademicTrack } from "@/types/track";
 import { t } from "@/i18n";
 
 /**
- * Entonnoir de recherche : Niveau (étape 1, blocs dépliables) → Filière (étape 2, séries ou mentions, seulement pour
- * Première/Terminale et l'université) → Matière (étape 3, filtrée par bloc et par série).
+ * Entonnoir de recherche : Niveau (cycle puis niveau précis) → Filière (séries ou mentions, seulement pour
+ * Première/Terminale et l'université) → Matière (filtrée par bloc et par série).
  */
 
 export type LevelBlockId = "primaire" | "college" | "lycee" | "licence" | "master" | "doctorat";
@@ -44,29 +44,22 @@ export function trackKindOf(level: EducationLevel | null | undefined): "serie" |
   return null;
 }
 
-/** Nombre d'étapes de l'entonnoir : la filière n'existe que pour certains niveaux. */
-export function funnelSteps(level: EducationLevel | null) {
-  const hasTrack = !!level?.trackKind;
-  return {
-    total: hasTrack ? 4 : 3,
-    level: 1,
-    track: 2,
-    subject: hasTrack ? 3 : 2,
-    summary: hasTrack ? 4 : 3,
-  };
-}
-
-/** Matières proposées pour un niveau (et une série, au lycée) : seules celles du bloc parent sont affichées. */
+/**
+ * Matières proposées pour un niveau (et une filière : série au lycée, mention à l'université) : chaque bloc n'affiche
+ * que les siennes. Une matière sans filière (`trackCodes` vide) est commune à toutes ; un niveau sans filière à choisir
+ * (Seconde, « Formation pro ») ne voit donc que ce tronc commun.
+ */
 export function subjectsFor(categories: Category[], level: EducationLevel | null, track: AcademicTrack | null): Category[] {
   const levelCategory = level?.category;
   if (!levelCategory) return [];
   return categories.filter((subject) => {
     const levelCategories = subject.levelCategories ?? [];
     if (levelCategories.length > 0 && !levelCategories.includes(levelCategory)) return false;
-    // Seconde (tronc commun) n'a pas de série choisie : elle voit toutes les matières du lycée.
+    if (level && subject.excludedLevels?.includes(level.label)) return false;
+    if (levelCategory !== "Lycée" && levelCategory !== "Université") return true;
     const trackCodes = subject.trackCodes ?? [];
-    if (levelCategory === "Lycée" && track && trackCodes.length > 0) return trackCodes.includes(track.code);
-    return true;
+    if (trackCodes.length === 0) return true;
+    return !!track && trackCodes.includes(track.code);
   });
 }
 

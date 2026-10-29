@@ -1,0 +1,189 @@
+@startuml 02_modele_domaine
+title Modèle du domaine d'EduLoc
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam shadowing false
+skinparam nodesep 30
+skinparam ranksep 40
+hide methods
+
+' Mise en page : grille de 3 colonnes pour tenir en portrait sur une page A4 avec 2 cm de marge (17 cm utiles).
+' Les classes les plus reliées entre elles sont voisines ; le sens de chaque association suit la grille
+' et les liens invisibles ([hidden]) maintiennent l'alignement.
+
+class RechercheSemantique <<MatchingSearch>> {
+  needDescription
+  results
+}
+
+class Message {
+  type
+  createdAt
+}
+
+class Document <<TutorDocument>> {
+  type
+  status
+}
+
+class Notification {
+  type
+  isRead
+}
+
+class Conversation {
+  status
+  lastMessageAt
+}
+
+class Candidature <<TutorApplication>> {
+  status
+  submittedAt
+}
+
+class Utilisateur <<User>> {
+  firstName
+  lastName
+  email
+  status
+  isAdmin
+}
+
+class ProfilTuteur <<TutorProfile>> {
+  displayName
+  bio
+  academicLevel
+  rating
+  isVisible
+}
+
+class Disponibilite <<Availability>> {
+  dayOfWeek
+  startTime
+  endTime
+}
+
+class Beneficiaire <<Beneficiary>> {
+  firstName
+  relationship
+  objective
+  preferredFormat
+}
+
+class Reservation <<Booking>> {
+  startAt
+  endAt
+  status
+  teachingMode
+  totalAmount
+}
+
+class Lieu <<Place>> {
+  label
+  type
+  location
+}
+
+class StructurePartenaire <<PartnerVenue>> {
+  name
+  type
+  status
+}
+
+class Salle <<Room>> {
+  name
+  capacity
+  pricePerHour
+  status
+}
+
+class Avis <<Review / RoomReview>> {
+  rating
+  comment
+}
+
+class NiveauEtude <<EducationLevel>> {
+  name
+  category
+  academicRank
+}
+
+class Offre <<Offer>> {
+  title
+  price
+  durationMinutes
+  format
+}
+
+class Matiere <<Subject>> {
+  name
+  category
+}
+
+class Filiere <<AcademicTrack>> {
+  kind
+  code
+  name
+}
+
+' --- Alignement (liens invisibles)
+Avis -[hidden]down- Matiere
+Beneficiaire -[hidden]right- Reservation
+Beneficiaire -[hidden]down- StructurePartenaire
+Candidature -[hidden]down- Disponibilite
+Conversation -[hidden]right- Candidature
+Conversation -[hidden]down- ProfilTuteur
+Disponibilite -[hidden]down- Lieu
+Document -[hidden]down- Candidature
+Lieu -[hidden]down- Avis
+Message -[hidden]down- Conversation
+Message -[hidden]right- Document
+NiveauEtude -[hidden]right- Offre
+Notification -[hidden]right- Conversation
+Notification -[hidden]down- Utilisateur
+Offre -[hidden]down- Filiere
+Offre -[hidden]right- Matiere
+ProfilTuteur -[hidden]right- Disponibilite
+ProfilTuteur -[hidden]down- Reservation
+RechercheSemantique -[hidden]right- Message
+RechercheSemantique -[hidden]down- Notification
+Reservation -[hidden]right- Lieu
+Reservation -[hidden]down- Salle
+Salle -[hidden]right- Avis
+Salle -[hidden]down- Offre
+StructurePartenaire -[hidden]down- NiveauEtude
+StructurePartenaire -[hidden]right- Salle
+Utilisateur -[hidden]down- Beneficiaire
+Utilisateur -[hidden]right- ProfilTuteur
+
+' --- Associations
+Utilisateur "1" -down- "0..*" Beneficiaire : gère >
+Utilisateur "1" -right- "0..1" ProfilTuteur : est >
+Utilisateur "1" -down- "0..1" StructurePartenaire : gère >
+Utilisateur "1" -down- "0..*" Reservation : demande >
+Utilisateur "1" -up- "0..*" Notification : reçoit >
+Utilisateur "1" -up- "0..*" RechercheSemantique : lance >
+Beneficiaire "0..*" -down- "0..1" NiveauEtude : suit >
+Beneficiaire "1" -right- "0..*" Reservation : bénéficie >
+ProfilTuteur "1" -up- "0..*" Candidature : dépose >
+Candidature "1" -up- "0..*" Document : contient >
+ProfilTuteur "1" -down- "0..*" Offre : publie >
+ProfilTuteur "1" -right- "0..*" Disponibilite : définit >
+ProfilTuteur "1" -down- "0..*" Lieu : déclare >
+ProfilTuteur "1" -down- "0..*" Reservation : assure >
+ProfilTuteur "0..*" -down- "0..*" Salle : accepte >
+Offre "0..*" -right- "1" Matiere : porte sur >
+Offre "0..*" -left- "0..1" NiveauEtude : vise >
+Offre "0..*" -down- "0..1" Filiere : relève de >
+Offre "1" -up- "0..*" Reservation : réservée par >
+Disponibilite "0..*" -down- "0..1" Lieu : se tient à >
+Reservation "0..*" -down- "0..1" Salle : se déroule dans >
+Reservation "0..*" -right- "0..1" Lieu : se déroule à >
+Reservation "1" -down- "0..1" Avis : donne lieu à >
+StructurePartenaire "1" -right- "0..*" Salle : possède >
+Salle "1" -right- "0..*" Avis : reçoit >
+Conversation "1" -up- "0..*" Message : contient >
+Utilisateur "1" -up- "0..*" Conversation : participe à >
+ProfilTuteur "1" -up- "0..*" Conversation : participe à >
+Conversation "0..*" -down- "0..1" Reservation : concerne >
+@enduml

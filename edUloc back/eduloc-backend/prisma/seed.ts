@@ -12,8 +12,8 @@ import argon2 from 'argon2';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
-import { MENTIONS, SERIES, SERIES_ECONOMIC, SERIES_LITERARY, SERIES_SCIENTIFIC } from '../src/modules/catalog/domain/academic-tracks';
-import { CATALOG_LEVELS, academicRankOfLevel, requiredDegreeFor } from '../src/modules/catalog/domain/education-levels';
+import { HIGH_SCHOOL_SUBJECT_TRACKS, MENTIONS, SERIES, UNIVERSITY_SUBJECT_TRACKS } from '../src/modules/catalog/domain/academic-tracks';
+import { CATALOG_LEVELS, LEVELS_ABOVE_LICENCE, LICENCE_LEVELS, PRIMARY_FIRST_CYCLE_LEVELS, academicRankOfLevel, requiredDegreeFor } from '../src/modules/catalog/domain/education-levels';
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 2 });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
@@ -32,42 +32,53 @@ type SubjectSeed = {
   description: string;
   /** Vide = tous les niveaux. */
   levelCategories?: string[];
-  /** Séries du lycée concernées (Première/Terminale) ; vide = toutes. */
-  trackCodes?: string[];
+  /** Niveaux précis exclus dans ces catégories (ex. T1-T3 pour l'anglais) ; vide = tous. */
+  excludedLevels?: readonly string[];
   aliases?: string[];
 };
 
+/** Matières qui ne figurent plus dans les programmes officiels : désactivées, pas supprimées, pour ne pas casser les offres existantes. */
+const RETIRED_SUBJECTS = [
+  'Mathématiques Avancées', 'Mathématiques Appliquées', 'Littérature', 'Sciences Physiques et Chimiques',
+  'Arts visuels', 'Musique',
+];
+/** Renommages : l'id est conservé, donc les offres et compétences des tuteurs suivent. */
+const RENAMED_SUBJECTS: ReadonlyArray<[from: string, to: string]> = [
+  ['Physique-Chimie', 'Sciences Physiques (SP)'],
+  ['Technologie', 'Sciences et Technologie (ST)'],
+];
+
 /**
  * Catalogue par bloc d'études (étape 3 de l'entonnoir : seules les matières du bloc choisi sont proposées).
- * Au lycée, `trackCodes` restreint la matière aux séries concernées ; Seconde (tronc commun) les voit toutes.
+ * Au lycée, les séries concernées viennent de HIGH_SCHOOL_SUBJECT_TRACKS ; une matière absente de cette table est
+ * commune à tout le lycée, Seconde comprise. Le collège n'a pas de série : tronc commun identique pour tous.
  */
 const SUBJECTS: SubjectSeed[] = [
   // Primaire
-  { name: 'Mathématiques', category: 'Sciences', description: 'Calcul, numération, géométrie, algèbre, probabilités.', levelCategories: [...PRIMARY, ...MIDDLE, ...UNIVERSITY], aliases: ['Maths'] },
+  { name: 'Mathématiques', category: 'Sciences', description: 'Calcul, numération, géométrie, algèbre, probabilités.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY], aliases: ['Maths'] },
   { name: 'Français', category: 'Langues', description: 'Grammaire, expression écrite et orale, littérature.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY] },
   { name: 'Malagasy', category: 'Langues', description: 'Lecture, écriture, littérature malagasy.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH] },
-  { name: 'Anglais', category: 'Langues', description: 'Initiation, conversation, grammaire, préparation aux examens.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY] },
-  { name: 'Éducation à la Citoyenneté', category: 'Lettres', description: 'Civisme, vivre ensemble, droits et devoirs.', levelCategories: PRIMARY },
-  { name: 'Histoire-Géographie', category: 'Lettres', description: 'Histoire de Madagascar et du monde, géographie.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH], aliases: ['Histoire', 'Géographie'] },
-  { name: 'Technologie', category: 'Sciences', description: 'Objets techniques, initiation au numérique.', levelCategories: [...PRIMARY, ...MIDDLE] },
-  { name: 'Arts visuels', category: 'Arts', description: 'Dessin, peinture, arts plastiques.', levelCategories: PRIMARY },
-  { name: 'Musique', category: 'Arts', description: 'Chant, rythme, culture musicale.', levelCategories: PRIMARY },
-  // Collège
-  { name: 'Sciences Physiques et Chimiques', category: 'Sciences', description: 'Matière, énergie, électricité, réactions chimiques.', levelCategories: MIDDLE },
-  { name: 'Sciences de la Vie et de la Terre (SVT)', category: 'Sciences', description: 'Biologie, géologie, écologie.', levelCategories: [...MIDDLE, ...HIGH], trackCodes: SERIES_SCIENTIFIC, aliases: ['SVT'] },
-  { name: 'EPS', category: 'Sport', description: 'Éducation physique et sportive.', levelCategories: [...MIDDLE, ...HIGH] },
-  // Lycée : commun à toutes les séries
+  // Anglais : initiation dès la T4 (8ème), pas en T1 à T3.
+  { name: 'Anglais', category: 'Langues', description: 'Initiation, conversation, grammaire, préparation aux examens.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH, ...UNIVERSITY], excludedLevels: PRIMARY_FIRST_CYCLE_LEVELS },
+  { name: 'Éducation à la Citoyenneté', category: 'Lettres', description: 'Civisme, vivre ensemble, droits et devoirs.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH], aliases: ['FOV', 'Fanabeazana ho Olompirenena Vanona'] },
+  { name: 'Arts', category: 'Arts', description: 'Dessin, arts plastiques, culture artistique (Zavakanto).', levelCategories: [...PRIMARY, ...MIDDLE], aliases: ['Zavakanto'] },
+  { name: 'EPS', category: 'Sport', description: 'Éducation physique et sportive.', levelCategories: [...PRIMARY, ...MIDDLE, ...HIGH] },
+  // Primaire T4-T5 et collège : Histoire et Géographie sont enseignées séparément (le lycée garde Histoire-Géographie)
+  { name: 'Histoire', category: 'Lettres', description: 'Histoire / Tantara : Madagascar et le monde.', levelCategories: [...PRIMARY, ...MIDDLE], excludedLevels: PRIMARY_FIRST_CYCLE_LEVELS },
+  { name: 'Géographie', category: 'Lettres', description: 'Géographie de Madagascar et du monde.', levelCategories: [...PRIMARY, ...MIDDLE], excludedLevels: PRIMARY_FIRST_CYCLE_LEVELS },
+  { name: 'Histoire-Géographie', category: 'Lettres', description: 'Histoire de Madagascar et du monde, géographie.', levelCategories: HIGH },
+  // Primaire T4-T5 : matière, êtres vivants, santé et objets techniques
+  { name: 'Sciences et Technologie (ST)', category: 'Sciences', description: 'Matière, êtres vivants, santé, objets techniques.', levelCategories: PRIMARY, excludedLevels: PRIMARY_FIRST_CYCLE_LEVELS, aliases: ['ST', 'Technologie', 'Sciences et Technologie'] },
+  // Collège (T6 à T9) : en plus des matières ci-dessus
+  { name: 'Sciences de la Vie et de la Terre (SVT)', category: 'Sciences', description: 'Biologie, géologie, écologie.', levelCategories: [...MIDDLE, ...HIGH], aliases: ['SVT'] },
+  // Lycée : matières propres à certaines séries (séries concernées : HIGH_SCHOOL_SUBJECT_TRACKS)
   { name: 'Philosophie', category: 'Lettres', description: 'Dissertation, explication de texte, grands auteurs.', levelCategories: [...HIGH, ...UNIVERSITY] },
-  // Lycée : séries scientifiques (C, D, S)
-  { name: 'Mathématiques Avancées', category: 'Sciences', description: 'Analyse, algèbre, géométrie, probabilités du programme scientifique.', levelCategories: HIGH, trackCodes: SERIES_SCIENTIFIC },
-  { name: 'Physique-Chimie', category: 'Sciences', description: 'Mécanique, électricité, chimie générale et organique.', levelCategories: HIGH, trackCodes: SERIES_SCIENTIFIC, aliases: ['Physique', 'Chimie', 'Sciences physiques'] },
-  // Lycée : séries économiques (OSE)
-  { name: 'Sciences Économiques et Sociales (SES)', category: 'Gestion', description: 'Économie, sociologie, organisation des sociétés.', levelCategories: HIGH, trackCodes: SERIES_ECONOMIC },
-  { name: 'Mathématiques Appliquées', category: 'Sciences', description: 'Statistiques, calcul financier, mathématiques pour l’économie.', levelCategories: HIGH, trackCodes: SERIES_ECONOMIC },
-  // Lycée : séries littéraires (A1, A2, L)
-  { name: 'Littérature', category: 'Lettres', description: 'Étude des œuvres, commentaire, dissertation littéraire.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
-  { name: 'Allemand', category: 'Langues', description: 'Langue allemande.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
-  { name: 'Espagnol', category: 'Langues', description: 'Langue espagnole.', levelCategories: HIGH, trackCodes: SERIES_LITERARY },
+  { name: 'Sciences Physiques (SP)', category: 'Sciences', description: 'Matière, énergie, électricité, mécanique, chimie.', levelCategories: [...MIDDLE, ...HIGH], aliases: ['Physique', 'Chimie', 'Sciences physiques', 'Physique-Chimie'] },
+  { name: 'Sciences Économiques et Sociales (SES)', category: 'Gestion', description: 'Économie, sociologie, organisation des sociétés.', levelCategories: HIGH },
+  { name: 'Allemand', category: 'Langues', description: 'Langue vivante 2 : allemand.', levelCategories: HIGH },
+  { name: 'Espagnol', category: 'Langues', description: 'Langue vivante 2 : espagnol.', levelCategories: HIGH },
+  { name: 'Russe', category: 'Langues', description: 'Langue vivante 2 : russe.', levelCategories: HIGH },
+  { name: 'Technologie de l’Information et de la Communication en Éducation (TICE)', category: 'Numérique', description: 'Outils numériques, recherche et traitement de l’information.', levelCategories: HIGH, aliases: ['TICE'] },
   // Université : suggestions (la matière se saisit librement après le choix de la mention)
   { name: 'Informatique', category: 'Numérique', description: 'Algorithmique, systèmes, culture numérique.', levelCategories: UNIVERSITY },
   { name: 'Programmation', category: 'Numérique', description: 'Python, JavaScript, bases de données, web.', levelCategories: UNIVERSITY, aliases: ['Python', 'Développement web', 'JavaScript', 'Java'] },
@@ -83,6 +94,58 @@ const SUBJECTS: SubjectSeed[] = [
   { name: 'Algorithmique avancée', category: 'Numérique', description: 'Complexité, graphes, programmation dynamique.', levelCategories: UNIVERSITY, aliases: ['Algorithmique'] },
   { name: 'Droit des affaires', category: 'Gestion', description: 'Sociétés, contrats commerciaux.', levelCategories: UNIVERSITY },
   { name: 'Macroéconomie', category: 'Gestion', description: 'Croissance, monnaie, politiques publiques.', levelCategories: UNIVERSITY },
+  // Université, d'après univ.md (CNTEMAD, EMIT). Mentions concernées : UNIVERSITY_SUBJECT_MENTIONS.
+  // excludedLevels : LEVELS_ABOVE_LICENCE = matière de Licence seulement, LICENCE_LEVELS = Master et au-delà ; absent = relevée dans les deux.
+  { name: 'Génie logiciel', category: 'Numérique', description: 'UML, conception et développement logiciel.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Technologies web', category: 'Numérique', description: 'Développement de sites et d’applications web.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Développement mobile', category: 'Numérique', description: 'Applications pour téléphones et tablettes.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Réseaux informatiques', category: 'Numérique', description: 'Théorie des réseaux, TCP/IP, réseaux d’entreprise.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Administration système', category: 'Numérique', description: 'Administration Linux et Windows.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Sécurité informatique', category: 'Numérique', description: 'Sécurité des systèmes et des réseaux.', levelCategories: UNIVERSITY },
+  { name: 'Systèmes d’exploitation', category: 'Numérique', description: 'Fonctionnement et gestion des systèmes d’exploitation.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Cloud computing', category: 'Numérique', description: 'Infrastructures et services dans le cloud.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Intelligence artificielle', category: 'Numérique', description: 'Apprentissage automatique, systèmes intelligents.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Systèmes d’information', category: 'Numérique', description: 'Conception de systèmes d’information, systèmes décisionnels.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Recherche opérationnelle', category: 'Numérique', description: 'Optimisation et aide à la décision.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Cryptographie', category: 'Numérique', description: 'Chiffrement et sécurité des échanges.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Analyse financière', category: 'Gestion', description: 'Lecture et diagnostic des comptes d’une entreprise.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Gestion financière', category: 'Gestion', description: 'Financement et décisions d’investissement.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Mathématiques financières', category: 'Gestion', description: 'Intérêts, actualisation, emprunts.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Fiscalité', category: 'Gestion', description: 'Impôts et fiscalité des entreprises.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Contrôle de gestion', category: 'Gestion', description: 'Coûts, budgets, tableaux de bord.', levelCategories: UNIVERSITY },
+  { name: 'Audit', category: 'Gestion', description: 'Audit général, certification des comptes.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Gestion des ressources humaines', category: 'Gestion', description: 'Recrutement, formation, management du personnel.', levelCategories: UNIVERSITY },
+  { name: 'Stratégie d’entreprise', category: 'Gestion', description: 'Diagnostic stratégique et choix d’orientation.', levelCategories: UNIVERSITY },
+  { name: 'Entrepreneuriat', category: 'Gestion', description: 'Création et pilotage d’une entreprise.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Microéconomie', category: 'Gestion', description: 'Comportement des consommateurs et des entreprises, marchés.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Économie du développement', category: 'Gestion', description: 'Croissance et développement des pays du Sud.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Économie agricole', category: 'Gestion', description: 'Économie rurale, politiques agricoles, sécurité alimentaire.', levelCategories: UNIVERSITY },
+  { name: 'Économie de l’environnement', category: 'Gestion', description: 'Valorisation et protection des ressources naturelles.', levelCategories: UNIVERSITY },
+  { name: 'Politiques publiques', category: 'Gestion', description: 'Conception et évaluation des politiques publiques.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Économie internationale', category: 'Gestion', description: 'Échanges et finance au niveau mondial.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Développement durable', category: 'Gestion', description: 'Enjeux économiques, sociaux et environnementaux.', levelCategories: UNIVERSITY },
+  { name: 'Marketing', category: 'Gestion', description: 'Marketing fondamental, démarche commerciale.', levelCategories: UNIVERSITY },
+  { name: 'Techniques de vente', category: 'Gestion', description: 'Vente, prospection, relation client.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Comportement du consommateur', category: 'Gestion', description: 'Motivations et décisions d’achat.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Études de marché', category: 'Gestion', description: 'Enquêtes, analyse de la demande et de la concurrence.', levelCategories: UNIVERSITY },
+  { name: 'Marketing digital', category: 'Gestion', description: 'Marketing en ligne, réseaux sociaux, e-commerce.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Commerce international', category: 'Gestion', description: 'Opérations et réglementation des échanges internationaux.', levelCategories: UNIVERSITY },
+  { name: 'Droit du commerce international', category: 'Gestion', description: 'Contrats et litiges du commerce international.', levelCategories: UNIVERSITY },
+  { name: 'Transport et logistique', category: 'Gestion', description: 'Chaîne de transport, douane, logistique.', levelCategories: UNIVERSITY },
+  { name: 'Finance internationale', category: 'Gestion', description: 'Change, financement des échanges.', levelCategories: UNIVERSITY },
+  { name: 'Négociation commerciale', category: 'Gestion', description: 'Préparation et conduite d’une négociation.', levelCategories: UNIVERSITY },
+  { name: 'Supply chain management', category: 'Gestion', description: 'Pilotage des flux et de la chaîne d’approvisionnement.', levelCategories: UNIVERSITY, excludedLevels: LICENCE_LEVELS },
+  { name: 'Théorie générale de la communication', category: 'Lettres', description: 'Modèles et concepts de la communication.', levelCategories: UNIVERSITY },
+  { name: 'Psychologie de la communication', category: 'Lettres', description: 'Comportements et relations dans la communication.', levelCategories: UNIVERSITY },
+  { name: 'Stratégie de communication des entreprises', category: 'Lettres', description: 'Plan et outils de communication d’une organisation.', levelCategories: UNIVERSITY },
+  { name: 'Collecte et traitement des informations', category: 'Lettres', description: 'Recherche, vérification et traitement de l’information.', levelCategories: UNIVERSITY },
+  { name: 'Mécanique des fluides', category: 'Sciences', description: 'Statique et dynamique des fluides.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Maintenance industrielle', category: 'Sciences', description: 'Maintenance préventive et corrective des équipements.', levelCategories: UNIVERSITY },
+  { name: 'Gestion de production', category: 'Sciences', description: 'Planification et pilotage de la production.', levelCategories: UNIVERSITY },
+  { name: 'Électrotechnique', category: 'Sciences', description: 'Machines et installations électriques.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Automatisme', category: 'Sciences', description: 'Systèmes automatisés et commande.', levelCategories: UNIVERSITY },
+  { name: 'Électronique de puissance', category: 'Sciences', description: 'Conversion de l’énergie électrique.', levelCategories: UNIVERSITY, excludedLevels: LEVELS_ABOVE_LICENCE },
+  { name: 'Télédétection', category: 'Sciences', description: 'Images satellites et cartographie numérique.', levelCategories: UNIVERSITY },
 ];
 
 async function seedCatalog() {
@@ -98,6 +161,18 @@ async function seedCatalog() {
       });
     }
   }
+  // Une faute de frappe dans les tables de rattachement laisserait une matière sans série ni mention, donc proposée partout.
+  const seeded = new Set(SUBJECTS.map((subject) => subject.name));
+  for (const name of [...Object.keys(HIGH_SCHOOL_SUBJECT_TRACKS), ...Object.keys(UNIVERSITY_SUBJECT_TRACKS)]) {
+    if (!seeded.has(name)) throw new Error(`Rattachement à une matière absente du catalogue : « ${name} ».`);
+  }
+  for (const [from, to] of RENAMED_SUBJECTS) {
+    // Sans effet une fois renommée, ou si la cible existe déjà (le nom est unique).
+    if (!(await prisma.subject.findUnique({ where: { name: to } }))) {
+      await prisma.subject.updateMany({ where: { name: from }, data: { name: to } });
+    }
+  }
+  await prisma.subject.updateMany({ where: { name: { in: RETIRED_SUBJECTS } }, data: { isActive: false } });
   for (const subject of SUBJECTS) {
     const data = {
       category: subject.category,
@@ -105,7 +180,8 @@ async function seedCatalog() {
       isActive: true,
       isVerified: true,
       levelCategories: subject.levelCategories ?? [],
-      trackCodes: subject.trackCodes ?? [],
+      trackCodes: [...(HIGH_SCHOOL_SUBJECT_TRACKS[subject.name] ?? UNIVERSITY_SUBJECT_TRACKS[subject.name] ?? [])],
+      excludedLevels: [...(subject.excludedLevels ?? [])],
       aliases: subject.aliases ?? [],
     };
     await prisma.subject.upsert({
@@ -201,14 +277,13 @@ const DEMO_TUTORS: DemoTutor[] = [
     degree: 'MASTER',
     gender: 'MALE',
     subjects: [
-      { subject: 'Mathématiques', levels: ['3ème'], description: 'Algèbre et géométrie, préparation BEPC.' },
-      { subject: 'Mathématiques Avancées', levels: ['Seconde', 'Première', 'Terminale'], description: 'Algèbre et analyse, préparation BAC.' },
-      { subject: 'Physique-Chimie', levels: ['Seconde', 'Première', 'Terminale'], description: 'Mécanique et électricité.' },
+      { subject: 'Mathématiques', levels: ['3ème', 'Seconde', 'Première', 'Terminale'], description: 'Algèbre et analyse, préparation BEPC et BAC.' },
+      { subject: 'Sciences Physiques (SP)', levels: ['Seconde', 'Première', 'Terminale'], description: 'Mécanique et électricité.' },
     ],
     offers: [
-      { subject: 'Mathématiques Avancées', level: 'Terminale', track: 'TS', title: 'Préparation au BAC — Mathématiques', description: 'Révision du programme, annales corrigées, méthode de rédaction.', format: 'BOTH', price: 25000 },
+      { subject: 'Mathématiques', level: 'Terminale', track: 'TS', title: 'Préparation au BAC — Mathématiques', description: 'Révision du programme, annales corrigées, méthode de rédaction.', format: 'BOTH', price: 25000 },
       { subject: 'Mathématiques', level: '3ème', title: 'Préparation au BEPC — Mathématiques', description: 'Reprendre les bases et réussir l’examen.', format: 'IN_PERSON', price: 20000 },
-      { subject: 'Physique-Chimie', level: 'Terminale', track: 'TS', title: 'Physique-Chimie — Terminale', description: 'Cours et exercices types BAC.', format: 'ONLINE', price: 22000 },
+      { subject: 'Sciences Physiques (SP)', level: 'Terminale', track: 'TS', title: 'Physique-Chimie — Terminale', description: 'Cours et exercices types BAC.', format: 'ONLINE', price: 22000 },
     ],
     places: [
       { label: 'Analakely & environs', address: 'Antananarivo — Analakely', lat: -18.9082, lng: 47.5242, radius: 8000, type: 'BENEFICIARY_HOME', primary: true },

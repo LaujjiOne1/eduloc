@@ -57,7 +57,7 @@ export function LessonAlarmCard() {
           value={alarm.enabled}
           disabled={saving}
           onValueChange={(enabled) => void update({ enabled })}
-          trackColor={{ false: "#D9D7CF", true: "#332E86" }}
+          trackColor={{ false: "#D5D7E2", true: "#332E86" }}
           thumbColor="#FFFFFF"
           accessibilityLabel={t("ui.lessonAlarmCard.turnOnTheLessonAlarm")}
         />

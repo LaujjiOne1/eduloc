@@ -1,0 +1,101 @@
+@startuml 12_paquetage
+title Diagramme de paquetage d'EduLoc
+skinparam packageStyle folder
+left to right direction
+
+package "Application mobile (Expo / React Native)" as FRONT {
+  package "app\n(routes et navigation)" as F_APP
+  package "screens\n(écrans)" as F_SCR
+  package "components\n(composants d'interface)" as F_CMP
+  package "store\n(état global : auth, recherche,\nréservation, candidature)" as F_STO
+  package "services\n(un service par domaine)" as F_SRV
+  package "api\n(client HTTP et téléversement)" as F_API
+  package "realtime\n(abonnement temps réel)" as F_RT
+  package "hooks, types, utils" as F_UT
+}
+
+package "Serveur d'application (NestJS)" as BACK {
+  package "common\n(erreurs, gardes, validation)" as B_COM
+  package "core\n(configuration)" as B_CORE
+
+  package "Modules métier" as MODULES {
+    package "auth" as M_AUTH
+    package "users" as M_USERS
+    package "beneficiaries" as M_BEN
+    package "catalog" as M_CAT
+    package "tutors" as M_TUT
+    package "search" as M_SEA
+    package "matching" as M_MAT
+    package "cv-import" as M_CV
+    package "geo" as M_GEO
+    package "bookings" as M_BOO
+    package "rooms" as M_ROO
+    package "partners" as M_PAR
+    package "reviews" as M_REV
+    package "communication" as M_COM
+    package "notifications" as M_NOT
+    package "realtime" as M_RTM
+    package "admin" as M_ADM
+  }
+
+  package "Infrastructure (ports et adaptateurs)" as INFRA {
+    package "cache" as I_CAC
+    package "outbox" as I_OUT
+    package "storage" as I_STO
+    package "push" as I_PUS
+    package "realtime" as I_RT
+    package "calls" as I_CAL
+  }
+}
+
+package "Données et services externes" as DATA {
+  database "PostgreSQL 16\n(PostGIS, pgvector)" as PG
+  database "Redis\n(cache, limitation de débit)" as RD
+  package "Stockage de fichiers" as ST
+  package "Ollama / PaddleOCR" as IA
+  package "Centrifugo, LiveKit" as RTS
+  package "Expo Push / FCM, Resend" as NOTIF
+}
+
+F_APP ..> F_SCR
+F_SCR ..> F_CMP
+F_SCR ..> F_STO
+F_SCR ..> F_SRV
+F_SRV ..> F_API
+F_STO ..> F_SRV
+F_RT ..> F_STO
+
+FRONT ..> BACK : HTTPS / REST (JSON)
+FRONT ..> RTS : WebSocket, WebRTC
+
+M_AUTH ..> M_USERS
+M_BEN ..> M_CAT
+M_TUT ..> M_CAT
+M_SEA ..> M_CAT
+M_MAT ..> M_CAT
+M_MAT ..> M_TUT
+M_CV ..> M_MAT
+M_CV ..> M_CAT
+M_BOO ..> M_TUT
+M_BOO ..> M_ROO
+M_ROO ..> M_PAR
+M_REV ..> M_BOO
+M_COM ..> M_BOO
+M_ADM ..> M_TUT
+M_ADM ..> M_PAR
+M_NOT ..> M_RTM
+
+MODULES ..> B_COM
+MODULES ..> B_CORE
+MODULES ..> INFRA
+
+I_CAC ..> RD
+I_OUT ..> PG
+I_STO ..> ST
+I_PUS ..> NOTIF
+I_RT ..> RTS
+I_CAL ..> RTS
+BACK ..> PG : Prisma ORM / SQL
+M_MAT ..> IA
+M_CV ..> IA
+@enduml

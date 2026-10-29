@@ -1,0 +1,33 @@
+gantt
+    title Chronogramme des travaux du projet EduLoc
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d/%m
+    tickInterval 1week
+    todayMarker stroke-width:2px,stroke:#e63946
+
+    section Phase 1 : Analyse et définition
+    Analyse des besoins et définition du projet      :done, p1a, 2025-07-01, 3w
+    Documentation et spécification fonctionnelle     :done, p1b, after p1a, 2w
+
+    section V1 : Conception et développement
+    Modélisation du système                          :done, v1a, after p1b, 2w
+    Structuration de la base de données              :done, v1b, after v1a, 1w
+    Implémentation des premières fonctionnalités     :done, v1c, after v1b, 3w
+
+    section Analyse V1 et passage à la V2
+    Analyse de la V1 et approfondissement des besoins :done, p3a, after v1c, 2w
+    Précision des nouveaux besoins (géolocalisation, séances, lieux d'étude) :done, p3b, after p3a, 1w
+    Mise à jour des spécifications et modélisation   :done, p3c, after p3b, 2w
+    Préparation des composants pour la V2            :done, p3d, after p3c, 1w
+
+    section Réalisation de la V2
+    Adaptation de l'architecture                     :done, v2a, after p3d, 2w
+    Évolution du modèle de données                   :done, v2b, after v2a, 1w
+    Développement des fonctionnalités de la V2       :active, v2c, after v2b, 3w
+    Tests et vérification de conformité              :active, v2d, after v2c, 2w
+
+    section Rédaction du mémoire
+    Rédaction du mémoire (en parallèle des phases)   :done, m1, 2025-07-01, 4w
+    Rédaction du mémoire (conception et V1)          :done, m2, after m1, 6w
+    Rédaction du mémoire (V2)                        :done, m3, after m2, 5w
+    Rédaction du mémoire (résultats et finalisation) :active, m4, after m3, 3w

@@ -1,0 +1,216 @@
+@startuml 10b_classes_globale_suite
+title Diagramme de classes de conception globale d'EduLoc (2/2)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+skinparam nodesep 20
+skinparam ranksep 25
+hide empty members
+
+' Mise en page : 3 colonnes de classes, pour tenir en portrait sur une page A4 avec 2 cm de marge
+' (17 cm utiles) avec un texte lisible. Le diagramme global est coupé en deux figures (1/2 et 2/2) ;
+' les classes grisées sont celles de l'autre figure, rappelées seulement pour porter leurs associations.
+' Le sens de chaque association suit la grille (même rangée : horizontal ; sinon : vertical) et les liens
+' invisibles ([hidden]) maintiennent l'alignement.
+
+class User <<voir 1/2>> #EEEEEE
+class Beneficiary <<voir 1/2>> #EEEEEE
+class TutorProfile <<voir 1/2>> #EEEEEE
+class Offer <<voir 1/2>> #EEEEEE
+class Availability <<voir 1/2>> #EEEEEE
+class Place <<voir 1/2>> #EEEEEE
+
+package "Réservation" {
+  class BookingHold {
+    -status : HoldStatus
+    -expiresAt : DateTime
+  }
+  class Booking {
+    -startAt : DateTime
+    -endAt : DateTime
+    -status : BookingStatus
+    -teachingMode : TeachingMode
+    -totalAmount : Decimal
+    +accept()
+    +refuse(reason)
+    +cancel(actor, reason)
+    +start(otp)
+    +complete()
+  }
+  class BookingEvent {
+    -fromStatus : BookingStatus
+    -toStatus : BookingStatus
+    -actor : BookingActor
+  }
+  class Review {
+    -rating : Integer
+    -text : String
+  }
+  class Conflict {
+    -type : ConflictType
+    -status : ConflictStatus
+  }
+}
+
+package "Lieux partenaires" {
+  class Room {
+    -name : String
+    -capacity : Integer
+    -pricePerHour : Decimal
+    -status : RoomStatus
+    -publication : RoomPublication
+  }
+  class PartnerVenue {
+    -name : String
+    -type : VenueType
+    -status : VenueStatus
+    -nif : String
+    -stat : String
+  }
+  class PartnerStatusEvent {
+    -scope : String
+    -toStatus : String
+  }
+  class RoomPhoto {
+    -storagePath : String
+  }
+  class VenueDocument {
+    -type : VenueDocumentType
+  }
+  class VenueSubscription {
+    -status : SubscriptionStatus
+    -endsAt : DateTime
+  }
+  class RoomAvailability {
+    -dayOfWeek : Integer
+    -startTime : String
+    -endTime : String
+  }
+  class RoomBlockedPeriod {
+    -startAt : DateTime
+    -endAt : DateTime
+  }
+  class PartnerPlan {
+    -code : String
+    -priceAmount : Decimal
+  }
+  class TutorRoom {
+    -isActive : Boolean
+  }
+  class RoomReview {
+    -overall : Integer
+    -comment : String
+  }
+}
+
+package "Communication et notifications" {
+  class Conversation {
+    -status : ConversationStatus
+    -lastMessageAt : DateTime
+  }
+  class Message {
+    -type : MessageType
+    -createdAt : DateTime
+  }
+  class MessageAttachment {
+    -kind : AttachmentKind
+    -transcriptStatus : TranscriptStatus
+  }
+  class CallSession {
+    -type : CallType
+    -status : CallStatus
+  }
+  class Notification {
+    -type : NotificationType
+    -isRead : Boolean
+  }
+  class OutboxEvent {
+    -eventType : String
+    -payload : Json
+  }
+}
+
+' --- Alignement (liens invisibles)
+Availability -[hidden]down- Booking
+Availability -[hidden]right- Place
+Beneficiary -[hidden]down- Availability
+Beneficiary -[hidden]right- TutorProfile
+Booking -[hidden]right- BookingEvent
+Booking -[hidden]down- Conflict
+BookingEvent -[hidden]down- PartnerStatusEvent
+BookingHold -[hidden]right- Booking
+BookingHold -[hidden]down- Review
+CallSession -[hidden]right- Notification
+Conflict -[hidden]down- PartnerVenue
+Conversation -[hidden]down- CallSession
+Conversation -[hidden]right- Message
+Message -[hidden]right- MessageAttachment
+Message -[hidden]down- Notification
+MessageAttachment -[hidden]down- OutboxEvent
+Notification -[hidden]right- OutboxEvent
+Offer -[hidden]right- Availability
+Offer -[hidden]down- BookingHold
+PartnerPlan -[hidden]down- MessageAttachment
+PartnerStatusEvent -[hidden]down- VenueSubscription
+PartnerVenue -[hidden]right- PartnerStatusEvent
+PartnerVenue -[hidden]down- VenueDocument
+Place -[hidden]down- BookingEvent
+Review -[hidden]right- Conflict
+Review -[hidden]down- Room
+Room -[hidden]right- PartnerVenue
+Room -[hidden]down- RoomPhoto
+RoomAvailability -[hidden]right- RoomBlockedPeriod
+RoomAvailability -[hidden]down- TutorRoom
+RoomBlockedPeriod -[hidden]right- PartnerPlan
+RoomBlockedPeriod -[hidden]down- RoomReview
+RoomPhoto -[hidden]down- RoomAvailability
+RoomPhoto -[hidden]right- VenueDocument
+RoomReview -[hidden]down- Message
+TutorProfile -[hidden]down- Place
+TutorRoom -[hidden]down- Conversation
+TutorRoom -[hidden]right- RoomReview
+User -[hidden]right- Beneficiary
+User -[hidden]down- Offer
+VenueDocument -[hidden]down- RoomBlockedPeriod
+VenueDocument -[hidden]right- VenueSubscription
+VenueSubscription -[hidden]down- PartnerPlan
+
+' --- Associations
+User "1" -down- "0..*" Booking : demande
+Beneficiary "1" -down- "0..*" Booking
+TutorProfile "1" -down- "0..*" Booking
+Offer "1" -down- "0..*" Booking
+Availability "0..1" -down- "0..*" Booking
+Place "0..1" -down- "0..*" Booking
+Room "0..1" -up- "0..*" Booking
+Booking "1" -right- "0..*" BookingEvent
+Booking "1" -down- "0..*" Conflict
+Booking "0..1" -left- "0..1" BookingHold
+User "1" -down- "0..*" BookingHold
+TutorProfile "1" -down- "0..*" BookingHold
+Room "0..1" -up- "0..*" BookingHold
+Booking "1" -down- "0..1" Review
+TutorProfile "1" -down- "0..*" Review
+User "1" -down- "0..1" PartnerVenue
+PartnerVenue "1" -down- "0..*" VenueDocument
+PartnerVenue "1" -left- "0..*" Room
+PartnerVenue "1" -down- "0..*" VenueSubscription
+PartnerPlan "1" -up- "0..*" VenueSubscription
+PartnerVenue "1" -right- "0..*" PartnerStatusEvent
+Room "1" -down- "0..*" RoomPhoto
+Room "1" -down- "0..*" RoomAvailability
+Room "1" -down- "0..*" RoomBlockedPeriod
+TutorProfile "1" -down- "0..*" TutorRoom
+Room "1" -down- "0..*" TutorRoom
+Room "1" -down- "0..*" RoomReview
+Booking "1" -down- "0..*" RoomReview
+User "1" -down- "0..*" RoomReview
+User "1" -down- "0..*" Conversation
+TutorProfile "1" -down- "0..*" Conversation
+Booking "0..1" -down- "0..*" Conversation
+Conversation "1" -right- "0..*" Message
+Message "1" -right- "0..1" MessageAttachment
+Conversation "1" -down- "0..*" CallSession
+CallSession "0..1" -up- "0..1" Message
+User "1" -down- "0..*" Notification
+@enduml

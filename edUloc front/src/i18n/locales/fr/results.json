@@ -10,7 +10,8 @@
     "map": "Carte",
     "noTutorToShowOn": "Aucun tuteur à afficher sur la carte.",
     "km": "{{label}}, {{distanceKm}} km",
-    "tryLoadingTheTutorsAgain": "Réessayer de charger les tuteurs"
+    "tryLoadingTheTutorsAgain": "Réessayer de charger les tuteurs",
+    "searching": "Recherche des tuteurs…"
   },
   "tutorProfile": {
     "verifiedTutor": "Tuteur validé",

@@ -1,0 +1,283 @@
+@startuml 08_classes_sprint6
+title Sprint 6 - Lieux partenaires, tarification et avis
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 14
+skinparam ranksep 22
+hide empty methods
+
+' Mise en page : une seule figure en grille de 3 colonnes, pour une page A4 en portrait avec 2 cm de marge (17 cm utiles).
+' Les éléments les plus liés sont voisins (les énumérations près des classes qui les emploient) ; le sens de chaque
+' liaison suit la grille et les liens invisibles ([hidden]) maintiennent l'alignement.
+
+enum RoomPublication {
+  UNPUBLISHED
+  PUBLISHED
+  UNPUBLISHED_BY_ADMIN
+}
+
+class TutorProfile {
+  -id : String
+  -partnerRoomRadiusM : Integer
+}
+
+class Review {
+  -id : String
+  -rating : Integer
+  -text : String
+  -officialReply : String
+  -hiddenAt : DateTime
+  +reply(text)
+  +hide()
+}
+
+class RoomBookability <<domaine>> {
+  +bookableRoomWhere(now)
+  +publishBlockers(input)
+  +missingRoomFields(room)
+}
+
+class TutorRoom {
+  -id : String
+  -isActive : Boolean
+}
+
+enum RoomStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  REJECTED
+  SUSPENDED
+}
+
+class BookingOptionsService <<service>> {
+  +options(offerId, near, maxDistanceM)
+  +slots(offerId, query)
+}
+
+class RoomReservationService <<service>> {
+  +lock(tx, roomId)
+  +check(tx, input)
+}
+
+class Booking {
+  -id : String
+  -teachingMode : TeachingMode
+  -roomFee : Decimal
+  -serviceFee : Decimal
+  -totalAmount : Decimal
+}
+
+class RoomPhoto {
+  -id : String
+  -storagePath : String
+  -position : Integer
+}
+
+class Room {
+  -id : String
+  -name : String
+  -addressLine : String
+  -city : String
+  -latitude : Float
+  -longitude : Float
+  -location : Geography(Point, 4326)
+  -capacity : Integer
+  -equipment : String[]
+  -accessibility : String[]
+  -welcomesMinors : Boolean
+  -pricePerHour : Decimal
+  -status : RoomStatus
+  -publication : RoomPublication
+  -rating : Float
+  -reviewsCount : Integer
+  +submit()
+  +publish()
+  +unpublish()
+}
+
+class RoomAvailability {
+  -id : String
+  -dayOfWeek : Integer
+  -startTime : String
+  -endTime : String
+}
+
+class RoomBlockedPeriod {
+  -id : String
+  -startAt : DateTime
+  -endAt : DateTime
+  -reason : String
+}
+
+class PartnerStatusEvent {
+  -id : String
+  -scope : String
+  -fromStatus : String
+  -toStatus : String
+  -note : String
+}
+
+class RoomReview {
+  -id : String
+  -cleanliness : Integer
+  -safety : Integer
+  -accessibility : Integer
+  -equipment : Integer
+  -punctuality : Integer
+  -overall : Integer
+  -comment : String
+  -partnerReply : String
+  -hiddenReason : String
+  +reply(text)
+  +hide(adminId, reason)
+}
+
+enum VenueStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  SUSPENDED
+  REJECTED
+  DISABLED
+}
+
+class PartnerVenue {
+  -id : String
+  -name : String
+  -type : VenueType
+  -description : String
+  -legalName : String
+  -nif : String
+  -stat : String
+  -contactPhone : String
+  -status : VenueStatus
+  -submittedAt : DateTime
+  -reviewedAt : DateTime
+  -reviewNote : String
+  +submit()
+  +approve(adminId)
+  +reject(adminId, note)
+  +suspend(adminId)
+}
+
+class User {
+  -id : String
+  -email : String
+}
+
+enum VenueType {
+  TRAINING_CENTER
+  COMPANY
+  SCHOOL
+  LIBRARY
+  COWORKING
+  ASSOCIATION
+  COMMUNITY_CENTER
+  OTHER
+}
+
+class VenueDocument {
+  -id : String
+  -type : VenueDocumentType
+  -storagePath : String
+  -mimeType : String
+}
+
+enum VenueDocumentType {
+  OWNERSHIP_PROOF
+  BUSINESS_REGISTRATION
+  MANAGER_IDENTITY
+  INSURANCE
+  OTHER
+}
+
+class PartnerPlan {
+  -id : String
+  -code : String
+  -name : String
+  -priceAmount : Decimal
+  -durationDays : Integer
+}
+
+class VenueSubscription {
+  -id : String
+  -status : SubscriptionStatus
+  -startsAt : DateTime
+  -endsAt : DateTime
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+' --- Alignement (liens invisibles)
+Booking -[hidden]down- RoomAvailability
+BookingOptionsService -[hidden]down- RoomPhoto
+BookingOptionsService -[hidden]right- RoomReservationService
+PartnerPlan -[hidden]right- VenueSubscription
+PartnerStatusEvent -[hidden]down- PartnerVenue
+PartnerStatusEvent -[hidden]right- RoomReview
+PartnerVenue -[hidden]right- User
+PartnerVenue -[hidden]down- VenueDocument
+Review -[hidden]down- RoomStatus
+Room -[hidden]down- PartnerStatusEvent
+Room -[hidden]right- RoomAvailability
+RoomAvailability -[hidden]down- RoomReview
+RoomBlockedPeriod -[hidden]right- PartnerStatusEvent
+RoomBlockedPeriod -[hidden]down- VenueStatus
+RoomBookability -[hidden]down- BookingOptionsService
+RoomBookability -[hidden]right- TutorRoom
+RoomPhoto -[hidden]right- Room
+RoomPhoto -[hidden]down- RoomBlockedPeriod
+RoomPublication -[hidden]down- RoomBookability
+RoomPublication -[hidden]right- TutorProfile
+RoomReservationService -[hidden]right- Booking
+RoomReservationService -[hidden]down- Room
+RoomReview -[hidden]down- User
+RoomStatus -[hidden]down- Booking
+TutorProfile -[hidden]right- Review
+TutorProfile -[hidden]down- TutorRoom
+TutorRoom -[hidden]down- RoomReservationService
+TutorRoom -[hidden]right- RoomStatus
+User -[hidden]down- VenueDocumentType
+VenueDocument -[hidden]right- VenueDocumentType
+VenueDocument -[hidden]down- VenueSubscription
+VenueDocumentType -[hidden]down- SubscriptionStatus
+VenueStatus -[hidden]right- PartnerVenue
+VenueStatus -[hidden]down- VenueType
+VenueSubscription -[hidden]right- SubscriptionStatus
+VenueType -[hidden]down- PartnerPlan
+VenueType -[hidden]right- VenueDocument
+
+' --- Associations et dépendances
+User "1" -left- "0..1" PartnerVenue : gère >
+PartnerVenue "1" -down- "0..*" VenueDocument : justifie >
+PartnerVenue "1" -up- "0..*" Room : possède >
+PartnerVenue "1" -down- "0..*" VenueSubscription : souscrit >
+PartnerPlan "1" -right- "0..*" VenueSubscription
+PartnerVenue "1" -up- "0..*" PartnerStatusEvent : historise >
+Room "1" -down- "0..*" PartnerStatusEvent
+Room "1" -left- "0..*" RoomPhoto
+Room "1" -right- "0..*" RoomAvailability : horaires >
+Room "1" -down- "0..*" RoomBlockedPeriod : fermetures >
+TutorProfile "1" -down- "0..*" TutorRoom : accepte >
+Room "1" -up- "0..*" TutorRoom
+Room "0..1" -up- "0..*" Booking : accueille >
+Booking "1" -up- "0..1" Review : donne lieu à >
+TutorProfile "1" -right- "0..*" Review : reçoit >
+Booking "1" -down- "0..*" RoomReview
+Room "1" -down- "0..*" RoomReview : reçoit >
+User "1" -up- "0..*" RoomReview : rédige >
+BookingOptionsService .up.> RoomBookability
+BookingOptionsService .down.> Room
+RoomReservationService .down.> Room
+RoomReservationService .right.> Booking
+@enduml

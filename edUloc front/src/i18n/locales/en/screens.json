@@ -31,7 +31,26 @@
     "search": "Search",
     "doYouTeachBecomeA": "Do you teach? Become a verified tutor on EduLoc",
     "mySpace": "My space · {{firstName}}",
-    "tryLoadingThePopularSearches": "Try loading the popular searches again"
+    "tryLoadingThePopularSearches": "Try loading the popular searches again",
+    "chooseYourPath": "Choose your path",
+    "chooseYourPathHint": "A search tailored to your level of study.",
+    "school": "School",
+    "schoolLevels": "Primary • Middle school • High school",
+    "schoolDescription": "Personalised support, revision and exam preparation with a tutor near you or online.",
+    "searchSchool": "Find a school tutor",
+    "university": "Higher education",
+    "universityLevels": "Bachelor's • Master's • Doctorate",
+    "universityDescription": "Every university degree programme, plus free search for a course to find a higher-level tutor.",
+    "searchUniversity": "Find a university tutor",
+    "whatEdulocOffers": "What EduLoc offers",
+    "serviceFormatTitle": "Online or in person",
+    "serviceFormatDescription": "Video lessons, or meet near you depending on your location.",
+    "serviceChatTitle": "Messages and calls",
+    "serviceChatDescription": "Talk to your tutor by message, voice note, document and video call.",
+    "serviceRoomsTitle": "Study venues",
+    "serviceRoomsDescription": "Book a partner room for your in-person lessons.",
+    "serviceVerifiedTitle": "Verified tutors",
+    "serviceVerifiedDescription": "Profiles are validated by EduLoc before they appear in the results."
   },
   "login": {
     "signInToContinue": "Sign in to continue",
@@ -75,6 +94,7 @@
   },
   "splash": {
     "theRightSupportInThe": "The right support, in the right place.",
-    "continueToTheEdulocHome": "Continue to the edUloc home"
+    "continueToTheEdulocHome": "Continue to the edUloc home",
+    "tapToContinue": "Tap to continue"
   }
 }

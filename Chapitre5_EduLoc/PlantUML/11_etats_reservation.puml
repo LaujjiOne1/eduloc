@@ -1,0 +1,33 @@
+@startuml 11_etats_reservation
+title Diagramme d'états d'une réservation (Booking)
+skinparam state {
+  BackgroundColor White
+}
+
+[*] --> PENDING : le demandeur envoie la demande\n(préavis >= 24 h, créneau libre)
+
+PENDING --> CONFIRMED : accepter\n[tuteur ; aucun conflit]\ngénère le code de démarrage
+PENDING --> REFUSED : refuser\n[tuteur ou système]
+PENDING --> CANCELLED : annuler\n[demandeur ou administrateur]
+PENDING --> PENDING : conflit à l'acceptation\n(enregistrement d'un Conflict,\nnotification des deux parties)
+
+CONFIRMED --> CANCELLED : annuler\n[demandeur, tuteur,\nadministrateur ou système]\n(interdit à moins de 2 h ;\njustification si moins de 24 h)
+CONFIRMED --> IN_PROGRESS : démarrer\n[tuteur ; code valide ;\n15 min avant le début jusqu'à la fin]
+
+IN_PROGRESS --> COMPLETED : terminer\n[tuteur ou système\n(clôture automatique)]
+
+REFUSED --> [*]
+CANCELLED --> [*]
+COMPLETED --> [*]
+
+note right of COMPLETED
+  Déclenche la demande d'avis
+  (Review, RoomReview)
+end note
+
+note bottom of PENDING
+  Une demande PENDING ne bloque pas
+  le créneau : seul un devis pose un
+  blocage temporaire (BookingHold, 15 min).
+end note
+@enduml

@@ -1,0 +1,206 @@
+@startuml 04_classes_sprint2
+title Sprint 2 - Candidature du tuteur, profil, import de CV et offres
+skinparam classAttributeIconSize 0
+hide empty methods
+
+enum TutorApplicationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum TutorDocumentType {
+  IDENTITY
+  DIPLOMA
+  CERTIFICATE
+  PROFESSIONAL_PROOF
+  CV
+  TRANSCRIPT
+  ENROLLMENT_CERTIFICATE
+  OTHER
+}
+enum TutorDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum TutorExperienceType {
+  PROFESSIONAL
+  ACADEMIC
+  TEACHING
+  SUPERVISION
+  VOLUNTEER
+}
+enum DegreeEquivalenceStatus {
+  PENDING
+  VALIDATED
+  REJECTED
+}
+enum TranscriptStatus {
+  NONE
+  PENDING
+  DONE
+  FAILED
+}
+enum TeachingFormat {
+  ONLINE
+  IN_PERSON
+  BOTH
+}
+enum CvImportStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+class User {
+  -id : String
+  -email : String
+}
+
+class TutorProfile {
+  -id : String
+  -displayName : String
+  -bio : String
+  -birthDate : Date
+  -gender : String
+  -highestDegree : String
+  -degreeTitle : String
+  -fieldOfStudy : String
+  -degreeInstitution : String
+  -degreeCountry : String
+  -isVisible : Boolean
+  -suspendedAt : DateTime
+  -rating : Float
+  -reviewsCount : Integer
+  -academicLevelValidatedAt : DateTime
+  -academicLevelNote : String
+  +updateProfile()
+  +setVisibility(visible)
+}
+
+class TutorApplication {
+  -id : String
+  -status : TutorApplicationStatus
+  -submittedAt : DateTime
+  -reviewedAt : DateTime
+  -rejectionReason : String
+  +submit()
+  +approve(adminId)
+  +reject(adminId, reason)
+}
+
+class TutorDocument {
+  -id : String
+  -type : TutorDocumentType
+  -storagePath : String
+  -mimeType : String
+  -sizeBytes : Integer
+  -status : TutorDocumentStatus
+  -extractedText : String
+  -extractionStatus : TranscriptStatus
+  -autoCheck : Json
+  -uploadedAt : DateTime
+}
+
+class TutorExperience {
+  -id : String
+  -type : TutorExperienceType
+  -title : String
+  -organization : String
+  -period : String
+  -description : String
+  -audience : String[]
+  -subjectsTaught : String
+}
+
+class TutorIntroVideo {
+  -storagePath : String
+  -mimeType : String
+  -durationMs : Integer
+}
+
+class TutorSubject {
+  -id : String
+  -competenceDescription : String
+}
+
+class DegreeEquivalence {
+  -id : String
+  -degreeTitle : String
+  -country : String
+  -specialty : String
+  -equivalentDegree : String
+  -status : DegreeEquivalenceStatus
+  -validatedAt : DateTime
+  +validate(levelId)
+  +reject()
+}
+
+class CvImport {
+  -id : String
+  -status : CvImportStatus
+  -fileName : String
+  -fileHash : String
+  -stage : String
+  -extractedText : String
+  -result : Json
+  -ocrEngine : String
+  -model : String
+  -durationMs : Integer
+  +requestUpload()
+  +process()
+  +getResult()
+}
+
+class Offer {
+  -id : String
+  -title : String
+  -description : String
+  -format : TeachingFormat
+  -durationMinutes : Integer
+  -durationOptions : Integer[]
+  -price : Decimal
+  -currency : String
+  -isActive : Boolean
+  -disabledByAdminAt : DateTime
+  +create()
+  +update()
+  +deactivate()
+}
+
+class Subject {
+  -id : String
+  -name : String
+}
+
+class EducationLevel {
+  -id : String
+  -name : String
+  -academicRank : Integer
+}
+
+class AcademicTrack {
+  -id : String
+  -code : String
+  -name : String
+}
+
+User "1" -- "0..1" TutorProfile : est >
+User "1" -- "0..*" CvImport : importe >
+TutorProfile "1" -- "0..*" TutorApplication : dépose >
+TutorApplication "1" -- "0..*" TutorDocument : contient >
+TutorProfile "1" -- "0..*" TutorExperience : déclare >
+TutorProfile "1" -- "0..1" TutorIntroVideo : présente >
+TutorProfile "1" -- "0..*" TutorSubject : maîtrise >
+TutorSubject "0..*" -- "1" Subject
+TutorSubject "0..*" -- "1" EducationLevel
+TutorProfile "0..*" -- "0..1" DegreeEquivalence : s'appuie sur >
+TutorProfile "0..*" -- "0..1" EducationLevel : niveau académique\nvalidé
+DegreeEquivalence "0..*" -- "0..1" EducationLevel : équivaut à >
+TutorProfile "1" -- "0..*" Offer : publie >
+Offer "0..*" -- "1" Subject
+Offer "0..*" -- "0..1" EducationLevel
+Offer "0..*" -- "0..1" AcademicTrack
+@enduml

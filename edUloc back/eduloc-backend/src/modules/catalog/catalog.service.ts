@@ -15,6 +15,7 @@ type SubjectRow = {
   description: string | null;
   levelCategories: string[];
   trackCodes: string[];
+  excludedLevels: string[];
   isVerified: boolean;
 };
 
@@ -25,6 +26,7 @@ const toDto = (s: SubjectRow) => ({
   description: s.description,
   levelCategories: s.levelCategories,
   trackCodes: s.trackCodes,
+  excludedLevels: s.excludedLevels,
   isVerified: s.isVerified,
 });
 

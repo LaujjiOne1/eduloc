@@ -1,0 +1,100 @@
+@startuml 05_classes_sprint3
+title Sprint 3 - Disponibilités, lieux et recherche classique géolocalisée
+skinparam classAttributeIconSize 0
+hide empty methods
+
+enum PlaceType {
+  TUTOR_HOME
+  BENEFICIARY_HOME
+  PUBLIC_PLACE
+  ONLINE
+  PARTNER_ROOM
+}
+
+class TutorProfile {
+  -id : String
+  -displayName : String
+  -isVisible : Boolean
+  -partnerRoomRadiusM : Integer
+}
+
+class Offer {
+  -id : String
+  -title : String
+  -price : Decimal
+  -durationMinutes : Integer
+  -format : TeachingFormat
+  -isActive : Boolean
+}
+
+class Place {
+  -id : String
+  -label : String
+  -address : String
+  -latitude : Float
+  -longitude : Float
+  -radius : Integer
+  -type : PlaceType
+  -isPrimary : Boolean
+  -location : Geography(Point, 4326)
+  -isActive : Boolean
+  +create()
+  +update()
+  +deactivate()
+}
+
+class Availability {
+  -id : String
+  -dayOfWeek : Integer
+  -startTime : String
+  -endTime : String
+  -timezone : String
+  -validFrom : Date
+  -validUntil : Date
+  -isActive : Boolean
+  +create()
+  +update()
+  +deactivate()
+}
+
+class BlockedPeriod {
+  -id : String
+  -startAt : DateTime
+  -endAt : DateTime
+  -reason : String
+}
+
+class SearchService <<service>> {
+  +searchOffers(criteria, position)
+  +tutorPublic(tutorProfileId)
+  +offerPublic(offerId)
+  +daySlots(tutorId, offerId, from, to, duration)
+}
+
+class DaySlotsCalculator <<domaine>> {
+  +computeDaySlots(input)
+}
+
+class PublicLocation <<domaine>> {
+  +toPublicPlace(place)
+  +publicDistance(meters, placeType)
+}
+
+class GeoService <<service>> {
+  +search(query)
+  +reverse(lat, lng)
+}
+
+TutorProfile "1" -- "0..*" Place : déclare >
+TutorProfile "1" -- "0..*" Availability : définit >
+TutorProfile "1" -- "0..*" BlockedPeriod : bloque >
+TutorProfile "1" -- "0..*" Offer : publie >
+Availability "0..*" -- "0..1" Place : se tient à >
+Availability "0..*" -- "0..1" Offer : limitée à >
+
+SearchService ..> Offer : filtre
+SearchService ..> Place : distance PostGIS
+SearchService ..> DaySlotsCalculator : utilise
+SearchService ..> PublicLocation : floute les domiciles
+SearchService ..> GeoService
+@enduml

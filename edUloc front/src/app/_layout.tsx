@@ -42,12 +42,24 @@ function LanguageBoundary({ children }: { children: ReactNode }) {
   return <Fragment key={language}>{children}</Fragment>;
 }
 
+// L'écran de départ est toujours l'accueil (« / »), quelle que soit la façon dont les écrans sont déclarés plus bas.
+export const unstable_settings = { initialRouteName: "index" };
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <RealtimeProvider>
-          <Stack screenOptions={{ headerShown: false }} screenLayout={({ children }) => <LanguageBoundary>{children}</LanguageBoundary>} />
+          {/* freezeOnBlur : un écran recouvert ne se re-rend plus tant qu'il n'est pas revenu au premier plan. */}
+          <Stack
+            screenOptions={{ headerShown: false, freezeOnBlur: true }}
+            screenLayout={({ children }) => <LanguageBoundary>{children}</LanguageBoundary>}
+          >
+            {/* « index » d'abord : le premier écran déclaré est celui où l'application démarre. */}
+            <Stack.Screen name="index" />
+            {/* La recherche monte du bas comme une feuille (façon Airbnb) au lieu de glisser de côté. */}
+            <Stack.Screen name="search/index" options={{ animation: "slide_from_bottom" }} />
+          </Stack>
         </RealtimeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

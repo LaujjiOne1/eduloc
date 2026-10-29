@@ -10,7 +10,8 @@
     "map": "Sari-tany",
     "noTutorToShowOn": "Tsy misy mpampianatra aseho eo amin'ny sari-tany.",
     "km": "{{label}}, {{distanceKm}} km",
-    "tryLoadingTheTutorsAgain": "Andramo indray ny fandraisana ireo mpampianatra"
+    "tryLoadingTheTutorsAgain": "Andramo indray ny fandraisana ireo mpampianatra",
+    "searching": "Mitady mpampianatra…"
   },
   "tutorProfile": {
     "verifiedTutor": "Mpampianatra voamarina",

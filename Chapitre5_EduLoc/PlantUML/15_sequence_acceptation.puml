@@ -1,0 +1,44 @@
+@startuml 15_sequence_acceptation
+title Séquence : acceptation d'une demande de réservation par le tuteur
+autonumber
+actor Tuteur
+participant "Application\n(BookingService)" as APP
+participant "BookingsController" as CTRL
+participant "BookingsService" as SVC
+participant "BookingStateMachine" as SM
+database "PostgreSQL" as DB
+participant "OutboxWriter" as OUT
+participant "OutboxRelayService" as RELAY
+participant "Push / Centrifugo" as PUSH
+actor Demandeur
+
+Tuteur -> APP : Accepter la demande
+APP -> CTRL : POST /bookings/{id}/accept
+CTRL -> SVC : acceptBooking(userId, id)
+SVC -> DB : début de transaction\nverrou du tuteur
+SVC -> DB : lire la réservation
+SVC -> SM : assertCanTransition(PENDING, CONFIRMED, TUTOR)
+SVC -> DB : chevauchement et marges ?
+
+alt conflit détecté
+  SVC --> CTRL : AcceptanceConflictError
+  SVC -> DB : enregistrer un Conflict\n(transaction séparée)
+  CTRL --> APP : 409 (la demande reste PENDING)
+  APP --> Tuteur : écran de conflit
+else aucun conflit
+  opt séance en salle partenaire
+    SVC -> DB : verrou et contrôle de la salle
+  end
+  SVC -> SVC : générer et chiffrer le code de démarrage
+  SVC -> DB : statut CONFIRMED + journal BookingEvent
+  SVC -> DB : refuser les demandes concurrentes
+  SVC -> OUT : booking.confirmed (même transaction)
+  OUT -> DB : insérer OutboxEvent
+  SVC -> DB : validation de la transaction
+  CTRL --> APP : 200 (réservation confirmée)
+  APP --> Tuteur : demande acceptée
+  RELAY -> DB : lire les événements non traités
+  RELAY -> PUSH : notification au demandeur
+  PUSH --> Demandeur : « Réservation confirmée »
+end
+@enduml

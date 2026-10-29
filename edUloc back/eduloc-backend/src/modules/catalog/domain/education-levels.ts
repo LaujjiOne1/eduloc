@@ -12,6 +12,16 @@ export const CATALOG_LEVELS: ReadonlyArray<{ category: string; names: readonly s
 ];
 
 /**
+ * Premier sous-cycle du primaire (« Niveau I » du nouveau programme : T1, T2, T3 = 11ème, 10ème, 9ème). Anglais,
+ * Sciences et Technologie, Histoire et Géographie n'y sont pas enseignés ; ils arrivent en T4 (8ème).
+ */
+export const PRIMARY_FIRST_CYCLE_LEVELS: readonly string[] = ['11ème', '10ème', '9ème'];
+
+/** Années de Licence et niveaux au-dessus (Master, Doctorat) : servent à réserver une matière à l'un ou à l'autre (`Subject.excludedLevels`). */
+export const LICENCE_LEVELS: readonly string[] = ['Licence 1', 'Licence 2', 'Licence 3'];
+export const LEVELS_ABOVE_LICENCE: readonly string[] = ['Master 1', 'Master 2', 'Doctorat 1', 'Doctorat 2', 'Doctorat 3'];
+
+/**
  * Diplôme minimal pour enseigner un niveau : garde-fou des flux existants (saisie du dossier tuteur),
  * sans lien avec l'éligibilité universitaire du matching (qui utilise `academicRank`).
  */

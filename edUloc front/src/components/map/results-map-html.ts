@@ -49,7 +49,7 @@ export function buildResultsMapHtml(tutors: Tutor[], selectedId: string | null, 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <link href="https://unpkg.com/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl.css" rel="stylesheet" />
 <style>
-  html, body, #map { margin: 0; height: 100%; width: 100%; background: #f1eee5; font-family: -apple-system, system-ui, sans-serif; }
+  html, body, #map { margin: 0; height: 100%; width: 100%; background: #f4f5f8; font-family: -apple-system, system-ui, sans-serif; }
   .pin { width: 40px; height: 40px; border-radius: 20px; background: #fff; border: 2px solid #332e86; box-shadow: 0 2px 8px rgba(20,22,43,.25); overflow: hidden; cursor: pointer; transition: transform .15s; }
   .pin.sel { background: #332e86; transform: scale(1.18); border-color: #fff; box-shadow: 0 4px 14px rgba(51,46,134,.5); }
   .pin svg { display: block; width: 100%; height: 100%; }
@@ -60,7 +60,7 @@ export function buildResultsMapHtml(tutors: Tutor[], selectedId: string | null, 
   @keyframes pulse { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
   .ctl { position: absolute; right: 10px; z-index: 5; width: 29px; height: 29px; border: 0; border-radius: 4px; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.1); font: 700 13px -apple-system, system-ui, sans-serif; color: #332e86; cursor: pointer; padding: 0; }
   #tilt { font-size: 11px; }
-  #msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #585b78; font-size: 13.5px; background: #f1eee5; padding: 24px; text-align: center; }
+  #msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #585b78; font-size: 13.5px; background: #f4f5f8; padding: 24px; text-align: center; }
 </style>
 </head><body>
 <div id="map"></div>

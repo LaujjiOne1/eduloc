@@ -44,5 +44,11 @@
     "tryLoadingTheTracksAgain": "Try loading the tracks again",
     "newProgramme": "New programme",
     "oldProgramme": "Old programme"
+  },
+  "sheet": {
+    "choose": "Choose",
+    "subject": "Subject",
+    "clearAll": "Clear all",
+    "search": "Search"
   }
 }
