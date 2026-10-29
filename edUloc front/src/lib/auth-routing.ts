@@ -10,9 +10,17 @@ const APPRENTI_DASHBOARD_ROUTE = "/apprenti-dashboard" as Href;
 const TUTOR_DASHBOARD_ROUTE = "/tutor-dashboard" as Href;
 const TUTOR_PENDING_ROUTE = "/tutor-application-pending" as Href;
 
-/** Vrai quand le compte peut utiliser l'espace tuteur (dossier approuvé, profil non suspendu). */
+/**
+ * Vrai quand le compte a accès à l'espace tuteur : dossier approuvé. Un tuteur suspendu (restreint) y reste
+ * admis — il n'est pas « bloqué » sur l'écran d'attente — et voit une alerte sur son accueil ; ses actions
+ * sensibles (accepter une demande…) restent refusées par le serveur.
+ */
 export const isApprovedTutor = (user: AuthenticatedUser | null): boolean =>
-  user?.tutor?.applicationStatus === "approved" && !user.tutor.isSuspended;
+  user?.tutor?.applicationStatus === "approved";
+
+/** Vrai quand le tuteur est suspendu par l'administration (profil masqué, nouvelles demandes impossibles). */
+export const isTutorSuspended = (user: AuthenticatedUser | null): boolean =>
+  isApprovedTutor(user) && user?.tutor?.isSuspended === true;
 
 /**
  * Où aller juste après une connexion ou une vérification d'e-mail réussie. Ordre :

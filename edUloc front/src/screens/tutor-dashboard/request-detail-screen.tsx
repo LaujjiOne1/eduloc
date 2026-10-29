@@ -12,8 +12,10 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { DIFFICULTY_LABELS, OBJECTIVE_LABELS } from "@/api/mappers";
 import { useBookingRequestAction } from "@/hooks/use-booking-request-action";
 import { useTutorBooking } from "@/hooks/use-tutor-booking";
+import { isTutorSuspended } from "@/lib/auth-routing";
+import { useAuthStore } from "@/store/auth.store";
 import type { Booking } from "@/types/booking";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { t as translate } from "@/i18n";
 
 function acceptedRoute(id: string): Href {
@@ -32,6 +34,7 @@ export function RequestDetailScreen() {
   const { state, retry } = useTutorBooking(id);
   const { state: actionState, accept, refuse } = useBookingRequestAction();
 
+  const isSuspended = useAuthStore((s) => isTutorSuspended(s.user));
   const isAccepting = actionState.status === "accepting";
   const isRefusing = actionState.status === "refusing";
 
@@ -79,7 +82,7 @@ export function RequestDetailScreen() {
             />
             <Button
               label={t("common.accept")}
-              disabled={isAccepting || isRefusing}
+              disabled={isAccepting || isRefusing || isSuspended}
               loading={isAccepting}
               loadingLabel={t("tutorDashboard.requestDetail.accepting")}
               onPress={() => handleAccept(state.booking.id)}

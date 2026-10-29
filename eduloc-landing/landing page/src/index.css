@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* EduLoc design system — all colors HSL */
+@layer base {
+  :root {
+    --background: 50 38% 97%;         /* paper */
+    --foreground: 235 37% 12%;        /* ink */
+    --card: 0 0% 100%;
+    --card-foreground: 235 37% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 235 37% 12%;
+    --primary: 244 49% 35%;
+    --primary-dark: 244 54% 24%;
+    --primary-foreground: 0 0% 100%;
+    --primary-tint: 247 60% 95%;
+    --violet: 248 65% 69%;
+    --violet-tint: 253 70% 96%;
+    --secondary: 253 70% 96%;
+    --secondary-foreground: 244 49% 35%;
+    --muted: 45 29% 92%;
+    --muted-foreground: 236 15% 41%;
+    --faint: 235 12% 64%;
+    --accent: 247 60% 95%;
+    --accent-foreground: 244 49% 35%;
+    --emerald: 169 84% 33%;
+    --emerald-tint: 162 55% 92%;
+    --warning: 35 65% 45%;
+    --warning-tint: 38 77% 93%;
+    --destructive: 5 46% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-tint: 9 45% 93%;
+    --border: 45 24% 87%;
+    --input: 45 24% 87%;
+    --ring: 244 49% 35%;
+    --radius: 0.75rem;
+    --gradient-glow: linear-gradient(90deg, hsl(244 49% 35%) 0%, hsl(248 65% 69%) 49%, hsl(169 84% 33%) 100%);
+    --shadow-soft: 0 10px 30px -12px hsl(244 49% 35% / 0.18);
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-display font-bold tracking-tight; }
+}
+
+@layer utilities {
+  .text-glow { background: var(--gradient-glow); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .bg-glow { background: var(--gradient-glow); }
+}

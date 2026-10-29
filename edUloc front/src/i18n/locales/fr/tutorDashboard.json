@@ -55,6 +55,8 @@
   },
   "dashboard": {
     "yourActivity": "Votre activité",
+    "accountRestricted": "COMPTE TUTEUR RESTREINT",
+    "accountRestrictedBody": "Votre compte tuteur a été restreint par l'équipe EduLoc. Votre profil est masqué dans la recherche et vous ne pouvez plus accepter de nouvelles demandes. Vous gardez l'accès à votre espace, à vos rendez-vous et à vos messages. Contactez le support pour en savoir plus.",
     "fileUnderReview": "DOSSIER EN COURS DE VÉRIFICATION",
     "yourApplicationIsCurrentlyBeing": "Votre candidature est actuellement examinée par l'équipe EduLoc. Votre profil reste masqué dans la recherche publique tant que votre dossier n'est pas validé.",
     "myCalendarAvailabilities": "Mon calendrier & disponibilités",

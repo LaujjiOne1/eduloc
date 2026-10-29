@@ -55,6 +55,8 @@
   },
   "dashboard": {
     "yourActivity": "Your activity",
+    "accountRestricted": "TUTOR ACCOUNT RESTRICTED",
+    "accountRestrictedBody": "Your tutor account has been restricted by the EduLoc team. Your profile is hidden from search and you can no longer accept new requests. You keep access to your space, your appointments and your messages. Contact support to find out more.",
     "fileUnderReview": "FILE UNDER REVIEW",
     "yourApplicationIsCurrentlyBeing": "Your application is currently being reviewed by the EduLoc team. Your profile stays hidden from public search until your file is validated.",
     "myCalendarAvailabilities": "My calendar & availabilities",

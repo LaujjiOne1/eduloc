@@ -55,6 +55,8 @@
   },
   "dashboard": {
     "yourActivity": "Ny asanao",
+    "accountRestricted": "VOAFETRA NY KAONTINAO MPAMPIANATRA",
+    "accountRestrictedBody": "Nofetren'ny ekipan'ny EduLoc ny kaontinao mpampianatra. Miafina amin'ny fikarohana ny mombamombanao ary tsy afaka manaiky fangatahana vaovao ianao intsony. Mbola afaka miditra amin'ny toerana misy anao, ny fotoana nifanarahana ary ny hafatrao ianao. Mifandraisa amin'ny fanohanana raha mila fanazavana.",
     "fileUnderReview": "RAKITRA EO AM-PAMARINANA",
     "yourApplicationIsCurrentlyBeing": "Eo am-pandinihana ny fangatahanao ny ekipan'ny EduLoc. Mijanona ho miafina amin'ny fikarohana ampahibemaso ny mombamombanao mandra-pahamarinina ny rakitrao.",
     "myCalendarAvailabilities": "Ny kalandrierako sy ny fotoana malalaka",

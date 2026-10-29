@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ChevronRightIcon, ClockIcon, TeachIcon } from "@/components/icons";
+import { AlertTriangleIcon, ChevronRightIcon, ClockIcon, TeachIcon } from "@/components/icons";
 import { FadeIn } from "@/components/motion/fade-in";
 import { PressableScale } from "@/components/motion/pressable-scale";
 import { DayAgenda, markersFromOccurrences } from "@/components/ui/day-agenda";
@@ -13,6 +13,7 @@ import { TutorBottomNav } from "@/components/ui/tutor-bottom-nav";
 import { useTutorAvailability } from "@/hooks/use-tutor-availability";
 import { useTutorBookings } from "@/hooks/use-tutor-bookings";
 import { useTutorProfile } from "@/hooks/use-tutor-profile";
+import { isTutorSuspended } from "@/lib/auth-routing";
 import { toIsoDate } from "@/lib/week";
 import { AvailabilityService } from "@/services/availability.service";
 import { useAuthStore } from "@/store/auth.store";
@@ -40,6 +41,8 @@ export function DashboardScreen() {
   const { state: availabilityState } = useTutorAvailability();
   // Statut RÉEL du dossier (serveur, mis à jour en direct) — et non un drapeau local posé à l'envoi.
   const isPendingValidation = useAuthStore((s) => s.user?.tutor?.applicationStatus === "pending");
+  // Tuteur restreint : il garde l'accès à son espace, mais avec une alerte (profil masqué, acceptation impossible).
+  const isSuspended = useAuthStore((s) => isTutorSuspended(s.user));
 
   const [selectedDateIso, setSelectedDateIso] = useState<string>(() => toIsoDate(new Date()));
 
@@ -89,6 +92,19 @@ export function DashboardScreen() {
           <Text className="mb-[2px] text-[24px] font-bold text-ink">{t("common.hello", { value: firstName ? `, ${firstName}` : "" })}</Text>
           <Text className="mb-5 text-[14px] text-ink-soft">{t("tutorDashboard.dashboard.yourActivity")}</Text>
         </FadeIn>
+
+        {isSuspended ? (
+          <FadeIn delay={50}>
+            <View className="mb-5 rounded-xl border border-error/30 bg-error-tint p-4" accessibilityRole="alert">
+              <View className="mb-2 flex-row items-center gap-[6px]">
+                <AlertTriangleIcon size={16} color="#AC4A40" />
+                <Text className="text-[12px] font-bold text-error">{t("tutorDashboard.dashboard.accountRestricted")}</Text>
+              </View>
+              <Text className="text-[13px] leading-[18.5px] text-ink-soft">
+                {t("tutorDashboard.dashboard.accountRestrictedBody")}</Text>
+            </View>
+          </FadeIn>
+        ) : null}
 
         {isPendingValidation ? (
           <FadeIn delay={50}>
